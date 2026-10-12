@@ -57,3 +57,7 @@ CI uruchamia checki, lecz nie wymusza blokady merge bez skonfigurowania required
 Showcase: 8/8 Vitest i 20/20 wykonań Playwright (17 różnych browser scenarios + 3 dodatkowe wykonania smoke). Łącznie 25 logicznych scenariuszy. Porównania wizualne przeszły z zapisanymi PNG, bez update. Szersza regresja: 109/109 Vitest, 47/47 Playwright. Wybrane smoke/resilience powtórzono pięć razy: 15/15, retries=0. TypeScript, ESLint i produkcyjny build PWA poprawne.
 
 Środowisko baseline: macOS 26.5.2 arm64, Node 24.18.0, Playwright 1.63.0, Chromium z instalacji Playwright, viewport 393 × 852, scale 1. Kod jest opublikowany na GitHub. [Pierwszy przebieg CI](https://github.com/logip87/jedna-kula/actions/runs/38235390349) zaliczył full-regression (showcase i 47 E2E) oraz visual. Quality gate zaliczył lint, TypeScript, Vitest i kontrolę generatora, ale przekroczył limit joba podczas instalacji przeglądarek. Cały przebieg miał wynik cancelled; nie deklarujemy pełnego CI jako zielonego.
+
+## Potwierdzenie CI — 12.10.2026
+
+[Przebieg dla commita `03c478a`](https://github.com/logip87/jedna-kula/actions/runs/38237821420) zakończył się sukcesem. Wszystkie trzy joby przeszły: quality-gate, full-regression, visual. Potwierdza to wykonanie na hosted runnerach, w tym smoke Chromium/Firefox/WebKit, representative risk gate, pełną regresję i zgodność baseline macOS. Wynik dotyczy wskazanego commita; bieżący status należy sprawdzać w Actions. Poprawiony test mentalny przeszedł również pięć razy lokalnie z `CI=1`, bez retry.

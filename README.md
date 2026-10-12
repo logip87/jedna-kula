@@ -74,7 +74,9 @@ flowchart TD
 
 Workflow ma read-only permissions, izolowane joby i concurrency. Po failure zachowuje HTML report, trace oraz screenshots przez 7 dni. Visual działa w osobnym jobie macOS; wzorce nie są aktualizowane automatycznie. Publikacja aplikacji pozostaje osobną operacją.
 
-**Pierwszy przebieg GitHub Actions, 12.10.2026:** [pełna regresja i showcase przeszły](https://github.com/logip87/jedna-kula/actions/runs/38235390349/job/114764685112), a [visual potwierdził zgodność baseline z hosted runnerem](https://github.com/logip87/jedna-kula/actions/runs/38235390349/job/114764684918). Quality gate zaliczył lint, TypeScript, Vitest i kontrolę generatora, lecz został przerwany limitem 15 minut podczas instalacji przeglądarek. Nie oznacza to zielonego całego pipeline. Instalacja ma teraz osobny limit 5 minut, aby problem infrastruktury był widoczny wcześniej. [Aktualne przebiegi CI](https://github.com/logip87/jedna-kula/actions/workflows/quality.yml).
+**CI potwierdzone na GitHub, 12.10.2026:** [przebieg dla commita `03c478a`](https://github.com/logip87/jedna-kula/actions/runs/38237821420) zakończył się sukcesem: quality gate, full-regression i visual. Obejmuje lint, TypeScript, Vitest, kontrolę generatora, build, smoke na trzech silnikach oraz accessibility/security/PWA/resilience. Visual przeszedł na hosted runnerze macOS bez aktualizacji baseline. [Aktualne przebiegi CI](https://github.com/logip87/jedna-kula/actions/workflows/quality.yml).
+
+Pierwszy przebieg ujawnił przekroczenie limitu podczas instalacji przeglądarek. Instalacja ma osobny limit 5 minut, aby problem infrastruktury był widoczny wcześniej. Regresja generuje HTML report, trace i screenshots po błędzie; raporty regresji i showcase mają osobne katalogi.
 
 **Delivery:** aplikację publikuje lokalne `npm run deploy` przez FTPS, z hasłem w Pęku kluczy i kopią zastępowanych plików. Workflow CI nie wdraża na serwer. Wdrożenie automatyczne z GitHub Actions wymagałoby osobnego joba zależnego od poprawnych checków oraz konfiguracji sekretów i środowiska produkcyjnego. Obecny zakres briefu wymaga automatycznego CI; deployment pozostaje ręcznie uruchamiany.
 
