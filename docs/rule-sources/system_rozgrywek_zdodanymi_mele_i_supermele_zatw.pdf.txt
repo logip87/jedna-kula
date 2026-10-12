@@ -1,0 +1,465 @@
+SYSTEMY ROZGRYWANIA TURNIEJÓW 
+ 
+1. Turniej wielorundowy - system szwajcarski. 
+ 
+1. Turniej (faza turnieju) rozgrywany według systemu szwajcarskiego  przeprowadzany jest 
+w następujący sposób: 
+a. ustalenie listy startowej; 
+b. ogłoszenie systemu gry; 
+c. określenie ilości rund; 
+d. rozstawienie drużyn do pierwszej rundy: 
+ losowe; 
+ według rankingu – w tym  przypadku dzieli się listę startową na pół oraz kojarzy 
+1 z górnej połowy z 1 z dolnej połowy, 2 z 2, 3 z 3 itd. (np. 1-17, 2-18); W przypadku 
+nieparzystej liczby uczestników jedna drużyna ma wolny los. 
+e. rozgrywanie kolejnych rund według rozstawień wynikających z: 
+ ilości odniesionych zwycięstw 
+ ilości punktów buchholza (przy grze z buchholzem) 
+ różnicy małych punktów 
+ innych przyjętych wyznaczników 
+f. Od drugiej rundy  kojarzone ze sobą są drużyny zajmujące kolejne miejsca w tabeli, 
+w ten sposób, że pierwsza gra z drugą, trzecia z czwartą itd., przy założeniu, że 
+w jednym turnieju drużyny mogą zagrać ze sobą jedynie raz.W przypadku gdy drużyny 
+grały już ze sobą, drużynie z pozycją wy ższą dobiera się drużynę kolejną z  najwyższą 
+pozycją w tabeli; 
+ 
+2. Dla ułatwienia obliczeń turnieje (fazy turniejów) rozgrywane systemem szwajcarskim  
+prowadzone są przy pomocy  programu komputerowego, dostępnego na stronie 
+www.petanque.pl lub innego programu dopuszczonego do użytkowania przez Zarząd PFP. 
+3. Zwycięzcą turnieju zostaje drużyna, która zgromadziła: 
+ największą ilość punktów za wygrane mecze; 
+ najwięcej punktów buchholz; 
+ najlepszą różnicę małych punktów; 
+ najwięcej małych punktów; 
+ 
+2. Turniej rozgrywany w grupach. 
+ 
+1. Turniej (faza turnieju) rozgrywany według systemu grupowego przeprowadzany jest 
+w następujący sposób: 
+a. ustalenie listy startowej; 
+b. ogłoszenie systemu gry; 
+c. określenie schematu gier i umieszczenie go na tablicy informacyjnej; 
+d. rozstawienie drużyn do grup: 
+ według rankingu, zgodne z systemem doboru par do play-off; 
+zatwierdzony 30.11.2024
+2. Rozgrywkę w grupach (do 2 wygranych) prowadzi się w następujący sposób: 
+a) runda nr 1 
+- mecz nr 1: drużyna z pozycji (1) vs. drużyna z pozycji (4), 
+- mecz nr 2: drużyna z pozycji (2) vs. drużyna z pozycji (3), 
+b) runda nr 2: 
+- mecz nr 3: zwycięzca meczu nr 1 vs. zwycięzca meczu nr 2, 
+- mecz nr 4: przegrany meczu nr 1 vs. przegrany meczu nr 2, 
+c) runda nr 3: 
+–  mecz nr 5: przegrany meczu nr 3 vs. zwycięzca meczu nr 4, 
+3. Rozgrywkę w grupach (każdy z każdym) prowadzi się w następujący sposób: 
+ 3 drużyny 4 drużyny 5 drużyn 6 drużyn 
+1 runda 1-3 1-4 2-5 1-6 
+  2-3 3-4 2-5 
+    3-4 
+2 runda 2-3 1-3 1-5 1-5 
+  2-4 2-3 4-6 
+    2-3 
+3 runda 1-2 1-2 1-4 1-4 
+  3-4 3-5 3-5 
+    2-6 
+4 runda   1-3 1-3 
+   2-4 2-4 
+    5-6 
+5 runda   1-2 1-2 
+   4-5 3-6 
+    4-5 
+O kolejności miejsc w grupie decydują: 
+a) ilość zwycięstw 
+b) przy równej ilości zwycięstw bezpośredni pojedynek 
+c) przy równej ilości zwycięstw (więcej niż 2 drużyn) różnica punktów z meczy  
+pomiędzy tymi drużynami (mała tabela) 
+d) przy równej ilości zwycięstw (więcej niż  2 drużyn) i równej różnicy punktów 
+z meczy pomiędzy tymi drużynami (mała tabela), jeśli są dwie bezpośredni 
+pojedynek jeśli więcej, suma zdobytych punktów z małej tabeli 
+e) kolejno analogicznie bezpośredni pojedynek lub różnica punktów ze wszystkich  
+meczy 
+4 Kolejne fazy turniejów mogą składać się z rozgrywek: 
+a) w grupach barażowych, według zasad przyjętych przez organizatora; 
+b) w grupie finałowej, w której o zwycięstwie decydują: 
+ ilość zwycięstw 
+ przy równej ilości zwycięstw bezpośredni pojedynek 
+ przy równej ilości zwycięstw (więcej niż 2 drużyn) różnica punktów z  meczy 
+pomiędzy tymi drużynami (mała tabela) 
+ przy równej ilości zwycięstw (więcej niż 2 drużyn) i równej różnicy  punktów 
+z meczy pomiędzy tymi drużynami (mała tabela), jeśli są dwie  bezpośredni 
+pojedynek jeśli więcej, suma zdobytych punktów z małej tabeli 
+ kolejno analogicznie bezpośredni pojedynek lub różnica punktów ze  wszystkich 
+meczy 
+ kolejno analogicznie bezpośredni pojedynek lub suma punktów ze  wszystkich 
+meczy 
+3. Turniej łączony. 
+ 
+1. Turniej przeprowadzany  w systemie mieszanym, w którym różne fazy turnieju  
+rozgrywane są według odmiennych metod. 
+2. Turniej składa się z: 
+a) fazy wstępnej, w której rozgrywa się 
+ 3 lub 5 rund systemem szwajcarskim, lub 
+ eliminacje w grupach , 
+b) części finałowej, rozgrywanej systemem pucharowym; 
+3. Mecze w grupach rozgrywane są w sposób określony w punkcie 2 podpunkty 1-3 
+4. W zależności od ilości startujących organizator może zdecydować o stworzeniu grup  
+barażowych. 
+5. Schematy rozstawień drużyn do części finałowej znajdują się w części 
+Play-off – warianty; 
+6. Część pucharowa może obejmować część lub wszystkich uczestników turnieju, może też 
+być rozgrywana do ustalenia każdego miejsca w turnieju, w zależności od decyzji  
+organizatora. 
+4. Play-off - warianty; 
+ 
+1. Turniej rozgrywany wyłącznie systemem pucharowym  również pozwala na  
+zastosowanie kilku wariantów rozgrywki: 
+a) turniej rozgrywany w systemie pucharowym, gdzie drużyna przegrana odpada 
+z dalszych rozgrywek; 
+b) turniej rozgrywany w systemie pucharowym, gdzie drużyna przegrana trafia do 
+nowej grupy pucharowej. Rozgrywka trwa do ustalenia każdego miejsca w turnieju. 
+c) turniej, w którym część pucharowa rozpoczyna się po części wstępnej rozgrywanej 
+w grupach lub według zasad szwajcara (jak w turniejach łączonych); 
+2 rozstawienia do play off : 
+ dla 4 drużyn: 1-4, 2-3 
+ dla 8 drużyn: 1-8, 5-4, 3-6, 7-2 
+ dla 16 drużyn: 1-16, 8-9, 5-12, 4-13 / 3-14, 6-11, 7-10, 2-15 
+graficzne ustawienie drużyn (dogrywka o każde miejsce) aktywny arkusz xls (do 
+48 drużyn z podziałem na 16-tki) 
+ dla 32 drużyn: 1-32, 17-16, 9-24, 25-8 / 28-5, 12-21, 20-13, 4-29 
+3-30, 14-19, 11-22, 6-27 / 26-7, 23-10, 18-15, 2-31 
+graficzne ustawienie drużyn 
+ dla 64 drużyn: 1-64, 32-33, 17-48, 16-49 / 9-56, 24-41, 25-40, 8-57 
+5-60, 28-37, 21-44, 12-53 / 13-52, 45-20, 29-36, 4-61 
+3-62, 30-35, 19-46, 14-51 / 11-54, 22-43, 27-38, 6-59 
+7-58, 26-39, 23-42,10-55 / 15-50, 18-47, 31-34. 2-63 
+ 
+3. Istnieje możliwość używania specyficznego klucza zestawień drużyn awansujących  do 
+następnych rund, jednak w każdym takim przypadku organizator musi zakomunikować 
+to zawodnikom przed rozpoczęciem turnieju. 
+4. W każdym przypadku rozgrywki pucharowej zwycięzcą zostaje drużyna, która 
+wygrywa mecz finałowy. 
+5. Turnieje rozgrywane w formule „mele” 
+1. Formuła mele może być zastosowana tylko w  przypadku dubletów i tripletów 
+w turniejach rozgrywanych w odmianie soft petanque.  Polega na losowym dobieraniu 
+w drużyny zawodników z listy uczestników przed rozpoczęciem turnieju i grają w  takim 
+samym, niezmiennym składzie już do końca turnieju. 
+2. W takiej formule zawody mogą być rozgrywane jako: 
+a. turniej wielorundowy – system szwajcarski, 
+b. turniej rozgrywany w grupach, 
+c. turniej łączony 
+6. Turnieje rozgrywane w formule „supermele” 
+1. Formła supermele może być zastosowana tylko w  przypadku dubletów i tripletów 
+w turniejach rozgrywanych w odmianie soft petanque.  Polega na losowym dobieraniu 
+w drużyny zawodników z listy uczestników przed rozpoczęciem każdej rundy turnieju. 
+Zasada ta nie dotyczy fazy play -off. O doborze zawodników do drużyn w tej fazie 
+decyduje organizator turnieju i w  takim już niezmiennym składzie drużyna gra już do 
+końca turnieju. 
+2. W takiej formule zawody mogą być rozgrywane jako: 
+a. turniej wielorundowy – system szwajcarski, 
+b. turniej rozgrywany w grupach, 
+c. turniej łączony 
+7. Konkurs strzału precyzyjnego 
+1. Teren gry (boisko) – zawody w SP odbywają się na boiskach, na których rozgrywane są  
+zawody petanque. 
+2. Zasady rozgrywki określa organizator w zaproszeniu do zawodów. 
+3. Najbardziej popularnym  sposobem rozgrywania tych zawodów jest turniej złożony  
+z trzech faz: 
+1) eliminacje, w których zawodnik wykonuje kolejne rzuty na jednym torze,  
+przestrzegając limitu 30 sekund na rzut; 
+2) baraże, w których zawodnik rzuca na przemian z przeciwnikiem, a rzuty odbywają  
+się na sąsiadujących ze sobą rzutniach; 
+3) część pucharowa (play -off), w której  zawodnicy korzystają  naprzemiennie z tej 
+samej rzutni. 
+4. Organizator może kształtować dowolnie zarys organizacyjny konkursu, jednak zawsze  
+jest zobowiązany do przestrzegania szczegółowych zasad regulaminu Konkursu 
+Strzału Precyzyjnego przedstawionych poniżej. 
+5. Na boisku znajduje się koło figur, o średnicy 1 metra, wewnątrz którego usytuowane są 
+cele i przeszkody.  W odległości, 6, 7, 8 i 9 metrów od krawędzi  koła figur, w linii  
+prostej, znajdują się 4 koła rzutów o średnicy 50 cm, z których zawodnicy wykonują  
+rzuty. 
+6. Koło figur i koła rzutów muszą być na stałe przytwierdzone do podłoża i stanowią  
+zespół nazywany torem rzutów. 
+7. Używane przedmioty: 
+o Kula cel o średnicy 73 mm i wadze 700 g, gładka i jasnego koloru; 
+o 2 kule przeszkody o średnicy 73 mm, gładkie, koloru ciemnego; 
+o Świnka pełniąca rolę przeszkody lub celu, drewniana,  o średnicy 30 mm,  
+dowolnego koloru; 
+Waga i średnica kul mogą się nieznacznie różnic od wymienionych powyżej, jednak  
+muszą być identyczne na wszystkich torach. 
+8. Figury – w całym turnieju SP, we wszystkich jego fazach, począwszy od eliminacji, 
+zawodnicy oddają strzały do 5 figur z czterech kół rzutów, rozpoczynając od koła 
+najbliższego kołu figur. 
+o  figura 1 - kula cel ustawiona na środku koła figur, przeszkód brak; 
+o figura 2 - kula cel ustawiona na środku koła figur, przeszkodą jest  świnka 
+ustawiona 10 cm przed kulą celem, w osi rzutu; 
+o figura 3 - kula cel ustawiona na środku koła figur, kule przeszkody  ustawione po 
+bokach, w odstępach 3 cm, prostopadle do osi rzutu; 
+o figura 4 - kula cel ustawiona na  środku koła figur, kula przeszkoda ustawiona 
+10 cm przed kulą celem, w osi rzutu; 
+o figura 5 - świnka ustawiona jako cel 20cm za krawędzią koła figur, w osi rzutu; 
+9. Ważność strzału – strzał jest uznany za ważny, jeżeli jego punkt uderzenia znajduje się 
+wewnątrz koła, w którym ułożone są cele i przeszkody. Gdy rzucana kula zawadzi  
+o krawędź okręgu, sędzia musi ocenić strzał na 0 punktów. 
+10. Punktacja. 
+1) Zawodnik zdobywa 1 punkt gdy: 
+a. w figurach 1 - 4 rzucana kula dotknie kuli celu lub przemieści ją w   obrębie koła 
+figur; 
+b. w figurach 2 - 4 rzucana kula, po kontakcie z kulą celem, dotknie lub  uderzy 
+przeszkodę; 
+c. w figurze 5 rzucana kula dotknie celu lecz nie przemieści go; 
+2) Zawodnik zdobywa 3 punkty gdy: 
+a. w figurach 1 - 4 rzucana kula wypchnie kulę cel z koła figur, nie zatrzymując się 
+na jego powierzchni; 
+b. w figurze 5 rzucana kula w widoczny sposób przemieści cel; 
+3) Zawodnik zdobywa 5 punktów gdy: 
+a. w figurach 1 - 4 rzucana kula wypchnie kulę cel z koła figur, zatrzymując  się 
+na jego powierzchni; 
+b. w figurze 5 rzucana kula wypchnie cel świnkę z koła figur;  
+ 
+W jednej próbie zawodnik może zdobyć maksymalnie 100 punktów 
+11. Przebieg zawodów. 
+1) Etapy rozgrywki: 
+a. faza eliminacji, w której zawodnik oddaje rzuty indywidualnie; 
+b. faza barażowa, w której zawodnicy rzucają naprzemiennie, korzystając z  dwóch 
+torów, a zawodnicy z najlepszymi wynikami uzupełniają grupę finałową 
+(do 4, 8, 16, 32 itd.); 
+c. faza finałowa, w której zawodnicy rzucają naprzemiennie na tym samym torze; 
+2) Najlepsi zawodnicy z eliminacji (1/2 finału)  oraz z baraży (1/2 finału) awansują  do 
+finału, który rozgrywany jest według zasad play-off. 
+12. Zasady rozgrywki. 
+1) Przebieg zawodów ustali szczegółowy regulamin. 
+2) W ramach eliminacji każdy zawodnik oddaje pełną serię rzutów do 5 figur. 
+3) Zawody sędziuje Sędzia Główny,  oceniający jakość rzutów oraz Sędziowie  
+pomocniczy: 
+o  notujący wyniki; 
+o obserwujący pozycję nóg zawodnika rzucającego; 
+Sędzia Główny używa tabliczek sygnalizatorów, za pomocą których 
+pokazuje oceny . 
+4) Zawodnikowi przysługuje 30 sekund na oddanie rzutu, od momentu, w którym  
+zostanie przygotowana figura w kole figur. 
+5) Do członków ekipy zawodnika oddającego swoje strzały należy  ustawienie celów  
+i przeszkód. 
+6) Do rozgrywki  pucharowej zawodnicy zostaną rozstawieni według wyników 
+z eliminacji i baraży w ten sposób, że najlepszy zawodnik z eliminacji zagra 
+z najsłabszym kwalifikującym się z baraży, drugi z przedostatnim itd. 
+7) We wstępnej fazie części pucharowej rzuty rozpoczyna zawodnik, który  osiągnął 
+lepszy wynik w eliminacjach lub barażu. 
+Od półfinałów o kolejności rzutów decyduje losowanie, które przeprowadza  Sędzia 
+Główny zawodów. 
+8) W przypadku gdy zawodnicy w rundzie uzy skają identyczny wynik punktowy, 
+o awansie decydują kolejno: 
+ większa ilość rzutów za 5 punktów; 
+ większa ilość rzutów za 5 punktów do starszych figur (5, 4… 1); 
+ większa ilość rzutów za 3 punkty; 
+Jeśli te trzy parametry nie wyłonią zwycięzcy, zostanie rozegrana dogrywka, 
+w seriach rzutów do 5 figur, z odległości  7 m. 
+9) W przypadku gdy zawody zostaną przerwane w trakcie próby zawodnika lub 
+w trakcie rundy  play-off I warunki nie pozwalają  na kontynuację powodując 
+przerwę dłuższą niż 15 minut, próba lub runda zostaną powtórzone; 
+ 
+6. Spotkanie klubowe. 
+6.1. Reprezentacje klubowe 
+1). Reprezentacja klubowa powinna składać się z co najmniej 6 zawodników, w tym 
+przynajmniej jednego zawodnika przeciwnej płci w stosunku do pozostałych. 
+Zawodnicy muszą posiadać aktualne licencje PFP. 
+2). Reprezentacje klubowe mają obowiązek wyznaczenia kapitana reprezentacji. 
+Nazwisko kapitana musi zostać podane w karcie zgłoszenia reprezentacji, której 
+wzór stanowi załącznik nr 2 do Regulaminu. 
+3). Kapitan reprezentacji klubowej  jest jedyną osobą, która ma prawo zgłaszać jej 
+skład  i reprezentować ją w sporach i reklamacjach. 
+4). W czasie rozgrywania meczu reprezentacje klubowe nie mogą korzystać 
+z zawodników rezerwowych: 
+5). Do każdego meczu kapitan reprezentacji klubowej może zgłosić inny skład. 
+ 
+6.2. System rozgrywek klubowych. 
+1. Spotkania w rozgrywkach, pomiędzy reprezentacjami klubów, rozgrywane są 
+w następujących konkurencjach: 
+a) jedna dowolna trójka przeciwko jednej dowolnej trójce (triplety); 
+b) jedna trójka mieszana przeciwko jednej trójce mieszanej (triplety); 
+c) dwie dowolne pary przeciwko dwóm dowolnym parom (dublety); 
+d) jedna para mikstowa przeciwko jednej parze mikstowej (dublety). 
+2 Spotkanie reprezentacji klubowych odbywa się w dwóch rundach, w dowolnej 
+kolejności. 
+ dwa mecze drużyn trzyosobowych; 
+ trzy mecze drużyn dwuosobowych; 
+3 Punktacja za poszczególne konkurencje: 
+ 3 punkty za zwycięstwo w meczu w tripletach; 
+ 2 punkty za zwycięstwo w meczu w dubletach. 
+4 Reprezentacja wygrywająca spotkanie klubowe otrzymuje 2 punkty meczowe, za 
+remis – 1 punkt meczowy, a za przegraną – 0. 
+5 Reprezentacja wygrywająca spotkanie klubowe walkowerem otrzymuje 2 punkty 
+meczowe, o których mowa w ust. 4 oraz 12 punktów, o których mowa w ust. 3. 
+Reprezentacja przegrywająca walkowerem punktów nie otrzymuje. 
+6 Spotkania między reprezentacjami klubowymi mogą odbywać się w ramach 
+turniejów, w grupach lub w systemie play-off. 
+ 
+6.3 Spotkanie reprezentacji klubowych. 
+1. Ustawienie zawodników do poszczególnych meczów zgłasza kapitan 
+reprezentacji Kierownikowi Zawodów bezpośrednio przed rozpoczęciem spotkania 
+(w protokole ze spotkania reprezentacji klubowych). 
+Po rozpoczęciu pierwszego meczu zmiany w zgłoszonych  ustawieniach są 
+niedozwolone. 
+2. Po zakończeniu spotkania kapitanowie przekazują kierownikowi zawodów 
+podpisane protokoły ze spotkania. 
+3. Kolejność konkurencji w poszczególnych spotkaniach ustala Sędzia Główny 
+w porozumieniu z organizatorem zawodów. 
+4. Dopuszcza się wprowadzenie przez organizatora zawodów limitu czasowego 
+w konkurencjach spotkania klubowego: 
+1) minimum 50 minut plus dodatkowy rzut celem w dubletach; 
+2) minimum 60 minut plus dodatkowy rzut celem w tripletach 
+. 
+7. Liga. 
+7.1.  Organizacja i zarząd ligi 
+1 Organizacją ligi zajmują się kluby zrzeszone w PFP. 
+2 Rozgrywki ligi prowadzone są w oparciu o Regulamin Gry w Petanque oraz 
+regulaminy PFP. 
+3 Rozgrywkami zarządza Komisja Ligi, a do jej kompetencji należy: 
+a. uchwalenie regulaminu ligi; 
+b. zgłoszenie Ligi Zarządowi PFP; 
+c. ustalenie terminarza spotkań; 
+d. akceptacja zmian w terminarzu spotkań; 
+e. rozstrzyganie sporów lub kierowanie spornych kwestii do Kolegium Sędziów 
+f. przedstawienie wyników Ligi Zarządowi PFP. 
+4 Komisja Ligi działa w porozumieniu z Koordynatorem Strefy PFP. 
+ 
+7.2. Zespoły ligowe. 
+1 Zespół ligowy składa się z co najmniej 6 zawodników. Zawodnicy muszą posiadać 
+aktualne  licencje PFP. 
+2 Klub zgłaszający zespół do ligi wyznacza kapitana zespołu. Nazwisko kapitana 
+zespołu musi zostać podane w karcie zgłoszenia zespołu do rozgrywek, której wzór 
+stanowi załącznik nr 3 do Regulaminu. 
+3 Kapitan zespołu ligowego zgłasza jego skład kapitanowi zespołu przeciwnego oraz 
+jest osobą, której podpis widnieje pod zgłoszeniem sporu, reklamacji lub protestu. 
+4 W czasie rozgrywania meczów  zespoły nie mogą korzystać z zawodników 
+rezerwowych: 
+5 Do każdego meczu kapitan zespołu ligowego może zgłosić inny skład. 
+6 W przypadku gdy klub zgłasza do rozgrywek więcej niż jeden zespół, to  może 
+przenosić swoich zawodników do różnych zespołów w trakcie sezonu, jednak ten 
+sam zawodnik nie może wystąpić w tej samej kolejce w różnych zespołach. 
+ 
+7.3. Terminarz i miejsce gry. 
+1 Rozgrywki ligowe odbywają się w oparciu o terminarz ligi, według zasad: 
+a. mecz i rewanż; 
+b. mecz i rewanż oraz turniej finałowy dla części drużyn; 
+c. mecz i turniej finałowy dla części drużyn; 
+2 Zasady rozgrywania ligi określą kluby organizujące rozgrywki. 
+3 Terminarz ligi zostaje ustalony w porozumieniu z klubami przez Komisję Ligi. 
+4 Kluby maja prawo wnosić o przesunięcie terminu spotkania. 
+5 W odniesieniu do jednego spotkania takiego przesunięcia można dokonać raz, za 
+zgodą zespołu przeciwnego. 
+6 Zmiana terminu musi zostać zgłoszona Komisji Ligi oraz uzyskać jej akceptację. 
+7 Boiska do gry wskazuje i  wyznacza gospodarz spotkania ligowego. 
+ 
+7.4. Rozgrywka i punktacja. 
+1. Mecze spotkania ligowego odbywają się według kolejności: 
+a. trzy mecze drużyn dwuosobowych; 
+b. dwa mecze drużyn trzyosobowych; 
+2 Punktacja za poszczególne konkurencje: 
+a. 2 punkty za zwycięstwo w meczu dubletów; 
+b. 3 punkty za zwycięstwo w meczu tripletów; 
+3 Zespół wygrywający spotkanie ligowe otrzymuje 2 punkty za wygrane spotkanie, 
+a za przegraną 0 punktów. 
+4 Zespół wygrywający spotkanie ligowe walkowerem otrzymuje 2 punkty za 
+wygrane spotkanie, 12 punktów za  wygrane mecze oraz  65 małych punktów. 
+Zespół  przegrywający walkowerem punktów nie otrzymuje. 
+ 
+7.5. Sędziowanie. 
+1 Podczas spotkania ligowego  wymagana jest obecność sędziego, który może  być 
+równocześnie graczem jednego z zespołów. 
+2 Za obecność sędziego odpowiedzialny jest gospodarz spotkania. 
+3 Sytuacje wątpliwe zgłaszane są Komisji Ligi w protokole ze spotkania ligowego. 
+Komisja Ligi ma prawo udzielić wyjaśnienia lub przekazać sprawę do innych 
+organów PFP 
+ 
+7.6. Zasięg Ligi oraz rankingi. 
+1 Kluby organizujące Ligę określają jej zasięg terytorialny. 
+2 W zależności od ilości uczestników ligi oraz jej zasięgu terytorialnego, Zarząd PFP 
+ustali jej wagę rankingową. 
+ 
+8. Mała liga. 
+ 
+8.1. Organizacja i zarząd ligi. 
+1. Organizacja ligi działa w ramach lub w porozumieniu z członkiem zwyczajnym  
+PFP.Rozgrywki ligi prowadzone są w oparciu o Regulamin Gry w Petanque oraz 
+regulaminy PFP. 
+2. Uczestnicy Małej Ligi wybierają spośród siebie Komisję Ligi, złożoną z minimum 
+3 osób. 
+3. Komisja Ligi zarządza rozgrywkami ustalając terminarz, prowadząc dokumentację 
+oraz wyznaczając terminy turniejów finałowych. 
+4. Komisja Ligi przygotowuje Regulamin Ligi, określając w nim nazwę ligi, system  
+rozgrywek, wysokość wpisowego, jakość nagród itp. 
+ 
+8.2. Zespoły ligowe. 
+1 Zespół ligowy składa się z 4 do 8  zawodników. 
+2 Zawodnicy nie muszą posiadać członkostwa w klubach zrzeszonych w PFP. 
+3 Zespół wybiera kapitana, który reprezentuje go przed Komisją Ligi. 
+4 Zespół zgłasza się do rozgrywek na  karcie zgłoszenia, którą przekazuje Komisji 
+Ligi. 
+5 Zespół na każdym etapie rozgrywek może zgłosić kolejnego zawodnika, pod 
+warunkiem, że  nie przekroczy limitu zawodników (zgodnie z pkt. 1) oraz że 
+zawodnik ten  nie zagrał do tego  momentu w innym zespole, nawet  jeżeli był już 
+wymieniony w którymś ze składów 
+ 
+8.3. Terminarz ligi i miejsce gry. 
+Rozgrywki ligowe odbywają się w oparciu o terminarz ligi, według zasad: 
+a. mecz i rewanż; 
+b. mecz i rewanż oraz turniej finałowy dla części drużyn; 
+c. mecz i turniej finałowy dla części drużyn; 
+1 O terminach rozgrywania spotkań decyduje Komisja Ligi w porozumieniu 
+z kapitanami zgłoszonych do ligi zespołów. 
+2 O wyborze miejsca spotkania ligowego decyduje gospodarz spotkania. 
+3 Zespoły mają prawo wnosić o przesunięcie terminu spotkania. W odniesieniu do  
+jednego spotkania takiego  przesunięcia można dokonać  raz, za zgodą zespołu  
+przeciwnego. 
+4 W przypadku zmiany terminu o więcej niż 6 dni, nowy termin musi być  wyznaczony 
+przez Komisję Ligi. 
+5 Zespół, który nie zgłosił się na boisko w drugim wyznaczonym terminie, przegrywa  
+spotkanie walkowerem. 
+ 
+ 
+ 
+8.4. Rozgrywka i punktacja. 
+1 Mecze zespołów ligowych odbywa się według kolejności: 
+a. dwa mecze singlistów; 
+b. dwa mecze dubletów; 
+c. jeden mecz tripletów; 
+2 Punktacja za poszczególne konkurencje: 
+a. 1 punkt za zwycięstwo w meczu singlistów; 
+b. 2 punkty za zwycięstwo w meczu dubletów; 
+c. 3 punkty za zwycięstwo w meczu tripletów; 
+3  Zespół wygrywający spotkanie ligowe otrzymuje 2 punkty za wygrane spotkanie, 
+a za przegraną 0 punktów. 
+4 Zespół wygrywający spotkanie ligowe walkowerem otrzymuje 2 punkty za wygrane  
+spotkanie, 12 punktów za wygrane mecze oraz 65 małych punktów. 
+5 Zespół przegrywający walkowerem traci 1 punkt z dorobku punktów za wygrane  
+spotkania. 
+ 
+8.5. Przebieg spotkania ligowego. 
+1 Kapitanowie drużyn przekazują sobie składy drużyn do poszczególnych meczów,  
+które zostają wpisane na kartę spotkania  ligowego przez kapitana  zespołu 
+gospodarza. 
+2 Mecze odbywają się bez limitu czasu, według kolejności: 
+ single, 
+ dublety, 
+ triplet. 
+Po zakończeniu spotkania kapitanowie zespołów podpisują wypełnioną kartę 
+spotkania. 
+ 
+8.6. Sędziowanie. 
+1 Spotkania małej ligi odbywają się bez udziału sędziego. 
+2 Sytuacje wątpliwe będą wyjaśnione przez Komisję Ligi  lub przez sędziego, którego 
+ona wskaże. Sędzia udzieli wyjaśnień telefonicznie lub na żądanie kapitana zespołu, 
+pisemnie (mail), w terminie wskazanym w regulaminie ligi. 
+3 Turnieje finałowe odbywają się z udziałem sędziego PFP, za którego obecność  
+odpowiedzialny jest organizator turnieju wraz z Koordynatorem Strefy. 
+ 
+8.7. Zasięg Ligi oraz rankingi. 
+1 Mała Liga ma z założenia charakter lokalny. 
+2 Rozgrywki Małej Ligi mogą się rozpocząć  gdy do gry zgłosi się co najmniej 
+6 zespołów. 
+3 Rozgrywki Małej Ligi  mogą mieć charakter otwarty lub gromadzić graczy jednego  
+środowiska. 
+4 W przypadku uczestnictwa w Małej Lidze minimum 12 zespołów, Zarząd PFP 
+określi ranking tych rozgrywek, w odniesieniu do graczy posiadających licencje PFP. 
+5 Turnieje finałowe Małej Ligi objęte są rankingiem PFP o współczynniku 10. 
+ 

@@ -1,0 +1,8 @@
+{
+  "id": "mental-completion",
+  "source": "AI-assisted proposal; synthetic deterministic fixture",
+  "risk": "A saved lesson can disappear after reopening the page",
+  "route": "/lessons/routine",
+  "expectedCompletedLessons": 1,
+  "steps": ["Open the lesson", "Complete it", "Wait for persisted completion", "Reload", "Inspect program progress"]
+}

@@ -1,0 +1,189 @@
+Strona 1 z 3 
+ 
+ 
+ 
+ 
+RANKING 
+§ 1. Ranking indywidualny 
+ 
+1. Zawodnicy posiadający aktualną licencję PFP PZS biorą udział w indywidualnej klasyfikacji zawodników. 
+2. PFP PZS notuje wyniki zawodników łączne, jako klasyfikację ogólną. 
+3. Do klasyfikacji indywidualnej zawodników zalicza się wyniki z zawodów: 
+a. o mistrzostwo Polski, 
+b. o Puchar Polski, 
+c. Centrope Cup, 
+d. rankingowych. 
+4. W przypadku uczestnictwa zawodnika w drużynie x takie same punkty rankingowe przyznaje się 
+wszystkim członkom drużyny. 
+5. O pozycji zawodnika w rankingu indywidualnym decyduje suma punktów z 10 turniejów, w których 
+zawodnik uzyskał najlepsze wyniki, w okresie ostatnich 12 miesięcy. 
+6. Ranking obejmujący punktację oraz siłę zawodników aktualizuje się na koniec każdego miesiąca. 
+ 
+§ 2. Zasady naliczania punktów 
+rankingowych 
+ 
+1. Stosowane pojęcia: 
+a) 
+b) 
+PAx 
+PAw 
+punkty awansu zawodnika X 
+punkty awansu wyjściowe 
+c) PAo punkty awansu ostatniego zawodnika 
+d) M zdobyte miejsce 
+e) I ilość startujących drużyn 
+f) SZ siła zawodnika 
+g) ST siła turnieju 
+h)  punktacja 
+i)  współczynnik 
+ 
+2. Punkty awansu obliczanego zawodnika (PAx). 
+Punkty te otrzymuje każdy zawodnik startujący w turnieju, a ich ilość zależy od ilości zawodników. 
+Punkty (PA x) dla poszczególnych zawodników są wyliczane według wzoru : 
+ 
+ 
+* 
+ 
+3. Punkty awansu wyjściowe (PAw). 
+To punkty otrzymane za uzyskane miejsce w turnieju przez drużynę lub zawodnika i pobierane są do wzoru 
+według poniższego schematu : 
+ 
+ Za pierwsze miejsce z tabeli 
+Ilość zawodników od Ilość zawodników do (włącznie) PAw 
+6 8 3 
+9 16 4 
+17 32 5 
+33 64 6 
+65 128 7 
+129 256 8 
+257 512 9 
+ za drugie miejsce PAw pomniejszone o 1 w stosunku do pierwszego miejsca; 
+ za następne dwa miejsca (3 i 4) PAw pomniejszane kolejno o ½ i 1 w stosunku do drugiego miejsca; 
+    za następne cztery miejsca  (5,6,7,8) PAw pomniejszane kolejno o 1/4, 2/4, 3/4 i 1;  w stosunku do  
+czwartego miejsca; 
+    za następnych osiem miejsc (9 – 16) PAw pomniejszane kolejno o 1/8, 2/8, 3/8, 4/8, 5/8, 6/8, 7/8 i 1 w 
+stosunku do ósmego miejsca; 
+za następne szesnaście miejsc (17 – 32) PAw pomniejszane kolejno o 1/16, 2/16, 3/16, 4/16, 5/16,  
+6/16, 7/16, 8/16, 9/16, 10/16, 11/16, 12/16, 13/16, 14/16, 15/16 i 1 w stosunku do szesnastego  
+miejsca; 
+zatwierdzony 30.11.2024
+Strona 2 z 3 
+ 
+ 
+za   następne miejsca, trzydzieści dwa (33-64), sześćdziesiąt cztery (65-128), sto dwadzieścia osiem 
+(129-256), dwieście pięćdziesiąt sześć (257-512) - analogicznie jak wyżej. 
+ 
+PAw wyraża się w postaci ułamka dziesiętnego do trzech miejsc po przecinku. 
+ 
+Przykładowe PAw 
+dla turnieju, w którym uczestniczy 18 zawodników (6-tripletów, 9 dubletów lub 18 singli) 
+ 
+Miejsce 
+1 
+PAw 
+5,000 
+2 4,000 
+3 3,500 
+4 3,000 
+5 2,750 
+6 2,500 
+7 2,250 
+8 2,000 
+9 1,875 
+10 1,750 
+11 1,625 
+12 1,500 
+13 1,375 
+14 1,250 
+15 1,125 
+16 1,000 
+17 0,938 
+18 0,875 
+ 
+PAo - dla tripletów wynosi 2,500 
+PAo - dla dubletów wynosi 1,875 
+PAo - dla singli wynosi 0,875 
+ 
+4. Siła Zawodnika (SZ) to suma PA (punktów awansu) z 10 najlepszych turniejów rozegranych w przeciągu 
+ostatnich 12 miesięcy. 
+5. Siła Turnieju (ST) to suma 16 najwyższych SZ (sił zawodników) uczestniczących w turnieju x podzielona 
+przez 16. 
+Dla turniejów z cyklu Centrope Cup przyjmuje się siłę turnieju wynikającą z ogólnych zasad rankingu, nie 
+mniejszą jednak niż ST = 75. 
+Dla turniejów finałowych Mistrzostw Polski ustala się siłę wynikającą z ogólnych zasad rankingu, nie mniejszą 
+jednak niż ST = 150. 
+6. Punktacja. 
+Punkty za poszczególne miejsca wylicza się ze wzoru ST x PAx. 
+Punkty wyraża się w postaci ułamka dziesiętnego do trzech miejsc po przecinku. 
+7. Współczynnik. 
+Do rozliczenia punktów rankingowych w turniejach o szczególnym znaczeniu stosuje się współczynniki 
+modyfikujące wartość zdobytych punktów według poniższych wartości: 
+a) wszystkie turnieje finałowe o Mistrzostwo Polski współczynnik - 3,00 
+b) wszystkie turnieje o Puchar Polski oraz turnieje kwalifikacyjne do Mistrzostw Polski współczynnik - 2,0 
+c) wszystkie turnieje Centrope Cup współczynnik – 1,75 
+d) wszystkie turnieje open regionalne rankingowe spełniające poniższe warunki współczynnik - 1,5 
+a. single - od 150 osób wzwyż 
+b. dublety - od 75 wzwyż 
+c. triplety - od 50 wzwyż 
+e) wszystkie turnieje open regionalne rankingowe spełniające poniższe warunki współczynnik – 1,3 
+a. single - od 97 do 149 
+b. dublety - od 49 do 74 
+c. triplety - od 33 do 49 
+
+Strona 3 z 3 
+ 
+ 
+f) wszystkie turnieje open regionalne rankingowe spełniające poniższe warunki współczynnik – 1,1 
+a. single - od 65 do 96 
+b. dublety - od 33 do 48 
+c. triplety - od 19 do 32 
+ 
+g)  pozostałe turnieje open regionalne rankingowe nie spełniające powyższych kryteriów współczynnik - 
+1,0 
+h) turnieje rankingowe lokalne – współczynnik 0,5 
+ 
+§ 3. Ranking klubów 
+ 
+1. Kluby zrzeszone w PFP PZS biorą udział w rankingu klubowym. 
+2. Pozycję w rankingu ustala się na podstawie sumy wszystkich punktów uzyskanych przez wszystkich 
+członków klubu na koniec każdego kwartału. 
+3. W klasyfikacji klubowej Zarząd PFP PZS może wprowadzić dodatkowe bonusy, premiujące klub. 
+Ustalenie takich bonusów na dany rok musi odbyć się przed rozpoczęciem sezonu na terenie otwartym. 
+4. Zawodnik po zmianie barw klubowych pozostawia zdobyte punkty na koncie opuszczonego klubu. 
+ 
+§ 4. Klubowe Mistrzostwa Polski 
+ 
+W rozgrywkach o Klubowe Mistrzostwo Polski stosuje się punktację rankingową według poniższych zasad. 
+Punkty wliczane są jedynie do rankingu klubowego. 
+ 
+MSC 
+LIGA / 
+KLASA 
+III II I 
+1 2000 4000 6000 
+2 2000 3750 5750 
+3 1500 3500 5500 
+4 1250 3250 5250 
+5 1000 3000 5000 
+6 750 2750 4750 
+7 500 2500 4500 
+8 250 2250 4250 
+ 
+§ 5. Ranking indywidualny w odmianie soft 
+petanque 
+ 
+1. Zawodnicy posiadający aktualną licencję PFP PZS biorą udział w indywidualnej klasyfikacji zawodników 
+w turniejach rozgrywanych w odmianie soft petanque. 
+2. PFP PZS notuje wyniki zawodników łączne, jako klasyfikację ogólną. 
+3. Do klasyfikacji indywidualnej zawodników zalicza się wyniki z zawodów: 
+a. rankingowych, 
+b. turniejów rankingowych rozgrywanych w formule „mele”, 
+c. turniejów rankingowych rozgrywanych w formule „supermele”. 
+4. Zasady naliczania punktów zgodnie z § 2. 
+5. W przypadku uczestnictwa zawodnika w drużynie x takie same punkty rankingowe przyznaje się 
+wszystkim członkom drużyny. 
+6. O pozycji zawodnika w rankingu indywidualnym decyduje suma punktów z 10 turniejów, w których 
+zawodnik uzyskał najlepsze wyniki, w okresie ostatnich 12 miesięcy. 
+7. Ranking obejmujący punktację oraz siłę zawodników aktualizuje się na koniec każdego miesiąca. 
+ 
+ 

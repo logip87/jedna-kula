@@ -1,0 +1,85 @@
+name: Quality Engineering
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  quality-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run qa:generate:check
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - name: Build + cross-browser smoke
+        run: npm run qa:smoke
+      - name: Risk gate (accessibility, security, PWA, resilience)
+        run: npm run qa:browsers -- --project showcase-android --grep '@a11y|@security|@pwa|@resilience'
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: quality-gate-failure
+          path: |
+            playwright-report/
+            test-results/showcase/
+          retention-days: 7
+          if-no-files-found: ignore
+  full-regression:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npm run qa:showcase
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: full-regression-failure
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+          if-no-files-found: ignore
+  visual:
+    if: github.event_name != 'pull_request'
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install chromium
+      - run: npm run qa:visual
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: visual-failure
+          path: |
+            playwright-report/showcase/
+            test-results/showcase/
+          retention-days: 7
+          if-no-files-found: ignore

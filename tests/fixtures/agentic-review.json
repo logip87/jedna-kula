@@ -1,0 +1,6 @@
+{
+  "kind": "synthetic-human-review",
+  "status": "approved",
+  "planDigest": "835c078387eb71476d7d969a8a699c4f49c69590226e9506ec7c6b4972407008",
+  "rationale": "Controlled example of a human review record: persists one completed lesson. This is synthetic test data, not a real user approval."
+}
