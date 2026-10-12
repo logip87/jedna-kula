@@ -46,11 +46,11 @@ Dwa baseline PNG są dla Chromium na macOS; dedykowany workflow visual używa `m
 
 ## CI i uruchamianie
 
-PR gate: npm ci → lint/TypeScript → unit/integration i kontrakty agentowe → build → smoke cross-browser → a11y/security/PWA/resilience. Full regression i showcase uruchamiają się po push oraz manualnie; visual ma osobny job macOS. Artefakty failure: HTML report, trace i screenshots, krótka retencja, bez video i uploadu dist/node_modules. Workflow ma read-only permissions, concurrency i brak sekretów. Agent fixtures nie mogą zmieniać workflow ani uruchamiać shell/network.
+PR gate: npm ci → lint/TypeScript → unit/integration i kontrakty agentowe → build → smoke cross-browser → a11y/security/PWA/resilience. Full regression i showcase uruchamiają się po push oraz manualnie; visual ma osobny job macOS. Artefakty failure: HTML report, trace i screenshots, krótka retencja, bez video i uploadu dist/node_modules. Workflow ma read-only permissions i concurrency; joby testowe nie dostają sekretów. Hasło FTPS otrzymuje wyłącznie krok wysyłki w jobie deploy. Agent fixtures nie mogą zmieniać workflow ani uruchamiać shell/network.
 
 Komendy i wyniki bieżącej weryfikacji są w README. Instalacja przeglądarek ma osobny limit 5 minut; nie ponawiamy automatycznie testów w celu ukrycia awarii. Regresja i showcase mają osobne katalogi HTML i wyników, aby raporty się nie nadpisywały. Artefakty są zbierane również po anulowaniu, jeśli zostały wygenerowane.
 
-CI uruchamia checki, lecz nie wymusza blokady merge bez skonfigurowania required checks w regułach gałęzi GitHub. Publikacja na produkcję jest lokalną, ręcznie uruchamianą operacją FTPS (`npm run deploy`); automatyczny job CD nie jest skonfigurowany.
+CI uruchamia checki, lecz nie wymusza blokady merge bez skonfigurowania required checks w regułach gałęzi GitHub. Job CD uruchamia się tylko po push do `main`, zależy od sukcesu quality-gate, full-regression i visual. Buduje wskazany commit z lockfile, publikuje FTPS i sprawdza SHA-256 statycznych plików przez HTTPS oraz SPA fallback. Sekret jest w środowisku `production`, ograniczonym do gałęzi `main`. Kopia zastępowanych plików trafia do artefaktu z retencją 14 dni. Po nieudanej wysyłce nie ponawiamy transferu automatycznie; wymagany jest triage. Lokalny deploy nadal działa.
 
 ## Wyniki lokalnej weryfikacji — 12.10.2026
 

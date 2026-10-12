@@ -70,15 +70,19 @@ flowchart TD
   S --> Q[Quality Gate]
   M[Push / Manual run] --> F[Full regression + Showcase]
   M --> V[Visual: macOS 26]
+  Q --> D[Deploy FTPS: tylko push main]
+  F --> D
+  V --> D
+  D --> H[Weryfikacja HTTPS / backup 14 dni]
 ```
 
-Workflow ma read-only permissions, izolowane joby i concurrency. Po failure zachowuje HTML report, trace oraz screenshots przez 7 dni. Visual działa w osobnym jobie macOS; wzorce nie są aktualizowane automatycznie. Publikacja aplikacji pozostaje osobną operacją.
+Workflow ma read-only permissions, izolowane joby i concurrency. Po failure zachowuje HTML report, trace oraz screenshots przez 7 dni. Visual działa w osobnym jobie macOS; wzorce nie są aktualizowane automatycznie. Po push do `main` job deploy czeka na sukces quality-gate, full-regression i visual. Publikuje przez FTPS i porównuje pliki buildu ze stroną przez HTTPS.
 
 **CI potwierdzone na GitHub, 12.10.2026:** [przebieg dla commita `03c478a`](https://github.com/logip87/jedna-kula/actions/runs/38237821420) zakończył się sukcesem: quality gate, full-regression i visual. Obejmuje lint, TypeScript, Vitest, kontrolę generatora, build, smoke na trzech silnikach oraz accessibility/security/PWA/resilience. Visual przeszedł na hosted runnerze macOS bez aktualizacji baseline. [Aktualne przebiegi CI](https://github.com/logip87/jedna-kula/actions/workflows/quality.yml).
 
 Pierwszy przebieg ujawnił przekroczenie limitu podczas instalacji przeglądarek. Instalacja ma osobny limit 5 minut, aby problem infrastruktury był widoczny wcześniej. Regresja generuje HTML report, trace i screenshots po błędzie; raporty regresji i showcase mają osobne katalogi.
 
-**Delivery:** aplikację publikuje lokalne `npm run deploy` przez FTPS, z hasłem w Pęku kluczy i kopią zastępowanych plików. Workflow CI nie wdraża na serwer. Wdrożenie automatyczne z GitHub Actions wymagałoby osobnego joba zależnego od poprawnych checków oraz konfiguracji sekretów i środowiska produkcyjnego. Obecny zakres briefu wymaga automatycznego CI; deployment pozostaje ręcznie uruchamiany.
+**Delivery:** aktualizacja `main` (w tym merge PR) uruchamia automatyczne wdrożenie na [jednakula.progtest.pl](https://jednakula.progtest.pl) po przejściu wszystkich trzech jobów. PR i manualne uruchomienie testów nie publikują aplikacji. Hasło FTPS jest sekretem środowiska `production`, dostępnym wyłącznie krokowi wysyłki. Deploy zachowuje stare zasoby, zapisuje kopię zastępowanych plików jako artefakt na 14 dni oraz weryfikuje zgodność plików przez HTTPS i trzy trasy SPA. Wdrożenia są serializowane; nowy push nie przerywa trwającego transferu. [Konfiguracja i odzyskiwanie](docs/CAL_DEPLOYMENT.md). Lokalne `npm run deploy` pozostaje dostępne.
 
 ### AI-assisted QA z jawną granicą odpowiedzialności
 

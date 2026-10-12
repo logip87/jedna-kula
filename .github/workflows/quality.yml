@@ -8,7 +8,7 @@ permissions:
   contents: read
 concurrency:
   group: quality-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   quality-gate:
     runs-on: ubuntu-24.04
@@ -94,4 +94,43 @@ jobs:
             playwright-report/showcase/
             test-results/showcase/
           retention-days: 7
+          if-no-files-found: ignore
+
+  deploy:
+    name: Deploy production (FTPS)
+    needs: [quality-gate, full-regression, visual]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: https://jednakula.progtest.pl
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - name: Build tested commit
+        run: npm run build
+      - name: Upload through verified FTPS
+        env:
+          CAL_FTP_PASSWORD: ${{ secrets.CAL_FTP_PASSWORD }}
+        run: python3 scripts/cal-ftp.py upload
+      - name: Verify static files and SPA routes over HTTPS
+        run: python3 scripts/cal-ftp.py verify
+      - name: Preserve previous production files
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-backup-${{ github.sha }}-${{ github.run_attempt }}
+          path: release/backup-cal-*/
+          include-hidden-files: true
+          retention-days: 14
           if-no-files-found: ignore

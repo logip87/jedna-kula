@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "deploy:setup": "python3 scripts/cal-ftp.py setup",
+    "deploy:verify": "python3 scripts/cal-ftp.py verify",
     "deploy:check": "python3 scripts/cal-ftp.py check",
     "deploy": "npm run build && python3 scripts/cal-ftp.py upload",
     "dev": "vite --host 0.0.0.0",
