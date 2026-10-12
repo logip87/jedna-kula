@@ -41,3 +41,7 @@ Nie ma domyślnej quarantine i automatycznych skipów. Ewentualne czasowe wyłą
 Baselines powstają w świadomie wybranym środowisku. Renderowanie na innym systemie nie jest dowodem regresji produktu. Brak Linux baseline nie jest naprawiany przez masową regenerację w CI.
 
 Offline czeka na realny controller i sprawdza cache. Worker update i usuwanie starego cache po dwóch wdrożeniach pozostają ręcznym scenariuszem: wersja A, aktywna sesja, wdrożenie B, komunikat aktualizacji, zakończenie/zapis, świadoma aktualizacja, restart offline. W showcase nie zastępujemy tego fikcyjnym `onNeedRefresh`, bo taki test nie weryfikowałby Workbox. Instalacja na fizycznych telefonach również pozostaje manualna.
+
+## Przykład triage z weryfikacji CI — 12.10.2026
+
+Po włączeniu raportowania w regresji przebieg lokalny z `CI=1` wykrył 46/47: test mentalny przeładowywał stronę przed potwierdzeniem zapisu kroku. Screenshot pokazał krok 1 po powrocie offline. Dodano oczekiwanie na krok 2 przed reload; UI pokazuje go po zakończeniu `save`. Asercja trwałości po reload nie została zmieniona. Weryfikacja poprawki obejmuje pięć wykonań tego scenariusza bez retry.

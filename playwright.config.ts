@@ -2,7 +2,19 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "tests/e2e",
   fullyParallel: false,
-  use: { baseURL: "http://127.0.0.1:4173", trace: "retain-on-failure" },
+  forbidOnly: !!process.env.CI,
+  retries: 0,
+  workers: process.env.CI ? 2 : undefined,
+  reporter: [
+    ["list"],
+    ["html", { outputFolder: "playwright-report/regression", open: "never" }],
+  ],
+  outputDir: "test-results/regression",
+  use: {
+    baseURL: "http://127.0.0.1:4173",
+    trace: "retain-on-failure",
+    screenshot: "only-on-failure",
+  },
   projects: [
     {
       name: "mobile-chromium",

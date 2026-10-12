@@ -50,6 +50,8 @@ test("five competencies, three levels and practical exercises keep lesson progre
   await page
     .getByRole("button", { name: "Wykonane · następny krok", exact: true })
     .click();
+  // The next step appears only after save completes; do not reload mid-transaction.
+  await expect(page.getByText("2 MIN · KROK 2 / 4", { exact: true })).toBeVisible();
   await page.evaluate(() => navigator.serviceWorker.ready);
   await expect
     .poll(() => page.evaluate(() => !!navigator.serviceWorker.controller))

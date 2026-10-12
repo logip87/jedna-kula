@@ -56,7 +56,7 @@ To przykład pracy od zidentyfikowanego ryzyka, przez poprawkę w aplikacji, do 
 
 Wyniki są zapisanym stanem weryfikacji, nie deklaracją ciągłego statusu CI. [Szczegóły środowiska i zakresu](docs/TEST_STRATEGY.md).
 
-### CI quality gate
+### CI/CD — quality gate i wdrożenie
 
 Workflow [GitHub Actions](.github/workflows/quality.yml) jest skonfigurowany dla pull requestów, push do main/master i uruchomienia manualnego.
 
@@ -74,7 +74,9 @@ flowchart TD
 
 Workflow ma read-only permissions, izolowane joby i concurrency. Po failure zachowuje HTML report, trace oraz screenshots przez 7 dni. Visual działa w osobnym jobie macOS; wzorce nie są aktualizowane automatycznie. Publikacja aplikacji pozostaje osobną operacją.
 
-**Status:** konfiguracja jest gotowa, lecz nie została jeszcze wykonana na GitHub. Lokalne repozytorium jest już połączone z `logip87/jedna-kula`; publikacja kodu i pierwszy przebieg CI wymagają jeszcze zakończenia. Pierwszy przebieg musi również potwierdzić zgodność lokalnych baseline macOS z hosted runnerem.
+**Pierwszy przebieg GitHub Actions, 12.10.2026:** [pełna regresja i showcase przeszły](https://github.com/logip87/jedna-kula/actions/runs/38235390349/job/114764685112), a [visual potwierdził zgodność baseline z hosted runnerem](https://github.com/logip87/jedna-kula/actions/runs/38235390349/job/114764684918). Quality gate zaliczył lint, TypeScript, Vitest i kontrolę generatora, lecz został przerwany limitem 15 minut podczas instalacji przeglądarek. Nie oznacza to zielonego całego pipeline. Instalacja ma teraz osobny limit 5 minut, aby problem infrastruktury był widoczny wcześniej. [Aktualne przebiegi CI](https://github.com/logip87/jedna-kula/actions/workflows/quality.yml).
+
+**Delivery:** aplikację publikuje lokalne `npm run deploy` przez FTPS, z hasłem w Pęku kluczy i kopią zastępowanych plików. Workflow CI nie wdraża na serwer. Wdrożenie automatyczne z GitHub Actions wymagałoby osobnego joba zależnego od poprawnych checków oraz konfiguracji sekretów i środowiska produkcyjnego. Obecny zakres briefu wymaga automatycznego CI; deployment pozostaje ręcznie uruchamiany.
 
 ### AI-assisted QA z jawną granicą odpowiedzialności
 

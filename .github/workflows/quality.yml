@@ -14,8 +14,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
         with:
           node-version: "24"
           cache: npm
@@ -24,13 +26,15 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run qa:generate:check
-      - run: npx playwright install --with-deps chromium firefox webkit
+      - name: Install browser dependencies
+        timeout-minutes: 5
+        run: npx playwright install --with-deps chromium firefox webkit
       - name: Build + cross-browser smoke
         run: npm run qa:smoke
       - name: Risk gate (accessibility, security, PWA, resilience)
         run: npm run qa:browsers -- --project showcase-android --grep '@a11y|@security|@pwa|@resilience'
       - uses: actions/upload-artifact@v4
-        if: failure()
+        if: failure() || cancelled()
         with:
           name: quality-gate-failure
           path: |
@@ -43,17 +47,21 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
         with:
           node-version: "24"
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium firefox webkit
+      - name: Install browser dependencies
+        timeout-minutes: 5
+        run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run qa:showcase
       - run: npm run test:e2e
       - uses: actions/upload-artifact@v4
-        if: failure()
+        if: failure() || cancelled()
         with:
           name: full-regression-failure
           path: |
@@ -66,16 +74,20 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
         with:
           node-version: "24"
           cache: npm
       - run: npm ci
-      - run: npx playwright install chromium
+      - name: Install Chromium
+        timeout-minutes: 5
+        run: npx playwright install chromium
       - run: npm run qa:visual
       - uses: actions/upload-artifact@v4
-        if: failure()
+        if: failure() || cancelled()
         with:
           name: visual-failure
           path: |

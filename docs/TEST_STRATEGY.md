@@ -4,7 +4,7 @@
 
 Jedna kula jest lokalną PWA React/TypeScript bez kont i synchronizacji. Wyniki i szkice trafiają do IndexedDB; Workbox buforuje shell, katalogi i PDF-y. Import JSON przechodzi walidację struktury oraz punktacji. Formularz kontaktowy jest odrębnym endpointem PHP i nie ma dostępu do wyników.
 
-Stan przed zmianą: 101 testów Vitest i 44 mobilne testy Playwright. Istnieją testy punktacji, postępu, rekomendacji, wznowienia, offline, importu i axe-core. Konfiguracja obsługiwała wyłącznie Chromium/Pixel 7; zrzuty były artefaktami, nie porównaniami do baseline. Brak GitHub Actions i demonstracji agentowych. Folder roboczy nie jest jeszcze repozytorium Git, więc workflow można wykonać po umieszczeniu projektu na GitHub.
+Stan przed zmianą: 101 testów Vitest i 44 mobilne testy Playwright. Istnieją testy punktacji, postępu, rekomendacji, wznowienia, offline, importu i axe-core. Konfiguracja obsługiwała wyłącznie Chromium/Pixel 7; zrzuty były artefaktami, nie porównaniami do baseline. Brak GitHub Actions i demonstracji agentowych. Na początku folder roboczy nie był repozytorium Git. Projekt jest teraz opublikowany jako publiczne `logip87/jedna-kula`.
 
 ## Quality Engineering Showcase
 
@@ -42,16 +42,18 @@ Pełny zestaw przeglądarkowy działa w Chromium/Pixel 7. Jeden E2E smoke zapisu
 
 ## Visual baseline
 
-Dwa baseline PNG są dla Chromium na macOS; dedykowany workflow visual używa `macos-26` (Apple Silicon), zgodnego z główną wersją systemu bazowego. [Obsługiwane obrazy GitHub Actions](https://github.com/actions/runner-images). Linux nie porównuje do baseline macOS, ponieważ renderowanie zależy od środowiska. Brak baseline lub istotny diff to failure; aktualizacja jest świadomym lokalnym poleceniem i wymaga porównania before/after. Wersja Playwright pochodzi z package-lock. Przed włączeniem visual jako wymaganego checku trzeba zweryfikować baseline na wybranym runnerze. [Zasady Playwright dotyczące środowiska](https://playwright.dev/docs/test-snapshots).
+Dwa baseline PNG są dla Chromium na macOS; dedykowany workflow visual używa `macos-26` (Apple Silicon), zgodnego z główną wersją systemu bazowego. [Obsługiwane obrazy GitHub Actions](https://github.com/actions/runner-images). Linux nie porównuje do baseline macOS, ponieważ renderowanie zależy od środowiska. Brak baseline lub istotny diff to failure; aktualizacja jest świadomym lokalnym poleceniem i wymaga porównania before/after. Wersja Playwright pochodzi z package-lock. Pierwszy przebieg 12.10.2026 potwierdził zgodność obu baseline na hosted runnerze `macos-26`, bez ich aktualizacji. [Zasady Playwright dotyczące środowiska](https://playwright.dev/docs/test-snapshots).
 
 ## CI i uruchamianie
 
 PR gate: npm ci → lint/TypeScript → unit/integration i kontrakty agentowe → build → smoke cross-browser → a11y/security/PWA/resilience. Full regression i showcase uruchamiają się po push oraz manualnie; visual ma osobny job macOS. Artefakty failure: HTML report, trace i screenshots, krótka retencja, bez video i uploadu dist/node_modules. Workflow ma read-only permissions, concurrency i brak sekretów. Agent fixtures nie mogą zmieniać workflow ani uruchamiać shell/network.
 
-Komendy i wyniki bieżącej weryfikacji są w README. Strategia nie deklaruje uruchomienia GitHub Actions przed faktycznym pushem repo.
+Komendy i wyniki bieżącej weryfikacji są w README. Instalacja przeglądarek ma osobny limit 5 minut; nie ponawiamy automatycznie testów w celu ukrycia awarii. Regresja i showcase mają osobne katalogi HTML i wyników, aby raporty się nie nadpisywały. Artefakty są zbierane również po anulowaniu, jeśli zostały wygenerowane.
+
+CI uruchamia checki, lecz nie wymusza blokady merge bez skonfigurowania required checks w regułach gałęzi GitHub. Publikacja na produkcję jest lokalną, ręcznie uruchamianą operacją FTPS (`npm run deploy`); automatyczny job CD nie jest skonfigurowany.
 
 ## Wyniki lokalnej weryfikacji — 12.10.2026
 
 Showcase: 8/8 Vitest i 20/20 wykonań Playwright (17 różnych browser scenarios + 3 dodatkowe wykonania smoke). Łącznie 25 logicznych scenariuszy. Porównania wizualne przeszły z zapisanymi PNG, bez update. Szersza regresja: 109/109 Vitest, 47/47 Playwright. Wybrane smoke/resilience powtórzono pięć razy: 15/15, retries=0. TypeScript, ESLint i produkcyjny build PWA poprawne.
 
-Środowisko baseline: macOS 26.5.2 arm64, Node 24.18.0, Playwright 1.63.0, Chromium z instalacji Playwright, viewport 393 × 852, scale 1. CI na GitHub oraz zgodność baseline z hosted runnerem nie były jeszcze wykonane. Lokalne repozytorium jest przygotowane i połączone z `logip87/jedna-kula`; kod nie został jeszcze wysłany.
+Środowisko baseline: macOS 26.5.2 arm64, Node 24.18.0, Playwright 1.63.0, Chromium z instalacji Playwright, viewport 393 × 852, scale 1. Kod jest opublikowany na GitHub. [Pierwszy przebieg CI](https://github.com/logip87/jedna-kula/actions/runs/38235390349) zaliczył full-regression (showcase i 47 E2E) oraz visual. Quality gate zaliczył lint, TypeScript, Vitest i kontrolę generatora, ale przekroczył limit joba podczas instalacji przeglądarek. Cały przebieg miał wynik cancelled; nie deklarujemy pełnego CI jako zielonego.
