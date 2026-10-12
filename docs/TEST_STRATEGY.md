@@ -54,4 +54,4 @@ Komendy i wyniki bieżącej weryfikacji są w README. Strategia nie deklaruje ur
 
 Showcase: 8/8 Vitest i 20/20 wykonań Playwright (17 różnych browser scenarios + 3 dodatkowe wykonania smoke). Łącznie 25 logicznych scenariuszy. Porównania wizualne przeszły z zapisanymi PNG, bez update. Szersza regresja: 109/109 Vitest, 47/47 Playwright. Wybrane smoke/resilience powtórzono pięć razy: 15/15, retries=0. TypeScript, ESLint i produkcyjny build PWA poprawne.
 
-Środowisko baseline: macOS 26.5.2 arm64, Node 24.18.0, Playwright 1.63.0, Chromium z instalacji Playwright, viewport 393 × 852, scale 1. CI na GitHub oraz zgodność baseline z hosted runnerem nie były jeszcze wykonane; folder roboczy nie ma repozytorium Git ani remote.
+Środowisko baseline: macOS 26.5.2 arm64, Node 24.18.0, Playwright 1.63.0, Chromium z instalacji Playwright, viewport 393 × 852, scale 1. CI na GitHub oraz zgodność baseline z hosted runnerem nie były jeszcze wykonane. Lokalne repozytorium jest przygotowane i połączone z `logip87/jedna-kula`; kod nie został jeszcze wysłany.

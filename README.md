@@ -74,7 +74,7 @@ flowchart TD
 
 Workflow ma read-only permissions, izolowane joby i concurrency. Po failure zachowuje HTML report, trace oraz screenshots przez 7 dni. Visual działa w osobnym jobie macOS; wzorce nie są aktualizowane automatycznie. Publikacja aplikacji pozostaje osobną operacją.
 
-**Status:** konfiguracja jest gotowa, lecz nie została jeszcze wykonana na GitHub. Folder roboczy nie ma obecnie repozytorium Git ani remote. Pierwszy przebieg musi również potwierdzić zgodność lokalnych baseline macOS z hosted runnerem.
+**Status:** konfiguracja jest gotowa, lecz nie została jeszcze wykonana na GitHub. Lokalne repozytorium jest już połączone z `logip87/jedna-kula`; publikacja kodu i pierwszy przebieg CI wymagają jeszcze zakończenia. Pierwszy przebieg musi również potwierdzić zgodność lokalnych baseline macOS z hosted runnerem.
 
 ### AI-assisted QA z jawną granicą odpowiedzialności
 
