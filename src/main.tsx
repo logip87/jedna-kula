@@ -1854,9 +1854,15 @@ function Result({
               ))}
             </select>
           </label>
+          <p id="routine-help">
+            Rutyna to wybór celu, spokojny wydech, rzut i reset: po wyniku
+            nazwij jeden fakt i przygotuj następną kulę. Zaznacz poniżej, jeśli
+            świadomie stosowałeś te kroki. Brak zaznaczenia nie zmienia punktów.
+          </p>
           <label className="checkbox">
             <input
               type="checkbox"
+              aria-describedby="routine-help"
               checked={routine ?? false}
               onChange={(e) => setRoutine(e.target.checked)}
             />{" "}

@@ -45,6 +45,14 @@ test("Today starts directly, preserves the draft and works offline", async ({
   await expect(
     page.getByRole("heading", { name: "Dzisiaj", exact: true }),
   ).toBeVisible();
+  const introduction = page.getByRole("region", {
+    name: "Wprowadzenie do rutyny",
+  });
+  await expect(introduction.getByText(/nazwij jeden fakt/)).toBeVisible();
+  await expect(introduction.getByRole("link")).toHaveAttribute(
+    "href",
+    "/lessons/routine",
+  );
   await page
     .getByRole("button", { name: "ZACZNIJ TRENING", exact: true })
     .click();

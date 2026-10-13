@@ -97,3 +97,5 @@ Aplikacja porządkuje pracę i pokazuje zapisane efekty. Tempo poprawy zależy o
 ---
 
 Opis aktualnych możliwości: **12.10.2026**. [Dokumentacja techniczna i testy](../README.md) · [Założenia produktu](PRD.md).
+
+Przed treningiem możesz skorzystać z wprowadzenia „Zanim rzucisz: poznaj rutynę” na ekranie Dzisiaj. Wyjaśnia Plan → Oddech → Wykonanie → Reset, przykład powrotu po rzucie oraz opcjonalną samoocenę po sesji. Nie wymaga zaliczania lekcji; pełna lekcja jest dostępna z linku.

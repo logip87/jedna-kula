@@ -1,3 +1,4 @@
+import { RoutineGuide } from "../mental/RoutineGuide";
 import {
   dashboardEvidence,
   acceptedAdaptation,
@@ -101,6 +102,11 @@ export function Today({ guide }: { guide?: ReactNode }) {
             )}
           </>
         )}
+        {!state.draft && (
+          <a className="coach-light-link" href="#routine-guide">
+            Jak przygotować głowę do rzutu? ↓
+          </a>
+        )}
         <button
           className="button cream"
           disabled={busy}
@@ -113,6 +119,14 @@ export function Today({ guide }: { guide?: ReactNode }) {
           Zmień czas lub rodzaj treningu →
         </Link>
       </section>
+      {!state.draft && (
+        <RoutineGuide
+          expanded={
+            !state.lessons.includes("routine") &&
+            !state.sessions.some((s) => s.routineUsed === true)
+          }
+        />
+      )}
       {proposal && !competition && !state.draft && (
         <section className="notice">
           <p>
