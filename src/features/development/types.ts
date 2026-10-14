@@ -51,6 +51,7 @@ export interface MentalCheckin {
   after?: number;
 }
 export interface PracticeSession {
+  cueLessonId?: string;
   id: string;
   moduleId: string;
   kind: "mental" | "physical";
@@ -65,6 +66,7 @@ export interface CompetitionPlan {
   date: string;
 }
 export interface CoachingState {
+  pendingMentalCueLessonId?: string;
   weeklyGoals: { week: string; sessions: number }[];
   weeklyChallenges?: WeeklyChallenge[];
   goals?: TrainingGoal[];

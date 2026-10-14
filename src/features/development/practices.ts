@@ -244,10 +244,28 @@ export function advancePractice(state: State, after?: number): State {
     coaching: {
       weeklyGoals: [],
       ...state.coaching,
+      ...(last && draft.kind === "mental" && draft.cueLessonId
+        ? { pendingMentalCueLessonId: draft.cueLessonId }
+        : {}),
       practiceDraft: last ? undefined : next,
       practiceHistory: last
         ? [...(state.coaching?.practiceHistory ?? []), next]
         : state.coaching?.practiceHistory,
+    },
+  };
+}
+
+export function selectPracticeCue(state: State, lessonId?: string): State {
+  const draft = state.coaching?.practiceDraft;
+  if (!draft || draft.kind !== "mental") return state;
+  if (lessonId && !mentalLessons.some((l) => l.id === lessonId))
+    throw new Error("Nieznana wskazówka mentalna.");
+  return {
+    ...state,
+    coaching: {
+      weeklyGoals: [],
+      ...state.coaching,
+      practiceDraft: { ...draft, cueLessonId: lessonId },
     },
   };
 }

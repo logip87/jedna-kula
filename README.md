@@ -163,6 +163,7 @@ Podgląd: http://localhost:4173. Instalacja na telefonie wymaga HTTPS. Playwrigh
 React · TypeScript · Vite · Tailwind CSS · React Router · IndexedDB (`idb`) · Workbox · Vitest · Playwright · axe-core.
 
 - [Strategia testów i ryzyka](docs/TEST_STRATEGY.md)
+- [Audyt przepływów produktu i wdrożone usprawnienia](docs/PRODUCT_FLOW_AUDIT.md)
 - [Proces AI-assisted testing](docs/AGENTIC_TESTING.md)
 - [Stabilność i obsługa failure](docs/FLAKINESS.md)
 - [Opis aplikacji dla gracza](docs/APLIKACJA.md)

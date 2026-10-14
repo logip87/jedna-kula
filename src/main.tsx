@@ -6,6 +6,7 @@ import {
   type DecisionReview,
 } from "./features/situations/throw-scenarios";
 import { LessonList } from "./features/mental/Lessons";
+import { attachPendingMentalCue, mentalCueText } from "./features/mental/cue";
 import {
   routineSteps,
   mentalCompetencies,
@@ -84,7 +85,6 @@ import {
   summarize,
   stats,
   achievements,
-  percent,
   type State,
   type Session,
   type Mode,
@@ -114,7 +114,20 @@ import {
   SelfChallenge,
   ResultInsights,
 } from "./features/coaching/Coaching";
-import { weeklyProgress } from "./features/coaching/model";
+import {
+  modeNames,
+  recommendation,
+  weeklyProgress,
+} from "./features/coaching/model";
+import {
+  comparableBaseline,
+  dashboardEvidence,
+  historySessions,
+  progressEvidence,
+  progressResults,
+  sessionOutcome,
+} from "./features/product/model";
+import { canUndoLastThrow, undoLastThrow } from "./features/coaching/session";
 import "./styles.css";
 import { Context, useApp } from "./app-context";
 import {
@@ -1050,6 +1063,15 @@ function Active() {
   const { state, save, busy } = useApp();
   const s = state.draft;
   const navigate = useNavigate();
+  const mountedSession = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    mountedSession.current = s?.id;
+    return () => {
+      mountedSession.current = undefined;
+    };
+  }, [s?.id]);
+  const isCurrentSession = () =>
+    mountedSession.current === s?.id && window.location.pathname === "/session";
 
   const [landing, setLanding] = useState<boolean | null>(null);
   const [direction, setDirection] = useState<Direction | null>(null);
@@ -1108,7 +1130,7 @@ function Active() {
                 },
               })
             ) {
-              if (final) navigate("/summary");
+              if (final && isCurrentSession()) navigate("/summary");
             }
           }}
         >
@@ -1206,7 +1228,7 @@ function Active() {
     function nextBlockReached() {
       return s!.results.length + 1 >= block!.end;
     }
-    if (!(await save({ ...state, draft: next }))) return;
+    if (!(await save({ ...state, draft: next })) || !isCurrentSession()) return;
     setLanding(null);
     setDirection(null);
     setLandingDirection(null);
@@ -1220,14 +1242,18 @@ function Active() {
       navigate("/summary");
   }
   async function nextPhase() {
-    await save({
-      ...state,
-      draft: {
-        ...s!,
-        timedPhase: phase + 1,
-        phaseStartedAt: new Date().toISOString(),
-      },
-    });
+    if (
+      !(await save({
+        ...state,
+        draft: {
+          ...s!,
+          timedPhase: phase + 1,
+          phaseStartedAt: new Date().toISOString(),
+        },
+      })) ||
+      !isCurrentSession()
+    )
+      return;
     setModeOverride(null);
   }
   return (
@@ -1279,7 +1305,8 @@ function Active() {
               disabled={busy}
               onClick={async () => {
                 if (!(await save({ ...state, draft: null }))) return;
-                navigate(s.missionId ? "/adventure/missions" : "/training");
+                if (isCurrentSession())
+                  navigate(s.missionId ? "/adventure/missions" : "/training");
               }}
             >
               Zakończ bez wyniku
@@ -1325,7 +1352,7 @@ function Active() {
                   }))
                 )
                   return;
-                navigate("/summary");
+                if (isCurrentSession()) navigate("/summary");
               }}
             >
               Zaliczone · podsumuj trening
@@ -1376,6 +1403,11 @@ function Active() {
           {s.results.length > 0 && (
             <p className="muted">
               Następny plan: {technicalMentalCue(mode, undefined, !!d.pressure)}
+            </p>
+          )}
+          {mentalCueText(s.mentalCueLessonId) && (
+            <p className="notice" aria-label="Twoja wskazówka mentalna">
+              Twój fokus: „{mentalCueText(s.mentalCueLessonId)}”
             </p>
           )}
           {d.mode === "boundary" && <p>Świnka {s.boundary} cm od linii.</p>}
@@ -1518,44 +1550,25 @@ function Active() {
           {s.results.at(-1)?.decision && (
             <DecisionAssessment session={s} index={s.results.length - 1} />
           )}
-          {s.results.length > 0 &&
-            s.kind !== "test" &&
-            !s.mastery &&
-            !s.challenge &&
-            !s.coach?.oneChance &&
-            block?.title !== "Krótki test końcowy" && (
-              <button
-                className="undo"
-                disabled={busy}
-                onClick={async () => {
-                  const results = s.results.slice(0, -1);
-                  await save({
-                    ...state,
-                    draft: {
-                      ...s,
-                      situationChoice: undefined,
-                      results,
-                      ...(s.trainingPlan
-                        ? {
-                            trainingPlan: {
-                              ...s.trainingPlan,
-                              index: s.trainingPlan.blocks.findIndex(
-                                (b) =>
-                                  b.kind === "throws" &&
-                                  results.length >= b.start &&
-                                  results.length < b.end,
-                              ),
-                            },
-                          }
-                        : {}),
-                      score: results.reduce((n, a) => n + a.points, 0),
-                    },
-                  });
-                }}
-              >
-                <RotateCcw size={16} /> Cofnij ostatni rzut
-              </button>
-            )}
+          {canUndoLastThrow(s) && (
+            <button
+              className="undo"
+              disabled={busy}
+              onClick={async () => {
+                if (
+                  !(await save({ ...state, draft: undoLastThrow(s) })) ||
+                  !isCurrentSession()
+                )
+                  return;
+                setLanding(null);
+                setDirection(null);
+                setLandingDirection(null);
+                setModeOverride(null);
+              }}
+            >
+              <RotateCcw size={16} /> Cofnij ostatni rzut
+            </button>
+          )}
         </>
       )}
       <ProgressionInfo session={s} />
@@ -1616,6 +1629,16 @@ function Result({
 }) {
   const { state, save, busy } = useApp();
   const navigate = useNavigate();
+  const mountedSession = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    mountedSession.current = session.id;
+    return () => {
+      mountedSession.current = undefined;
+    };
+  }, [session.id]);
+  const isCurrentSession = () =>
+    mountedSession.current === session.id &&
+    window.location.pathname === "/summary";
   const [stress, setStress] = useState(session.stressLevel ?? "normalnie");
   const [routine, setRoutine] = useState<boolean | undefined>(
     session.routineUsed,
@@ -1660,7 +1683,8 @@ function Result({
       }))
     )
       return;
-    navigate(`/history/${session.id}`, { replace: true });
+    if (isCurrentSession())
+      navigate(`/history/${session.id}`, { replace: true });
   }
   return (
     <>
@@ -1820,7 +1844,14 @@ function Result({
           <details className="card">
             <summary>Twoja głowa podczas treningu</summary>
             <p>Samopoczucie: {session.stressLevel}</p>
-            <p>Rutyna: {session.routineUsed ? "tak" : "nie"}</p>
+            <p>
+              Rutyna:{" "}
+              {session.routineUsed === undefined
+                ? "brak odpowiedzi"
+                : session.routineUsed
+                  ? "tak"
+                  : "nie"}
+            </p>
             <p>Powrót po błędzie: {session.recovery}</p>
             {session.mentalExerciseDone && <p>Ćwiczenie mentalne: zaliczone</p>}
           </details>
@@ -1846,6 +1877,31 @@ function Result({
         </>
       ) : (
         <section className="card config">
+          {session.results.length < session.plan.length || d.timed ? (
+            <Link className="secondary" to="/session">
+              Wróć do treningu
+            </Link>
+          ) : (
+            canUndoLastThrow(session) && (
+              <button
+                className="secondary"
+                disabled={busy}
+                onClick={async () => {
+                  if (
+                    !(await save({
+                      ...state,
+                      draft: undoLastThrow(session),
+                    })) ||
+                    !isCurrentSession()
+                  )
+                    return;
+                  navigate("/session");
+                }}
+              >
+                <RotateCcw size={16} /> Popraw ostatni rzut
+              </button>
+            )
+          )}
           <h2>Jak czułeś się podczas treningu?</h2>
           <div className="filters">
             {[
@@ -1911,12 +1967,13 @@ function Summary() {
 }
 function HistoryPage() {
   const { state } = useApp();
+  const sessions = historySessions(state);
   return (
     <>
       <Heading eyebrow="KAŻDY TRENING SIĘ LICZY" title="Historia treningów">
         Twoje wyniki zapisane na tym urządzeniu.
       </Heading>
-      {state.sessions.length === 0 ? (
+      {sessions.length === 0 ? (
         <div className="empty">
           <History />
           <h2>Tu zaczyna się Twoja historia</h2>
@@ -1927,29 +1984,44 @@ function HistoryPage() {
         </div>
       ) : (
         <div className="history-list">
-          {[...state.sessions].reverse().map((s) => (
-            <Link
-              key={s.id}
-              className="card history-item"
-              to={`/history/${s.id}`}
-            >
-              <div className="icon-box">
-                <CategoryIcon
-                  category={drills.find((d) => d.id === s.drillId)!.category}
-                />
-              </div>
-              <div>
-                <h3>{drills.find((d) => d.id === s.drillId)!.name}</h3>
-                <p className="muted">
-                  {date(s.completedAt!)} · {s.results.length} rzutów ·{" "}
-                  {summarize(s).percentage}% pkt ·{" "}
-                  {s.kind === "test" ? "TEST" : "TRENING"}
-                </p>
-              </div>
-              <b>{s.score} pkt</b>
-              <ChevronRight size={20} />
-            </Link>
-          ))}
+          {sessions.map((s) => {
+            const outcome = sessionOutcome(s);
+            const baseline = comparableBaseline(s, sessions);
+            const delta = baseline === null ? null : outcome.rate - baseline;
+            return (
+              <Link
+                key={s.id}
+                className="card history-item"
+                to={`/history/${s.id}`}
+              >
+                <div className="icon-box">
+                  <CategoryIcon
+                    category={drills.find((d) => d.id === s.drillId)!.category}
+                  />
+                </div>
+                <div>
+                  <h3>{drills.find((d) => d.id === s.drillId)!.name}</h3>
+                  <p className="muted">
+                    {date(s.completedAt!)} · {outcome.distances} ·{" "}
+                    {s.kind === "test" ? "TEST" : "TRENING"}
+                  </p>
+                  <p>
+                    {outcome.hits}/{s.results.length} {outcome.metric} ·{" "}
+                    {outcome.rate}% skuteczności
+                  </p>
+                  {delta !== null && (
+                    <p className="muted small">
+                      {delta > 0 ? "+" : ""}
+                      {delta} pp względem wcześniejszych porównywalnych sesji (
+                      {baseline}%).
+                    </p>
+                  )}
+                </div>
+                <b>{s.score} pkt</b>
+                <ChevronRight size={20} />
+              </Link>
+            );
+          })}
         </div>
       )}
     </>
@@ -2029,17 +2101,66 @@ function Metric({
 function ProgressPage() {
   const { state } = useApp();
   const st = stats(state);
-  const distance = Array.from(new Set(st.attempts.map((a) => a.distance))).sort(
-    (a, b) => a - b,
-  );
+  const results = progressResults(state);
+  const evidence = dashboardEvidence(state);
+  const next = recommendation(state);
   return (
     <>
-      <Heading eyebrow="TWÓJ WŁASNY RYTM" title="Rośniesz z każdą kulą.">
-        Porównuj się ze sobą. Każda próba to doświadczenie.
+      <Heading eyebrow="TWÓJ WŁASNY RYTM" title="Twój postęp">
+        Sprawdź, co zmienia się w Twoich wynikach i co trenować dalej.
       </Heading>
-      <Link className="button" to="/coach/development">
-        Skill Tree i mój rozwój
-      </Link>
+      {st.count ? (
+        <>
+          <section className="card">
+            <h2>Czy robię postęp?</h2>
+            <p>{progressEvidence(state)}</p>
+            {evidence.strongest && (
+              <p>
+                <b>Mocniejszy obszar:</b> {modeNames[evidence.strongest.mode]}{" "}
+                {evidence.strongest.distance} m · {evidence.strongest.rate}% ·{" "}
+                {evidence.strongest.count} prób.
+              </p>
+            )}
+            {evidence.weakest && (
+              <p>
+                <b>Do poprawy:</b> {modeNames[evidence.weakest.mode]}{" "}
+                {evidence.weakest.distance} m · {evidence.weakest.rate}% ·{" "}
+                {evidence.weakest.count} prób.
+              </p>
+            )}
+          </section>
+          <section className="card">
+            <h2>Następny trening</h2>
+            <p>
+              <b>
+                {modeNames[next.mode]} {next.distance} m.
+              </b>{" "}
+              {next.reason}
+            </p>
+            <Link className="button" to="/">
+              {state.draft
+                ? "Wróć do rozpoczętego treningu"
+                : "Przejdź do treningu na dziś"}
+              <ArrowRight size={20} />
+            </Link>
+          </section>
+        </>
+      ) : (
+        <section className="card">
+          <h2>Zacznij od pierwszego treningu</h2>
+          <p>
+            Zapisz pierwszą serię, aby zobaczyć swoją skuteczność. Do oceny
+            wariantu potrzebujemy 20 prób z co najmniej 2 sesji w tych samych
+            warunkach.
+          </p>
+          <Link className="button" to="/">
+            {state.draft
+              ? "Dokończ rozpoczęty trening"
+              : "Przejdź do treningu na dziś"}
+            <ArrowRight size={20} />
+          </Link>
+        </section>
+      )}
       <p className="notice">
         Statystyki poniżej dotyczą zwykłych treningów. Testy i próby
         mistrzowskie porównujesz osobno w historii i podsumowaniu testu.
@@ -2053,83 +2174,132 @@ function ProgressPage() {
           label="Tygodni regularności"
           value={weeklyProgress(state).streak}
         />
-        <Metric label="Celność puenty" value={st.point} suffix="%" />
-        <Metric label="Celność strzału" value={st.shoot} suffix="%" />
-        <Metric label="Carreaux / strzały" value={st.carreau} suffix="%" />
+        {[
+          { label: "Celność puenty", value: st.point, count: st.pointAttempts },
+          {
+            label: "Celność strzału",
+            value: st.shoot,
+            count: st.shootAttempts,
+          },
+          {
+            label: "Carreaux / strzały",
+            value: st.carreau,
+            count: st.shootAttempts,
+          },
+        ].map((metric) =>
+          metric.count ? (
+            <Metric
+              key={metric.label}
+              label={metric.label}
+              value={metric.value}
+              suffix="%"
+            />
+          ) : (
+            <div className="card metric" key={metric.label}>
+              <strong aria-label="Brak prób">—</strong>
+              <span>{metric.label}</span>
+              <span>Brak prób</span>
+            </div>
+          ),
+        )}
         <Metric
           label="Lekcje mentalne"
           value={completedMentalLessons(state.lessons)}
           suffix={` / ${lessons.length}`}
         />
       </div>
-      {!st.count && (
-        <p className="notice">
-          Statystyki pojawią się po pierwszym zapisanym treningu.
-        </p>
+      {results.areas.length > 0 && (
+        <section className="card">
+          <h2>Skuteczność według rzutu i dystansu</h2>
+          <p className="muted small">
+            Trafienia / próby. Puenta do 60 cm, strzał z usunięciem celu,
+            precyzja w kole, lob: pierwsze lądowanie. To łączne wyniki danego
+            rodzaju rzutu; ocenę zmiany powyżej liczymy tylko dla porównywalnych
+            sesji.
+          </p>
+          {[...new Set(results.areas.map((area) => area.mode))].map((mode) => (
+            <div key={mode}>
+              <h3>{modeNames[mode]}</h3>
+              {results.areas
+                .filter((area) => area.mode === mode)
+                .map((area) => (
+                  <div className="stat-row" key={area.key}>
+                    <b>{area.distance} m</b>
+                    <div className="bar">
+                      <span style={{ width: `${area.rate}%` }} />
+                    </div>
+                    <span>
+                      {area.rate}% · {area.hits}/{area.count} prób
+                    </span>
+                  </div>
+                ))}
+            </div>
+          ))}
+        </section>
+      )}
+      {results.recent.length > 0 && (
+        <section className="card">
+          <h2>Ostatnie wyniki</h2>
+          <div className="recent-chart">
+            {results.recent.map((s) => {
+              const outcome = sessionOutcome(s);
+              return (
+                <Link
+                  to={`/history/${s.id}`}
+                  key={s.id}
+                  aria-label={`${drills.find((d) => d.id === s.drillId)!.name}, ${outcome.distances}: ${outcome.hits}/${s.results.length} ${outcome.metric}, ${outcome.rate}% skuteczności`}
+                >
+                  <b>{outcome.rate}%</b>
+                  <div className="chart-column">
+                    <span
+                      style={{
+                        height: `${Math.max(3, outcome.rate)}%`,
+                      }}
+                    />
+                  </div>
+                  <small>
+                    {new Date(s.completedAt!).toLocaleDateString("pl-PL", {
+                      day: "numeric",
+                      month: "numeric",
+                    })}
+                  </small>
+                </Link>
+              );
+            })}
+          </div>
+          <p className="muted small">
+            Skuteczność z ostatnich 7 treningów. Lob: pierwsze lądowanie. Różne
+            ćwiczenia i warunki nie tworzą wspólnego trendu.
+          </p>
+        </section>
       )}
       <section className="card">
-        <h2>Celność na odległościach</h2>
-        <p className="muted small">
-          Trafienia / próby. Puenta do 60 cm, strzał z usunięciem celu, precyzja
-          w kole. Wyniki wszystkich typów rzutów łącznie.
-        </p>
-        {distance.map((d) => {
-          const a = st.attempts.filter((x) => x.distance === d);
-          const n = percent(a.filter((x) => x.hit).length, a.length);
-          return (
-            <div className="stat-row" key={d}>
-              <b>{d} m</b>
-              <div className="bar">
-                <span style={{ width: `${n}%` }} />
-              </div>
-              <span>
-                {n}% · {a.length} prób
-              </span>
-            </div>
-          );
-        })}
-      </section>
-      <section className="card">
-        <h2>Ostatnie wyniki</h2>
-        <div className="recent-chart">
-          {state.sessions
-            .filter((s) => s.kind !== "test" && !s.mastery && !s.challenge)
-            .slice(-7)
-            .map((s) => (
-              <Link
-                to={`/history/${s.id}`}
-                key={s.id}
-                aria-label={`${drills.find((d) => d.id === s.drillId)!.name}: ${summarize(s).percentage}%`}
-              >
-                <b>{summarize(s).percentage}%</b>
-                <div className="chart-column">
-                  <span
-                    style={{
-                      height: `${Math.max(3, summarize(s).percentage)}%`,
-                    }}
-                  />
-                </div>
-                <small>
-                  {new Date(s.completedAt!).toLocaleDateString("pl-PL", {
-                    day: "numeric",
-                    month: "numeric",
-                  })}
-                </small>
-              </Link>
-            ))}
-        </div>
-        <p className="muted small">
-          Procent możliwych punktów z ostatnich 7 sesji.
-        </p>
-      </section>
-      <section className="card">
         <h2>Spokojna głowa</h2>
-        <p>Rutyna w {st.routine}% treningów.</p>
-        <p>Zaliczone ćwiczenia mentalne: {st.mental}.</p>
+        {st.routine === null ? (
+          <p>Brak odpowiedzi o rutynie. Możesz dodać samoocenę po treningu.</p>
+        ) : (
+          <>
+            <p>
+              Rutyna w {st.routine}% treningów
+              {st.routineResponses < st.count ? " z samooceną" : ""}.
+            </p>
+            <p className="muted small">
+              {st.routineUsed}/{st.routineResponses} odpowiedzi: używałem
+              rutyny.
+              {st.routineResponses < st.count &&
+                ` Brak odpowiedzi w ${st.count - st.routineResponses} treningach.`}
+            </p>
+          </>
+        )}
+        <p>Ukończone moduły mentalne: {st.mentalModules}.</p>
+        <p>Rutyna/reset w treningu: {st.mental}.</p>
         <Link className="text-link" to="/lessons">
           Przejdź do lekcji <ArrowRight size={16} />
         </Link>
       </section>
+      <Link className="secondary" to="/coach/development">
+        Skill Tree i mój rozwój
+      </Link>
       <div className="section-title">
         <h2>Osiągnięcia treningowe</h2>
       </div>
@@ -2503,6 +2673,7 @@ function App() {
     lock.current = true;
     setBusy(true);
     try {
+      if (!restoring && state) next = attachPendingMentalCue(state, next);
       const awarded = awardAchievements(
         restoring
           ? next

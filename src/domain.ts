@@ -87,6 +87,7 @@ export interface Attempt extends PlannedThrow {
   landingDirection?: Direction;
 }
 export interface Session {
+  mentalCueLessonId?: string;
   situationChoice?: { index: number; title: string; mode: Mode };
   coach?: {
     source: "recommended" | "manual" | "generator" | "self" | "adaptive";
@@ -203,6 +204,9 @@ export const maxPoints = (mode: Mode) =>
   Math.max(...choices[mode].map((c) => c.points));
 export const percent = (n: number, d: number) =>
   d ? Math.round((n / d) * 100) : 0;
+export function successfulAttempt(a: Attempt): boolean {
+  return a.mode === "lob" ? a.landingHit === true : a.hit;
+}
 export function makePlan(
   drill: Drill,
   distance: number,
@@ -319,17 +323,28 @@ export function stats(state: State) {
     (a) => a.mode === "point" || a.mode === "boundary" || a.mode === "target",
   );
   const shoot = attempts.filter((a) => a.mode === "shoot");
+  const routineResponses = sessions.filter(
+    (s) => typeof s.routineUsed === "boolean",
+  );
+  const routineUsed = routineResponses.filter((s) => s.routineUsed).length;
   return {
     count: sessions.length,
+    pointAttempts: point.length,
+    shootAttempts: shoot.length,
     point: percent(point.filter((a) => a.hit).length, point.length),
     shoot: percent(shoot.filter((a) => a.hit).length, shoot.length),
     carreau: percent(shoot.filter((a) => a.carreau).length, shoot.length),
     streak: streak(sessions),
-    routine: percent(
-      sessions.filter((s) => s.routineUsed).length,
-      sessions.length,
-    ),
+    routine: routineResponses.length
+      ? percent(routineUsed, routineResponses.length)
+      : null,
+    routineResponses: routineResponses.length,
+    routineUsed,
     mental: sessions.filter((s) => s.mentalExerciseDone).length,
+    mentalModules:
+      state.coaching?.practiceHistory?.filter(
+        (p) => p.kind === "mental" && !!p.completedAt,
+      ).length ?? 0,
     attempts,
   };
 }

@@ -119,6 +119,7 @@ const block = object({
   end: number(0, 100000, true),
 });
 const session = object({
+  mentalCueLessonId: optional(choice(lessons.map((l) => l.id))),
   situationChoice: optional(
     object({ index: number(0, 100000, true), title: text, mode }),
   ),
@@ -213,6 +214,7 @@ const duel = object({
   ),
 });
 const practice = object({
+  cueLessonId: optional(choice(lessons.map((l) => l.id))),
   id: text,
   moduleId: choice(practiceModules.map((m) => m.id)),
   kind: choice(["mental", "physical"]),
@@ -326,6 +328,7 @@ const stateValidator = object({
   ),
   coaching: optional(
     object({
+      pendingMentalCueLessonId: optional(choice(lessons.map((l) => l.id))),
       weeklyGoals: array(object({ week: date, sessions: number(1, 7, true) })),
       weeklyChallenges: optional(
         array(
@@ -649,6 +652,7 @@ export function parseBackup(raw: string): State {
     const steps = practiceSteps(p);
     if (
       p.kind !== module.kind ||
+      (p.kind !== "mental" && p.cueLessonId !== undefined) ||
       (p.kind === "mental" ? p.minutes !== 2 : p.minutes === 2) ||
       p.step > steps.length ||
       (p.completedAt ? p.step !== steps.length : p.step >= steps.length) ||

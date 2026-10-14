@@ -1,4 +1,5 @@
 import { ProgressionInfo } from "../product/ProgressionInfo";
+import { lastRepeatableTraining, repeatLastTraining } from "./repeat";
 import { RoutineGuide } from "../mental/RoutineGuide";
 import {
   dashboardEvidence,
@@ -17,7 +18,7 @@ import { useState, type ReactNode } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowRight, Timer, Trophy, RotateCcw } from "lucide-react";
 import { useApp } from "../../app-context";
-import { type Session, summarize } from "../../domain";
+import { type Session, successfulAttempt } from "../../domain";
 import { drills } from "../../data";
 import { surfaces } from "../adventure/model";
 import {
@@ -44,7 +45,8 @@ export function Today({ guide }: { guide?: ReactNode }) {
     proposal = adaptation(state),
     mental = mentalRecommendation(state),
     athlete = audience(state) === "athlete",
-    dashboard = dashboardEvidence(state);
+    dashboard = dashboardEvidence(state),
+    lastTraining = lastRepeatableTraining(state);
   const start = async (adapt = false) => {
     if (state.draft) {
       navigate("/session");
@@ -54,6 +56,11 @@ export function Today({ guide }: { guide?: ReactNode }) {
       ? acceptedAdaptation(state)
       : (competition ?? dailyTraining(state));
     if (await save({ ...state, draft: session })) navigate("/session");
+  };
+  const repeat = async () => {
+    const session = repeatLastTraining(state);
+    if (session && (await save({ ...state, draft: session })))
+      navigate("/session");
   };
   return (
     <div className="coach-page product-today">
@@ -120,6 +127,16 @@ export function Today({ guide }: { guide?: ReactNode }) {
           Zmień czas lub rodzaj treningu →
         </Link>
       </section>
+      {!state.draft && lastTraining && (
+        <button
+          className="secondary"
+          disabled={busy}
+          onClick={() => void repeat()}
+        >
+          <RotateCcw size={18} /> Powtórz ostatni trening:{" "}
+          {drills.find((d) => d.id === lastTraining.drillId)?.name}
+        </button>
+      )}
       {!state.draft && (
         <RoutineGuide
           expanded={
@@ -134,8 +151,7 @@ export function Today({ guide }: { guide?: ReactNode }) {
             <b>{proposal.reason}</b>
           </p>
           <p>
-            Trzy ostatnie porównywalne serie, minimum 30 prób: {proposal.rate}%.{" "}
-            {proposal.change}
+            {proposal.evidence} {proposal.change}
           </p>
           <button
             className="secondary"
@@ -191,9 +207,13 @@ export function Today({ guide }: { guide?: ReactNode }) {
                   </Link>{" "}
                   ·{" "}
                   {s.results.length
-                    ? Math.round((summarize(s).hits / s.results.length) * 100)
+                    ? Math.round(
+                        (s.results.filter(successfulAttempt).length /
+                          s.results.length) *
+                          100,
+                      )
                     : 0}
-                  % trafień · {s.results.length} prób
+                  % skuteczności · {s.results.length} prób
                 </li>
               ))}
             </ul>

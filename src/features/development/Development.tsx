@@ -1,6 +1,8 @@
 import { MentalFilters } from "../mental/Filters";
+import { mentalCueText } from "../mental/cue";
 import {
   mentalLevels,
+  mentalLessons,
   type MentalCompetency,
   type MentalLevel,
 } from "../mental/catalog";
@@ -40,6 +42,7 @@ import {
   practiceModules,
   practiceSteps,
   startPractice,
+  selectPracticeCue,
 } from "./practices";
 import type { WeeklyChallenge } from "./types";
 
@@ -462,6 +465,32 @@ export function PracticeLibrary({ kind }: { kind: "mental" | "physical" }) {
           .
         </p>
       )}
+      {kind === "mental" && state.coaching?.pendingMentalCueLessonId && (
+        <section className="notice" aria-label="Wskazówka do następnej serii">
+          <p>
+            Na następną serię: „
+            {mentalCueText(state.coaching.pendingMentalCueLessonId)}”
+          </p>
+          <Link className="button" to="/training">
+            Przejdź do treningu technicznego
+          </Link>
+          <button
+            className="secondary"
+            disabled={busy}
+            onClick={() =>
+              void save({
+                ...state,
+                coaching: {
+                  ...state.coaching!,
+                  pendingMentalCueLessonId: undefined,
+                },
+              })
+            }
+          >
+            Usuń wskazówkę
+          </button>
+        </section>
+      )}
       <section className="card config">
         {kind === "physical" ? (
           <>
@@ -634,6 +663,32 @@ export function PracticeActive() {
       </p>
       <h1>{module.title}</h1>
       <p className="development-practice-step">{steps[draft.step]}</p>
+      {last && draft.kind === "mental" && (
+        <label>
+          Wskazówka do następnej serii (opcjonalnie)
+          <select
+            disabled={busy}
+            value={draft.cueLessonId ?? ""}
+            onChange={(e) =>
+              void save(selectPracticeCue(state, e.target.value || undefined))
+            }
+          >
+            <option value="">Bez nowej wskazówki</option>
+            {[...new Set([module.lessonId, "routine", "mistake"])].map((id) => {
+              const lesson = mentalLessons.find((l) => l.id === id);
+              return lesson ? (
+                <option key={id} value={id}>
+                  {lesson.phrase}
+                </option>
+              ) : null;
+            })}
+          </select>
+          <span className="muted small">
+            Pojawi się przy rzutach w następnym nowym treningu. Testy i wyzwania
+            ją zachowają na później.
+          </span>
+        </label>
+      )}
       {last && draft.kind === "mental" && (
         <label>
           Napięcie po module (1–5)

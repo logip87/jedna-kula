@@ -1,5 +1,13 @@
 # Test strategy
 
+## Audyt przepływów produktu — 14.10.2026
+
+Końcowa weryfikacja lokalna po wdrożeniu dwóch dalszych usprawnień: **164/164 Vitest** (unit i integration), **80/80 Playwright E2E**, **16/16 dodatkowych wykonań** odporności zapisu, PWA, dostępności, bezpieczeństwa i smoke na Chromium, Firefox oraz WebKit. Bez retry i bez aktualizowania wzorców wizualnych. ESLint, TypeScript i produkcyjny build PWA poprawne. Szczegóły, ograniczenia oraz rzeczywisty przebieg produktu: [PRODUCT_FLOW_AUDIT.md](PRODUCT_FLOW_AUDIT.md).
+
+Wskazówka z praktyki mentalnej jest testowana od wyboru przez restart modułu, ukończenie, start treningu i reload aż do następnego treningu bez odziedziczonej wskazówki. Reguła łatwiejszego wariantu ma macierz progów, próbki, dat, porównywalności i kategorii; browser potwierdza, że zwykły start zachowuje główną rekomendację, a dopiero akceptacja wybiera właściwy łatwiejszy trening.
+
+Nowe macierze algorytmu i statystyk pozostają na poziomie unit. Testy browser obejmują wyłącznie nowy pełny loop z powtórzeniem treningu, korektę ostatniego wpisu, reset roboczych wyborów lobu po udanym cofnięciu i opuszczenie ekranu podczas opóźnionego zapisu. Testy korzystają z izolowanych danych. Nie wykonano ponownego audytu wizualnego ani wdrożenia.
+
 ## Cel i analiza projektu
 
 Jedna kula jest lokalną PWA React/TypeScript bez kont i synchronizacji. Wyniki i szkice trafiają do IndexedDB; Workbox buforuje shell, katalogi i PDF-y. Import JSON przechodzi walidację struktury oraz punktacji. Formularz kontaktowy jest odrębnym endpointem PHP i nie ma dostępu do wyników.

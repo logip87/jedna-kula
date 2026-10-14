@@ -1,6 +1,7 @@
 import {
   localDay,
   percent,
+  successfulAttempt,
   type Mode,
   type Session,
   type State,
@@ -118,12 +119,17 @@ export function trends(
   mode: Mode,
   distance: number,
   key?: string,
+  now = new Date(),
 ) {
-  const matching = sessions.filter(
-    (s) =>
-      s.results.some((a) => a.mode === mode && a.distance === distance) &&
-      (!key || conditionKey(s, mode, distance) === key),
-  );
+  const matching = sessions
+    .filter(
+      (s) =>
+        s.completedAt &&
+        Date.parse(s.completedAt) <= now.getTime() &&
+        s.results.some((a) => a.mode === mode && a.distance === distance) &&
+        (!key || conditionKey(s, mode, distance) === key),
+    )
+    .sort((a, b) => Date.parse(a.completedAt!) - Date.parse(b.completedAt!));
   if (matching.length < 10) return null;
   const rate = (group: Session[]) => {
     const attempts = group.flatMap((s) =>
@@ -131,7 +137,10 @@ export function trends(
     );
     return {
       count: attempts.length,
-      value: percent(attempts.filter((a) => a.hit).length, attempts.length),
+      value: percent(
+        attempts.filter(successfulAttempt).length,
+        attempts.length,
+      ),
     };
   };
   const recent = rate(matching.slice(-5));
@@ -146,9 +155,9 @@ export function trends(
   };
 }
 export function weaknesses(state: State, now = new Date()) {
-  const sessions = evidenceSessions(state)
-    .filter((s) => new Date(s.completedAt!) <= now)
-    .slice(-12);
+  const sessions = evidenceSessions(state).filter(
+    (s) => new Date(s.completedAt!) <= now,
+  );
   const groups = new Map<
     string,
     { session: Session; mode: Mode; distance: number; sessions: Session[] }
@@ -176,16 +185,36 @@ export function weaknesses(state: State, now = new Date()) {
     }
   return [...groups.entries()]
     .flatMap(([key, g]) => {
+      // Keep the recent sample for each set of comparable conditions. Training
+      // another skill must not erase evidence for a neglected one.
+      g.sessions = g.sessions.slice(-12);
       const attempts = g.sessions.flatMap((s) =>
         s.results.filter((a) => a.mode === g.mode && a.distance === g.distance),
       );
       if (attempts.length < 20 || g.sessions.length < 2) return [];
       const rate = percent(
-        attempts.filter((a) => (g.mode === "lob" ? a.landingHit : a.hit))
-          .length,
+        attempts.filter(successfulAttempt).length,
         attempts.length,
       );
-      const trend = trends(evidenceSessions(state), g.mode, g.distance, key);
+      const trend = trends(sessions, g.mode, g.distance, key, now);
+      // Rank by the current series rather than one unusually bad day or a
+      // long-term average. The displayed rate remains the actual pooled rate.
+      const recentRates = g.sessions
+        .slice(-5)
+        .map((s) => {
+          const a = s.results.filter(
+            (a) => a.mode === g.mode && a.distance === g.distance,
+          );
+          return percent(a.filter(successfulAttempt).length, a.length);
+        })
+        .sort((a, b) => a - b);
+      const middle = Math.floor(recentRates.length / 2);
+      const currentRate =
+        recentRates.length >= 3
+          ? recentRates.length % 2
+            ? recentRates[middle]
+            : (recentRates[middle - 1] + recentRates[middle]) / 2
+          : rate;
       const age = Math.max(
         0,
         (now.getTime() - new Date(g.session.completedAt!).getTime()) / 86400000,
@@ -199,12 +228,16 @@ export function weaknesses(state: State, now = new Date()) {
           ? 1.15
           : 1;
       const priority =
-        (1 - rate / 100 + (trend && trend.delta < -5 ? 0.1 : 0)) *
+        (1 -
+          currentRate / 100 +
+          (trend && trend.delta < -5 && currentRate < trend.previous - 5
+            ? 0.1
+            : 0)) *
         confidence *
         recency *
         importance *
         lackOfPractice *
-        (rate < 35 ? 0.25 : rate <= 75 ? 1.3 : 0.8);
+        (currentRate < 35 ? 0.25 : currentRate <= 75 ? 1.3 : 0.8);
       const misses = attempts.filter(
         (a) => !a.hit && a.missDirection && a.missDirection !== "center",
       );
@@ -270,7 +303,10 @@ export function recommendation(
   const weak = weaknesses(state, now).filter(
     (r) => r.distance <= maximumDistance,
   )[0];
-  if (!weak)
+  if (!weak) {
+    const hasHistory = evidenceSessions(state).some(
+      (s) => Date.parse(s.completedAt!) <= now.getTime(),
+    );
     return {
       mode: "point" as Mode,
       distance: 6,
@@ -278,13 +314,23 @@ export function recommendation(
       rate: null,
       target: null,
       session: null,
-      reason:
-        "Zacznij od spokojnej puenty na 6 m. Do oceny wariantu potrzebujemy 20 prób z co najmniej 2 sesji w tych samych warunkach.",
+      reason: `${hasHistory ? "Zbieramy punkt odniesienia. Powtórz spokojną puentę na 6 m." : "Zacznij od spokojnej puenty na 6 m."} Do oceny wariantu potrzebujemy 20 prób z co najmniej 2 sesji w tych samych warunkach.`,
     };
+  }
+  const afterBreak =
+    now.getTime() - Date.parse(weak.session.completedAt!) >= 30 * 86400000;
+  const explanation =
+    weak.trend && weak.trend.delta > 5
+      ? `Ostatnie porównywalne serie: ${weak.trend.recent}%. Utrwal widoczną poprawę.`
+      : weak.rate < 35
+        ? "Budujemy podstawę; ten wariant jest jeszcze bardzo trudny."
+        : weak.rate > 75
+          ? "Utrwal powtarzalność na znanym dystansie."
+          : "To priorytet w zakresie trudnym, ale osiągalnym.";
   return {
     ...weak,
-    target: Math.min(100, weak.rate + 7),
-    reason: `${weak.rate}% skuteczności na ${weak.distance} m (${weak.count} prób z ${weak.sessions.length} sesji w tych samych warunkach). ${weak.rate < 35 ? "Budujemy podstawę; ten wariant jest jeszcze bardzo trudny." : "To priorytet w zakresie trudnym, ale osiągalnym."}${weak.direction ? ` W ${weak.direction.rate}% oznaczonych nietrafionych prób dominują ${weak.direction.id === "short" ? "rzuty za krótkie" : weak.direction.id === "long" ? "rzuty za długie" : weak.direction.id === "left" ? "pudła w lewo" : "pudła w prawo"}.` : ""}`,
+    target: Math.min(100, (weak.trend?.recent ?? weak.rate) + 7),
+    reason: `${weak.rate}% skuteczności na ${weak.distance} m (${weak.count} prób z ${weak.sessions.length} sesji w tych samych warunkach). ${afterBreak ? "Dawno nie trenowałeś tego wariantu. Wróć do znanych warunków. " : ""}${explanation}${weak.direction ? ` W ${weak.direction.rate}% oznaczonych nietrafionych prób dominują ${weak.direction.id === "short" ? "rzuty za krótkie" : weak.direction.id === "long" ? "rzuty za długie" : weak.direction.id === "left" ? "pudła w lewo" : "pudła w prawo"}.` : ""}`,
   };
 }
 export function createRecommendedSession(
@@ -319,12 +365,12 @@ export function personalBest(session: Session, history: Session[]) {
     return null;
   const previous = comparableSessions(session, history);
   if (session.challenge?.kind === "daily") return null;
-  const hitCount = (s: Session) => s.results.filter((a) => a.hit).length;
+  const hitCount = (s: Session) => s.results.filter(successfulAttempt).length;
   const longest = (s: Session) => {
     let run = 0,
       best = 0;
     for (const a of s.results) {
-      run = a.hit ? run + 1 : 0;
+      run = successfulAttempt(a) ? run + 1 : 0;
       best = Math.max(best, run);
     }
     return best;
@@ -384,12 +430,12 @@ export function personalBest(session: Session, history: Session[]) {
             .filter((a) => a.length >= 10);
           if (!prior.length) return [];
           const value = percent(
-              attempts.filter((a) => a.hit).length,
+              attempts.filter(successfulAttempt).length,
               attempts.length,
             ),
             before = Math.max(
               ...prior.map((a) =>
-                percent(a.filter((a) => a.hit).length, a.length),
+                percent(a.filter(successfulAttempt).length, a.length),
               ),
             );
           return value > before
@@ -576,7 +622,7 @@ export function previousBenchmark(session: Session, history: Session[]) {
   return [...new Set(session.plan.map((a) => a.distance))].map((distance) => {
     const rate = (s: Session) => {
       const a = s.results.filter((a) => a.distance === distance);
-      return percent(a.filter((a) => a.hit).length, a.length);
+      return percent(a.filter(successfulAttempt).length, a.length);
     };
     const before = rate(previous),
       after = rate(session);
