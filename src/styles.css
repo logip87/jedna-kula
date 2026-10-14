@@ -20,6 +20,7 @@
   --surface: #fffdf8;
   --gold-soft: #f7e6b1;
   --focus: #8f6500;
+  --bottom-nav-height: 73px;
 }
 * {
   box-sizing: border-box;
@@ -131,6 +132,7 @@ svg {
   display: flex;
   flex-direction: column;
   color: #fff;
+  overflow-y: auto;
 }
 .brand {
   display: flex;
@@ -255,6 +257,10 @@ main {
 .greeting .muted {
   font-size: 15px;
   margin-top: 10px;
+  overflow-wrap: anywhere;
+}
+.greeting > div {
+  min-width: 0;
 }
 .wave {
   font-size: 36px;
@@ -653,6 +659,12 @@ main {
 .page-heading {
   margin-bottom: 30px;
 }
+.page-heading h1,
+.duel-result h2,
+.duel-result p,
+.rules-notes p {
+  overflow-wrap: anywhere;
+}
 .page-heading .muted {
   margin-top: 13px;
   font-size: 16px;
@@ -672,6 +684,26 @@ main {
   padding: 12px 16px;
   min-height: 48px;
   color: #50493f;
+  font-size: 14px;
+  font-weight: 600;
+}
+.secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+}
+.text-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
   font-size: 14px;
   font-weight: 600;
 }
@@ -888,7 +920,12 @@ input[type="checkbox"] {
 .notice p {
   margin-bottom: 12px;
 }
-.active {
+.notice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.active-training {
   max-width: 590px;
   margin: auto;
 }
@@ -902,6 +939,8 @@ input[type="checkbox"] {
   gap: 15px;
 }
 .icon-button {
+  display: grid;
+  place-items: center;
   border: 1px solid #d2cdc1;
   background: var(--surface);
   padding: 13px;
@@ -992,14 +1031,16 @@ progress::-moz-progress-bar {
   font-size: 36px;
 }
 @keyframes distance-change-fade {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0;
   }
-  12%, 78% {
+  12%,
+  78% {
     opacity: 1;
   }
 }
-.active .cue {
+.active-training .cue {
   margin: 22px 0;
   background: #f5f2ea;
   font-size: 18px;
@@ -1046,7 +1087,7 @@ progress::-moz-progress-bar {
 .result-button:hover:enabled {
   border-color: var(--ink);
 }
-.active .routine {
+.active-training .routine {
   margin: 27px 0;
   justify-content: space-around;
 }
@@ -1112,11 +1153,13 @@ fieldset > .secondary {
 }
 .metric-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 15px;
   margin-bottom: 23px;
 }
 .metric {
+  min-width: 0;
+  overflow-wrap: anywhere;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -1757,6 +1800,12 @@ summary {
     padding: 0 30px 25px;
   }
 }
+@media (min-width: 761px) and (max-width: 1000px) {
+  .detail-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}
 @media (max-width: 760px) {
   .sidebar {
     display: none;
@@ -1765,8 +1814,13 @@ summary {
     margin-left: 0;
   }
   .topbar {
-    height: 74px;
-    padding: 0 20px;
+    min-height: calc(74px + env(safe-area-inset-top, 0px));
+    height: auto;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: calc(12px + env(safe-area-inset-top, 0px))
+      max(20px, env(safe-area-inset-right, 0px)) 12px
+      max(20px, env(safe-area-inset-left, 0px));
     background: #f7f1e5;
   }
   .desktop-label {
@@ -1775,6 +1829,8 @@ summary {
   .mobile-brand {
     display: flex;
     font-size: 23px;
+    flex-shrink: 0;
+    white-space: nowrap;
   }
   .mobile-brand > svg {
     background: var(--ink);
@@ -1786,40 +1842,69 @@ summary {
     transform: rotate(-7deg);
   }
   main {
-    padding: 26px 20px 112px;
+    padding: 26px max(20px, env(safe-area-inset-right, 0px))
+      calc(var(--bottom-nav-height) + 32px + env(safe-area-inset-bottom, 0px))
+      max(20px, env(safe-area-inset-left, 0px));
   }
   .desktop-footer {
     display: none;
   }
   .bottom-nav {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    justify-content: space-around;
-    background: #fffdf8fa;
+    gap: 0;
+    background: var(--surface);
     border-top: 1px solid #dad7cd;
-    padding: 8px 7px calc(8px + env(safe-area-inset-bottom));
+    height: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
+    padding: 8px
+      max(7px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px))
+      calc(8px + env(safe-area-inset-bottom, 0px));
     z-index: 5;
   }
   .bottom-nav a {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: 24px 16px;
+    justify-items: center;
+    align-content: center;
     align-items: center;
-    gap: 5px;
-    min-width: 58px;
-    min-height: 56px;
-    padding: 9px 10px;
+    gap: 4px;
+    min-width: 0;
+    height: 56px;
+    margin: 0;
+    padding: 6px 2px;
     color: #534a3b;
     font-size: 11px;
     font-weight: 600;
     border-radius: 14px;
+    transition:
+      color 0.15s,
+      background-color 0.15s;
+  }
+  .bottom-nav-icon {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+  }
+  .bottom-nav-icon svg {
+    display: block;
+    width: 21px;
+    height: 21px;
+  }
+  .bottom-nav-label {
+    width: 100%;
+    min-width: 0;
+    line-height: 16px;
+    text-align: center;
+    white-space: nowrap;
   }
   .bottom-nav a.active {
     color: var(--ink);
     background: var(--gold);
-    font-weight: 800;
   }
   h1 {
     font-size: 33px;
@@ -2211,7 +2296,7 @@ summary {
     font-size: 16px;
   }
   .metric-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
   }
   .metric {
@@ -2273,6 +2358,10 @@ summary {
   }
   .header-actions {
     gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    margin-left: auto;
+    min-width: 0;
   }
   .install {
     font-size: 11px;
@@ -2284,11 +2373,12 @@ summary {
     gap: 4px;
   }
   .avatar {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
     border-radius: 14px;
   }
-  .active {
+  .active-training {
     padding-bottom: 10px;
   }
   .session-top {
@@ -2304,7 +2394,7 @@ summary {
   .result-button > span {
     font-size: 15px;
   }
-  .active .distance {
+  .active-training .distance {
     margin-top: 27px;
   }
   .recent-chart {
@@ -2334,11 +2424,12 @@ summary {
 }
 @media (max-width: 360px) {
   main {
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
   }
   .topbar {
-    padding: 0 16px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
   }
   .mobile-brand {
     font-size: 20px;
@@ -2357,10 +2448,6 @@ summary {
   }
   .plan-card .muted {
     font-size: 13px;
-  }
-  .bottom-nav a {
-    min-width: 52px;
-    padding: 9px 7px;
   }
   .greeting .muted {
     font-size: 13px;
@@ -2385,9 +2472,6 @@ summary {
   }
 }
 /* Rules guide — inherits the sport palette and touch-first navigation. */
-.bottom-nav {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-}
 .rules-page {
   max-width: 980px;
   margin: 0 auto;
@@ -2886,11 +2970,6 @@ summary {
   }
 }
 @media (max-width: 600px) {
-  .bottom-nav a {
-    padding-inline: 1px;
-    font-size: 10px;
-    min-width: 44px;
-  }
   .rules-category {
     padding: 16px;
     min-height: 190px;
@@ -3589,6 +3668,9 @@ summary {
   gap: 8px;
 }
 .coach-light-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: #efbb32;
   text-decoration: underline;
   width: fit-content;
@@ -3624,7 +3706,7 @@ summary {
   margin-top: 16px;
 }
 .coach-details select {
-  margin-left: 12px;
+  margin-top: 10px;
 }
 .coach-details progress {
   width: 100%;
@@ -3676,7 +3758,7 @@ summary {
   margin: 20px 0;
 }
 .coach-library-group select {
-  margin-left: 12px;
+  margin-top: 10px;
 }
 @media (max-width: 600px) {
   .coach-main {

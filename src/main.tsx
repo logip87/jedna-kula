@@ -1231,7 +1231,7 @@ function Active() {
     setModeOverride(null);
   }
   return (
-    <div className="active">
+    <div className="active-training">
       <div className="session-top">
         <span>{s.missionTitle ?? d.name}</span>
         <button
@@ -2695,8 +2695,10 @@ function App() {
           <nav className="bottom-nav" aria-label="Nawigacja główna">
             {nav.map(([path, Icon, label]) => (
               <NavLink key={path} end={path === "/"} to={path}>
-                <Icon size={21} />
-                <span>{label}</span>
+                <span className="bottom-nav-icon" aria-hidden="true">
+                  <Icon size={21} strokeWidth={2} />
+                </span>
+                <span className="bottom-nav-label">{label}</span>
               </NavLink>
             ))}
           </nav>

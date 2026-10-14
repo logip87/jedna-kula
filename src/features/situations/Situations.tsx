@@ -169,24 +169,29 @@ export function MatchMode() {
           {confirm && (
             <section className="notice">
               <p>Usunąć rozpoczęty szkic? Ukończona historia pozostanie.</p>
-              <button
-                disabled={busy}
-                onClick={async () => {
-                  if (
-                    await save({
-                      ...state,
-                      situations: {
-                        ...state.situations,
-                        matchDraft: undefined,
-                      },
-                    })
-                  )
-                    setConfirm(false);
-                }}
-              >
-                Tak, przerwij
-              </button>
-              <button onClick={() => setConfirm(false)}>Wróć do meczu</button>
+              <div className="notice-actions">
+                <button
+                  className="danger"
+                  disabled={busy}
+                  onClick={async () => {
+                    if (
+                      await save({
+                        ...state,
+                        situations: {
+                          ...state.situations,
+                          matchDraft: undefined,
+                        },
+                      })
+                    )
+                      setConfirm(false);
+                  }}
+                >
+                  Tak, przerwij
+                </button>
+                <button className="secondary" onClick={() => setConfirm(false)}>
+                  Wróć do meczu
+                </button>
+              </div>
             </section>
           )}
         </>

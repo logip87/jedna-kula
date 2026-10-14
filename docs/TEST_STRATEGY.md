@@ -42,7 +42,20 @@ Pełny zestaw przeglądarkowy działa w Chromium/Pixel 7. Jeden E2E smoke zapisu
 
 ## Visual baseline
 
-Dwa baseline PNG są dla Chromium na macOS; dedykowany workflow visual używa `macos-26` (Apple Silicon), zgodnego z główną wersją systemu bazowego. [Obsługiwane obrazy GitHub Actions](https://github.com/actions/runner-images). Linux nie porównuje do baseline macOS, ponieważ renderowanie zależy od środowiska. Brak baseline lub istotny diff to failure; aktualizacja jest świadomym lokalnym poleceniem i wymaga porównania before/after. Wersja Playwright pochodzi z package-lock. Pierwszy przebieg 12.10.2026 potwierdził zgodność obu baseline na hosted runnerze `macos-26`, bez ich aktualizacji. [Zasady Playwright dotyczące środowiska](https://playwright.dev/docs/test-snapshots).
+Baseline PNG są dla Chromium na macOS; dedykowany workflow visual używa `macos-26` (Apple Silicon), zgodnego z główną wersją systemu bazowego. [Obsługiwane obrazy GitHub Actions](https://github.com/actions/runner-images). Linux nie porównuje do baseline macOS, ponieważ renderowanie zależy od środowiska. Brak baseline lub istotny diff to failure; aktualizacja jest świadomym lokalnym poleceniem i wymaga porównania before/after. Wersja Playwright pochodzi z package-lock. Pierwszy przebieg 12.10.2026 potwierdził zgodność dwóch pierwotnych baseline na hosted runnerze `macos-26`, bez ich aktualizacji. [Zasady Playwright dotyczące środowiska](https://playwright.dev/docs/test-snapshots).
+
+## Audyt interfejsu — 14.10.2026
+
+Przegląd w przeglądarce obejmuje główne ekrany w 13 rozdzielczościach od 320 × 568 do 1920 × 1080, dodatkowo landscape, małą wysokość oraz powiększony tekst. Przesuwanie nawigacji powodowała kolizja klasy `.active` ekranu sesji z klasą aktywnego `NavLink`: `margin: auto` zmieniał odstępy po kliknięciu. Sesja ma teraz osobną klasę, a dolne menu cztery równe kolumny i stałe boxy ikon/etykiet. Kolor i tło wyróżniają aktywną pozycję bez zmiany jej geometrii.
+
+- [Geometria i responsywność](../tests/e2e/ui-layout.spec.ts): wszystkie cztery zakładki na 13 viewportach, landscape, zoom 125% oraz kontrolki sesji na 320 px. Pomiary obejmują pozycje, szerokości, wysokości, wycentrowanie, SVG i brak overflow. Szerokość porównujemy z zadanym viewportem, ponieważ mobilna przeglądarka potrafi automatycznie rozszerzyć `innerWidth` przy przepełnieniu.
+- [Kontrolki i długie treści](../tests/e2e/ui-controls.spec.ts): imię 40 znaków, nazwy pojedynku 30 znaków, wartości statystyk z dziewięcioma cyframi, powiększony tekst, jednoczesny stan offline/install, przyciski i linki z celem minimum 44 × 44 px oraz ustawienia treningu na tabletach i przy granicach breakpointów.
+- [Safe-area](../tests/e2e/ui-safe-area.spec.ts): WebKit z viewportem PWA iPhone 390 × 844. Emulacja nie dostarcza sprzętowych insetów, dlatego test zastępuje wyłącznie wartości `env()` w rzeczywistym CSS wartościami testowymi: top 44 px, bottom 32 px i asymetryczny bok 24 px. Sprawdza odstęp od gestów, górny nagłówek, symetrię menu i padding treści. Fizyczny iPhone i zainstalowana PWA pozostają do kontroli na urządzeniu.
+- [Porównania wizualne](../tests/visual/navigation.spec.ts): home 320 px, aktywny trening 390 px i crop samego menu w każdym aktywnym stanie na 320/390 px. Wraz z dwoma dotychczasowymi obrazami suite ma 12 wzorców PNG; nie snapshotuje całej aplikacji.
+
+Uruchomienie: `npm run test:e2e -- tests/e2e/ui-layout.spec.ts tests/e2e/ui-controls.spec.ts tests/e2e/ui-safe-area.spec.ts` oraz `npm run qa:visual`. Zmiany UI pozostają w istniejących komponentach i CSS; logika treningu oraz architektura są zachowane.
+
+Końcowa weryfikacja lokalna: 114/114 Vitest, 75/75 Playwright E2E i 6/6 scenariuszy visual (12 obrazów), bez retry. Wzorce oceniono wizualnie i zaktualizowano, a następny przebieg porównujący je bez aktualizacji przeszedł. TypeScript, ESLint, formatowanie oraz produkcyjny build PWA są poprawne. Nie wykonano wdrożenia ani testu na fizycznym telefonie.
 
 ## CI i uruchamianie
 
