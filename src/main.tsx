@@ -27,6 +27,7 @@ import {
 import { awardSituations, challengePassed } from "./features/situations/model";
 import React, { useEffect, useRef, useState } from "react";
 import { DistanceChange } from "./DistanceChange";
+import { ProgressionInfo } from "./features/product/ProgressionInfo";
 import { createRoot } from "react-dom/client";
 import {
   BrowserRouter,
@@ -1021,6 +1022,11 @@ function Detail() {
           )}
         </section>
       </div>
+      <ProgressionInfo
+        distances={all || d.sequence ? d.distances : [distance]}
+        drillId={d.id}
+        isTest={d.test}
+      />
     </>
   );
 }
@@ -1541,6 +1547,7 @@ function Active() {
             )}
         </>
       )}
+      <ProgressionInfo session={s} />
     </div>
   );
 }
@@ -1879,6 +1886,7 @@ function Result({
           </button>
         </section>
       )}
+      <ProgressionInfo session={session} />
     </>
   );
 }

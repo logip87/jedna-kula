@@ -35,13 +35,14 @@ function session(
   rate: number,
   distance = 8,
   id = crypto.randomUUID() as string,
+  attempts = 10,
 ): Session {
-  const plan = Array.from({ length: 10 }, () => ({
+  const plan = Array.from({ length: attempts }, () => ({
     mode: "shoot" as const,
     distance,
   }));
   const results = plan.map((p, i) => {
-    const c = choices.shoot.find((c) => c.hit === i < rate / 10)!;
+    const c = choices.shoot.find((c) => c.hit === i < (rate * attempts) / 100)!;
     return {
       ...p,
       id: `${id}-${i}`,
@@ -94,13 +95,54 @@ describe("adaptive coach", () => {
       acceptedAdaptation(state([100, 100, 100], 10), now).coach?.oneChance,
     ).toBe(true);
     expect(adaptation(state([100, 100]), now)).toBeNull();
-    expect(adaptation(state([100, 100, 80]), now)).toBeNull();
+    expect(adaptation(state([100, 100, 60]), now)).toBeNull();
     const s = state([100, 90, 100]);
     s.sessions[0].surface = "rough";
     expect(adaptation(s, now)).toBeNull();
     const old = state([100, 100, 100]);
     old.sessions[0].completedAt = "2026-08-01T10:00:00Z";
     expect(adaptation(old, now)).toBeNull();
+  });
+  it.each([
+    [6, 80],
+    [7, 75],
+    [8, 70],
+    [9, 65],
+  ])(
+    "offers the next distance from %i m at %i%% in every session",
+    (distance, threshold) => {
+      const data: State = {
+        ...emptyState,
+        sessions: Array.from({ length: 3 }, () =>
+          session(threshold, distance, crypto.randomUUID(), 20),
+        ),
+      };
+      expect(adaptation(data, now)?.distance).toBe(distance + 1);
+      data.sessions[2] = session(
+        threshold - 5,
+        distance,
+        crypto.randomUUID(),
+        20,
+      );
+      expect(adaptation(data, now)).toBeNull();
+    },
+  );
+  it("keeps 67% at 6 m and excludes short or unfinished series from progression", () => {
+    const data: State = {
+      ...emptyState,
+      sessions: Array.from({ length: 3 }, () =>
+        session(67, 6, crypto.randomUUID(), 100),
+      ),
+    };
+    expect(adaptation(data, now)).toBeNull();
+    data.sessions = Array.from({ length: 3 }, () =>
+      session(100, 8, crypto.randomUUID(), 20),
+    );
+    data.sessions[2] = session(100, 8, crypto.randomUUID(), 6);
+    expect(adaptation(data, now)).toBeNull();
+    data.sessions[2] = session(100, 8, crypto.randomUUID(), 20);
+    data.sessions[2].results.pop();
+    expect(adaptation(data, now)).toBeNull();
   });
   it("changes only after explicit acceptance and retains source conditions", () => {
     const s = state([100, 100, 100]);

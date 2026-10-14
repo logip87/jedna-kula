@@ -1,3 +1,4 @@
+import { ProgressionInfo } from "../product/ProgressionInfo";
 import { RoutineGuide } from "../mental/RoutineGuide";
 import {
   dashboardEvidence,
@@ -248,6 +249,11 @@ export function Today({ guide }: { guide?: ReactNode }) {
           {guide}
         </details>
       )}
+      <ProgressionInfo
+        session={state.draft ?? competition ?? undefined}
+        distances={[r.distance]}
+        drillId={r.session?.drillId}
+      />
     </div>
   );
 }
@@ -469,6 +475,7 @@ export function Generator() {
           </button>
         )}
       </section>
+      <ProgressionInfo session={session} />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { ProgressionInfo } from "../product/ProgressionInfo";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Crosshair, Trophy, RotateCcw } from "lucide-react";
@@ -172,6 +173,7 @@ export function PrecisionTraining() {
         <Link className="secondary" to="/rules/category/shooting">
           Figury i oficjalne źródło: MPSP 03.04.2026
         </Link>
+        <ProgressionInfo fixedPlan="precision" />
       </div>
     );
   const shot = precisionPlan[round.scores.length];
@@ -330,6 +332,7 @@ export function PrecisionTraining() {
           </button>
         </section>
       )}
+      <ProgressionInfo fixedPlan="precision" />
     </div>
   );
 }

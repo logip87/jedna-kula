@@ -1,4 +1,10 @@
 import { drills } from "../../data";
+import {
+  progressionThreshold,
+  progressionSessions,
+  progressionAttempts,
+  progressionWindowDays,
+} from "./progression";
 import { percent, type Session, type State } from "../../domain";
 import {
   comparableSessions,
@@ -30,14 +36,15 @@ export function adaptation(state: State, now = new Date()) {
         conditionKey(s, r.mode, r.distance) ===
         conditionKey(r.session!, r.mode, r.distance),
     )
-    .slice(-3);
+    .slice(-progressionSessions);
   const counts = group.map((s) =>
     s.results.filter((a) => a.mode === r.mode && a.distance === r.distance),
   );
   if (
-    group.length < 3 ||
-    counts.some((a) => a.length < 10) ||
-    Date.parse(group[0].completedAt!) < now.getTime() - 30 * 86400000
+    group.length < progressionSessions ||
+    counts.some((a) => a.length < progressionAttempts) ||
+    Date.parse(group[0].completedAt!) <
+      now.getTime() - progressionWindowDays * 86400000
   )
     return null;
   const rates = counts.map((a) =>
@@ -46,7 +53,9 @@ export function adaptation(state: State, now = new Date()) {
       a.length,
     ),
   );
-  const kind: "harder" | "easier" | null = rates.every((n) => n > 80)
+  const kind: "harder" | "easier" | null = rates.every(
+    (n) => n >= progressionThreshold(r.distance),
+  )
     ? "harder"
     : rates.every((n) => n < 35)
       ? "easier"
@@ -66,7 +75,7 @@ export function adaptation(state: State, now = new Date()) {
     kind,
     distance,
     pressure,
-    rate: Math.round(rates.reduce((a, b) => a + b, 0) / 3),
+    rate: Math.round(rates.reduce((a, b) => a + b, 0) / progressionSessions),
     reason:
       kind === "harder"
         ? "Ten trening robi się dla Ciebie łatwy."

@@ -1,3 +1,4 @@
+import { ProgressionInfo } from "../product/ProgressionInfo";
 import { useState } from "react";
 import { Users, Trophy, RotateCcw } from "lucide-react";
 import { useApp } from "../../app-context";
@@ -191,6 +192,7 @@ export function DuelTraining() {
             <p>Pierwsze zakończone wyzwanie pojawi się tutaj.</p>
           )}
         </details>
+        <ProgressionInfo fixedPlan="duel" />
       </div>
     );
   const player = draft.scores.length % 2;
@@ -268,6 +270,7 @@ export function DuelTraining() {
           <RotateCcw size={18} /> Cofnij ostatni wynik
         </button>
       )}
+      <ProgressionInfo fixedPlan="duel" />
     </div>
   );
 }

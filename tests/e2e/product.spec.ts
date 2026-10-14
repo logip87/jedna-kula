@@ -38,13 +38,11 @@ function series(hits = 10, id = crypto.randomUUID() as string): Session {
 }
 async function restore(page: Page, data: State) {
   await page.goto("/settings");
-  await page
-    .getByLabel("Wybierz kopię")
-    .setInputFiles({
-      name: "legacy.json",
-      mimeType: "application/json",
-      buffer: Buffer.from(JSON.stringify(data)),
-    });
+  await page.getByLabel("Wybierz kopię").setInputFiles({
+    name: "legacy.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(JSON.stringify(data)),
+  });
   await page
     .getByRole("button", { name: "Tak, zastąp dane kopią", exact: true })
     .click();
@@ -55,12 +53,15 @@ test("Today changes difficulty only after acceptance and resumes the accepted pl
 }) => {
   await restore(page, {
     ...emptyState,
-    sessions: [series(), series(), series()],
+    sessions: [series(7), series(7), series(7)],
   });
   await page.goto("/");
   await expect(
     page.getByRole("heading", { name: "Strzał 8 m", exact: true }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Zasady awansu" }),
+  ).toContainText("8 m: minimum 70%");
   await expect(
     page.getByRole("button", { name: "SPRÓBUJ TRUDNIEJ", exact: true }),
   ).toBeVisible();
@@ -68,6 +69,9 @@ test("Today changes difficulty only after acceptance and resumes the accepted pl
     .getByRole("button", { name: "SPRÓBUJ TRUDNIEJ", exact: true })
     .click();
   await expect(page.locator(".distance")).toContainText("9 m");
+  await expect(
+    page.getByRole("region", { name: "Zasady awansu" }),
+  ).toContainText("9 m: minimum 65%");
   await page.reload();
   await expect(page.locator(".distance")).toContainText("9 m");
   await page.goto("/");
