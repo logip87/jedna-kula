@@ -14,6 +14,7 @@ import {
   technicalMentalCue,
 } from "./features/mental/catalog";
 import { Feedback } from "./features/feedback/Feedback";
+import { ProfilePrompt } from "./features/profile/ProfilePrompt";
 import {
   TrainingSummary,
   MeasurementSettings,
@@ -622,15 +623,6 @@ function Start() {
             </span>
           </p>
         </div>
-      )}
-      {!state.player && (
-        <Link to="/profile" className="onboarding">
-          <User size={22} />
-          <span>
-            <b>Jak się do Ciebie zwracać?</b> Dodaj imię, jeśli masz ochotę.
-          </span>
-          <ArrowRight size={19} />
-        </Link>
       )}
     </>
   );
@@ -2629,6 +2621,7 @@ function App() {
             </div>
           )}
           <main id="main-content" tabIndex={-1}>
+            <ProfilePrompt key={route.pathname} />
             <Routes>
               <Route path="/" element={<Today guide={<BeginnerGuide />} />} />
               <Route path="/start" element={<Start />} />

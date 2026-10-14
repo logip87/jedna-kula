@@ -876,6 +876,15 @@ input[type="checkbox"] {
 .onboarding b {
   display: block;
 }
+.onboarding {
+  flex-wrap: wrap;
+}
+.profile-prompt-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
 .notice p {
   margin-bottom: 12px;
 }
