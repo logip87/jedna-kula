@@ -947,6 +947,49 @@ progress::-moz-progress-bar {
   font-size: 33px;
   letter-spacing: 0;
 }
+.distance-change {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  pointer-events: none;
+}
+.distance-change-card {
+  width: min(100%, 340px);
+  padding: 28px 24px;
+  border: 1px solid var(--gold);
+  border-radius: 24px;
+  background: var(--ink);
+  color: var(--gold);
+  box-shadow: 0 16px 64px #0006;
+  text-align: center;
+  animation: distance-change-fade 3.2s ease-in-out both;
+}
+.distance-change-card > span {
+  display: block;
+  font-size: 16px;
+  font-weight: 650;
+}
+.distance-change-card strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 96px;
+  line-height: 1.1;
+  font-weight: 800;
+}
+.distance-change-card small {
+  font-size: 36px;
+}
+@keyframes distance-change-fade {
+  0%, 100% {
+    opacity: 0;
+  }
+  12%, 78% {
+    opacity: 1;
+  }
+}
 .active .cue {
   margin: 22px 0;
   background: #f5f2ea;

@@ -26,6 +26,7 @@ import {
 } from "./features/situations/Situations";
 import { awardSituations, challengePassed } from "./features/situations/model";
 import React, { useEffect, useRef, useState } from "react";
+import { DistanceChange } from "./DistanceChange";
 import { createRoot } from "react-dom/client";
 import {
   BrowserRouter,
@@ -1328,6 +1329,7 @@ function Active() {
       )}
       {(!d.timed || phase === 1 || phase === 2) && (
         <>
+          <DistanceChange distance={item.distance} />
           <div className="session-progress">
             <span>
               Rzut {s.results.length + 1}
