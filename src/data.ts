@@ -61,7 +61,7 @@ export const drills: Drill[] = [
     category: "Lob",
     description: "Wysoki lot. Miękkie lądowanie.",
     instructions:
-      "Wyznacz koło lądowania o średnicy 50 cm. Rzuć wysoko. Osobno zapisz trafienie w strefę lądowania i końcową odległość od świnki.",
+      "Ustaw świnkę na wybranym dystansie. Na początek zaznacz koło o średnicy 50 cm ze środkiem 1 m przed świnką. Rzuć wysoko i oceń pierwszy kontakt kuli z ziemią w tym kole. Osobno zapisz końcową odległość od świnki.",
     mode: "lob",
     distances: [6, 7, 8, 9],
     attempts: 6,
@@ -74,7 +74,7 @@ export const drills: Drill[] = [
     category: "Lob",
     description: "Przeleć nad przeszkodą i wyląduj za nią.",
     instructions:
-      "Połóż płaski znacznik lub grupę kul przed strefą lądowania. Wyznacz za nią koło 50 cm. Zapisz lądowanie i końcową pozycję kuli.",
+      "Ustaw świnkę na wybranym dystansie. Zaznacz pole lądowania o średnicy 50 cm ze środkiem 1 m przed świnką. Połóż płaski znacznik 50 cm przed środkiem tego pola. Rzuć nad znacznikiem do koła. Osobno oceń pierwszy kontakt z ziemią i końcową pozycję kuli.",
     mode: "lob",
     distances: [6, 7, 8, 9],
     attempts: 6,

@@ -27,6 +27,7 @@ import {
 import { awardSituations, challengePassed } from "./features/situations/model";
 import React, { useEffect, useRef, useState } from "react";
 import { DistanceChange } from "./DistanceChange";
+import { LobSetup } from "./LobSetup";
 import { ProgressionInfo } from "./features/product/ProgressionInfo";
 import { createRoot } from "react-dom/client";
 import {
@@ -1001,6 +1002,13 @@ function Detail() {
               </select>
             </label>
           )}
+          {d.mode === "lob" && (
+            <LobSetup
+              distance={d.sequence?.[0] ?? (all ? d.distances[0] : distance)}
+              obstacle={d.id === "lob-obstacle"}
+              isTest={d.test}
+            />
+          )}
           {state.draft ? (
             <>
               <p className="notice">
@@ -1382,6 +1390,13 @@ function Active() {
           {d.mode === "target" && (
             <p>Cel: koło o średnicy {s.targetSize} cm.</p>
           )}
+          {mode === "lob" && !situation && (
+            <LobSetup
+              distance={item.distance}
+              obstacle={d.id === "lob-obstacle"}
+              isTest={s.kind === "test"}
+            />
+          )}
           {situation && (
             <fieldset>
               <legend>{scenario?.title}. Co robisz?</legend>
@@ -1432,6 +1447,10 @@ function Active() {
           {mode === "lob" && (
             <fieldset>
               <legend>Czy kula wylądowała w kole 50 cm?</legend>
+              <p className="muted small">
+                Oceń pierwszy kontakt z ziemią w zaznaczonym polu o średnicy 50
+                cm. Końcową pozycję względem świnki zapiszesz poniżej.
+              </p>
               <div className="two-col">
                 <button
                   className={`secondary ${landing === true ? "selected" : ""}`}

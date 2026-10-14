@@ -1,5 +1,6 @@
 import { TacticBoard, TacticalFeedback } from "../situations/Board";
 import { useState } from "react";
+import { LobSetup } from "../../LobSetup";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowRight,
@@ -388,10 +389,10 @@ export function MissionDetail() {
           </select>
         </label>
         {mission.mode === "lob" && (
-          <p>
-            Koło lądowania ma 50 cm. Najpierw oceń lądowanie, potem pozycję
-            końcową.
-          </p>
+          <LobSetup
+            distance={distances[0]}
+            obstacle={mission.drillId === "lob-obstacle"}
+          />
         )}
         {mission.scenario && (
           <Link
