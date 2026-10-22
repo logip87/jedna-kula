@@ -3,7 +3,8 @@ import { drills } from "../../data";
 import { mentalLessons } from "./catalog";
 
 export function mentalCueText(lessonId?: string) {
-  return mentalLessons.find((lesson) => lesson.id === lessonId)?.phrase;
+  const lesson = mentalLessons.find((lesson) => lesson.id === lessonId);
+  return lesson?.matchCue ?? lesson?.phrase;
 }
 
 // Included in the same transaction as the new draft: a failed write cannot
@@ -20,7 +21,11 @@ export function attachPendingMentalCue(previous: State, next: State): State {
   const useCue = eligible && !!mentalCueText(lessonId);
   return {
     ...next,
-    draft: { ...draft, mentalCueLessonId: useCue ? lessonId : undefined },
+    draft: {
+      ...draft,
+      lessonReflection: undefined,
+      mentalCueLessonId: useCue ? lessonId : undefined,
+    },
     ...(useCue
       ? {
           coaching: {
@@ -30,5 +35,18 @@ export function attachPendingMentalCue(previous: State, next: State): State {
           },
         }
       : {}),
+  };
+}
+
+export function selectFieldTask(state: State, lessonId: string): State {
+  if (!mentalLessons.some((l) => l.id === lessonId))
+    throw new Error("Nieznana lekcja.");
+  return {
+    ...state,
+    coaching: {
+      weeklyGoals: [],
+      ...state.coaching,
+      pendingMentalCueLessonId: lessonId,
+    },
   };
 }

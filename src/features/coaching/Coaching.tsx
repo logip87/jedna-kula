@@ -106,6 +106,9 @@ export function Today({ guide }: { guide?: ReactNode }) {
             {mental && !competition && (
               <p className="coach-goal">
                 {mental.reason} Zaczniemy od 2 minut rutyny.
+                <Link className="text-link" to={`/lessons/${mental.lessonId}`}>
+                  Krótka lekcja do tego zadania
+                </Link>
               </p>
             )}
           </>

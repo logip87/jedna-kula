@@ -138,7 +138,7 @@ describe("training plans", () => {
     expect(plan[3].mode).toBe("shoot");
   });
   it("contains complete lessons across the five competencies", () => {
-    expect(lessons).toHaveLength(25);
+    expect(lessons).toHaveLength(31);
     expect(
       lessons.every(
         (l) => l.description && l.rule && l.example && l.exercise && l.phrase,

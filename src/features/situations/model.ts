@@ -198,6 +198,7 @@ export function matchScore(m: MatchTraining): [number, number] {
 export function startMatch(
   state: State,
   initial: [number, number] = [0, 0],
+  firstScenarioId?: string,
 ): State {
   if (state.situations?.matchDraft) return state;
   if (initial.some((n) => !Number.isInteger(n) || n < 0 || n > 12))
@@ -206,6 +207,10 @@ export function startMatch(
   for (let i = pool.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  if (firstScenarioId && pool.includes(firstScenarioId)) {
+    pool.splice(pool.indexOf(firstScenarioId), 1);
+    pool.unshift(firstScenarioId);
   }
   const match: MatchTraining = {
     id: crypto.randomUUID(),

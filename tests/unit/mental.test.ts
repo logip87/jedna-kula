@@ -104,7 +104,7 @@ describe("own mental training system", () => {
     );
     for (const c of mentalCompetencies) {
       const lessons = mentalLessons.filter((l) => l.competency === c.id);
-      expect(lessons).toHaveLength(5);
+      expect(lessons.length).toBeGreaterThanOrEqual(5);
       expect(new Set(lessons.map((l) => l.level))).toEqual(
         new Set(mentalLevels.map((l) => l.id)),
       );

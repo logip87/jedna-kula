@@ -276,6 +276,7 @@ export function mentalRecommendation(state: State, now = new Date()) {
   if (checked.length === 5 && checked.filter((s) => s.routineUsed).length <= 2)
     return {
       id: "routine",
+      lessonId: "routine",
       reason: `W ostatnich 5 pełnych treningach użyłeś rutyny ${checked.filter((s) => s.routineUsed).length} razy.`,
       instruction:
         "2 min: wybierz cel i zagranie. Spokojny wydech. Trzy ruchy rzutu bez kuli. Po każdym zanotuj jeden fakt i przygotuj kolejne zadanie.",
@@ -289,23 +290,22 @@ export function mentalRecommendation(state: State, now = new Date()) {
           Date.parse(p.completedAt) <= now.getTime() &&
           Date.parse(p.completedAt) >= now.getTime() - 14 * 86400000,
       )
+      .sort((a, b) => Date.parse(a.completedAt!) - Date.parse(b.completedAt!))
       .slice(-3) ?? [];
   const stressed = sessions.filter(
     (s) =>
       s.stressLevel === "zestresowany" ||
       s.stressLevel === "bardzo zestresowany",
   );
-  if (
-    (sessions.length === 5 && stressed.length >= 3) ||
-    (tension.length === 3 &&
-      tension.every((p) => (p.checkin?.before ?? 0) >= 4))
-  )
+  const highTension =
+    tension.length === 3 && tension.every((p) => (p.checkin?.before ?? 0) >= 4);
+  if ((sessions.length === 5 && stressed.length >= 3) || highTension)
     return {
       id: "tension",
-      reason:
-        tension.length === 3
-          ? "W trzech ostatnich modułach zaznaczyłeś napięcie 4–5/5."
-          : `W ${stressed.length} z 5 treningów zaznaczyłeś większy stres.`,
+      lessonId: "mistake",
+      reason: highTension
+        ? "W trzech ostatnich modułach zaznaczyłeś napięcie 4–5/5."
+        : `W ${stressed.length} z 5 treningów zaznaczyłeś większy stres.`,
       instruction:
         "2 min: zauważ napięcie bez oceniania. Jeden spokojny oddech. Rozluźnij chwyt i barki. Nazwij zadanie następnej kuli.",
     };
@@ -348,6 +348,7 @@ export function mentalRecommendation(state: State, now = new Date()) {
     if (a !== null && b !== null && a >= 60 && a - b >= 15)
       return {
         id: "pressure",
+        lessonId: "one",
         reason: `Na tym samym dystansie i przy tych samych ustawieniach: ${a}% w zwykłych seriach, ${b}% pod presją. To różnica wyników, nie diagnoza.`,
         instruction:
           "2 min reset: zauważ wynik, zaakceptuj go, spokojny oddech, nazwij następne zadanie. Potem krótka seria z pełną rutyną.",

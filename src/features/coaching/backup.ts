@@ -119,6 +119,7 @@ const block = object({
   end: number(0, 100000, true),
 });
 const session = object({
+  lessonReflection: optional(choice(["applied", "repeat", "no-opportunity"])),
   mentalCueLessonId: optional(choice(lessons.map((l) => l.id))),
   situationChoice: optional(
     object({ index: number(0, 100000, true), title: text, mode }),

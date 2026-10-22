@@ -1,3 +1,4 @@
+import { FieldTaskAction, FieldReflection } from "./features/mental/FieldTask";
 import {
   throwScenarios,
   scenarioForThrow,
@@ -1408,6 +1409,8 @@ function Active() {
           {mentalCueText(s.mentalCueLessonId) && (
             <p className="notice" aria-label="Twoja wskazówka mentalna">
               Twój fokus: „{mentalCueText(s.mentalCueLessonId)}”
+              <br />
+              {lessons.find((l) => l.id === s.mentalCueLessonId)?.exercise}
             </p>
           )}
           {d.mode === "boundary" && <p>Świnka {s.boundary} cm od linii.</p>}
@@ -1644,6 +1647,9 @@ function Result({
     session.routineUsed,
   );
   const [recovery, setRecovery] = useState(session.recovery ?? "czasami");
+  const [lessonReflection, setLessonReflection] = useState<
+    Session["lessonReflection"]
+  >(session.lessonReflection);
   const sum = summarize(session);
   const d = drills.find((d) => d.id === session.drillId)!;
   async function finish() {
@@ -1652,6 +1658,7 @@ function Result({
       situationChoice: undefined,
       completedAt: new Date().toISOString(),
       stressLevel: stress,
+      lessonReflection: lessonReflection || undefined,
       routineUsed: routine,
       recovery,
     };
@@ -1839,6 +1846,12 @@ function Result({
           </div>
         )}
       </details>
+      <FieldReflection
+        session={session}
+        value={lessonReflection}
+        onChange={setLessonReflection}
+        readonly={readonly}
+      />
       {readonly ? (
         <>
           <details className="card">
@@ -2048,11 +2061,10 @@ function LessonDetail() {
       >
         {l.description}
       </Heading>
-      <div className="cue big">„{l.phrase}”</div>
+      <div className="cue big">„{l.matchCue ?? l.phrase}”</div>
       {[
         ["Jedna zasada", l.rule],
         ["Na boisku", l.example],
-        ["Spróbuj dziś", l.exercise],
       ].map(([title, text], i) => (
         <section className="card" key={title}>
           <p className="eyebrow">0{i + 1}</p>
@@ -2060,6 +2072,15 @@ function LessonDetail() {
           <p>{text}</p>
         </section>
       ))}
+      <details className="card">
+        <summary>Procedura krok po kroku</summary>
+        <ol>
+          {l.procedure?.map((step, i) => (
+            <li key={i}>{step}</li>
+          ))}
+        </ol>
+      </details>
+      <FieldTaskAction lessonId={l.id} />
       {id === "routine" && <Routine />}
       <button
         className="button"
@@ -2072,9 +2093,6 @@ function LessonDetail() {
       </button>
       <Link className="secondary" to={`/coach/practice/mental?lesson=${l.id}`}>
         Wykonaj ćwiczenie mentalne
-      </Link>
-      <Link className="secondary" to="/training">
-        Wypróbuj na treningu
       </Link>
     </div>
   );

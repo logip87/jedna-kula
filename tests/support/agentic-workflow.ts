@@ -38,7 +38,7 @@ test('reviewed AI-assisted plan executes the persistence contract', { tag: ['@sh
   await page.reload();
   await expect(page.getByRole('button', { name: 'Zaliczone', exact: true })).toBeDisabled();
   await page.goto('/lessons');
-  await expect(page.getByText('${plan.expectedCompletedLessons} / 25 zaliczonych', { exact: true })).toBeVisible();
+  await expect(page.getByText('${plan.expectedCompletedLessons} / 31 zaliczonych', { exact: true })).toBeVisible();
 });
 `;
 }

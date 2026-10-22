@@ -678,7 +678,7 @@ export function PracticeActive() {
               const lesson = mentalLessons.find((l) => l.id === id);
               return lesson ? (
                 <option key={id} value={id}>
-                  {lesson.phrase}
+                  {mentalCueText(lesson.id)}
                 </option>
               ) : null;
             })}

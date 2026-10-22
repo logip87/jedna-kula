@@ -55,7 +55,21 @@ export interface Drill {
   cue: string;
   minutes: number;
 }
+export type LessonTag =
+  | "mental"
+  | "tactical"
+  | "team"
+  | "terrain"
+  | "pressure"
+  | "decision"
+  | "match-management";
 export interface Lesson {
+  durationMinutes?: number;
+  tags?: LessonTag[];
+  procedure?: string[];
+  matchCue?: string;
+  reflection?: string;
+  scenarioId?: string;
   competency: import("./features/mental/catalog").MentalCompetency;
   level: import("./features/mental/catalog").MentalLevel;
   id: string;
@@ -87,6 +101,7 @@ export interface Attempt extends PlannedThrow {
   landingDirection?: Direction;
 }
 export interface Session {
+  lessonReflection?: "applied" | "repeat" | "no-opportunity";
   mentalCueLessonId?: string;
   situationChoice?: { index: number; title: string; mode: Mode };
   coach?: {

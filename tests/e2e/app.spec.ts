@@ -62,7 +62,7 @@ test(
     ).toBeDisabled();
     await page.goto("/lessons");
     await expect(
-      page.getByText("1 / 25 zaliczonych", { exact: true }),
+      page.getByText("1 / 31 zaliczonych", { exact: true }),
     ).toBeVisible();
   },
 );

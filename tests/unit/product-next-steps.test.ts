@@ -180,7 +180,7 @@ describe("a chosen mental cue in the next technical series", () => {
     while (state.coaching?.practiceDraft) state = advancePractice(state, 3);
     expect(state.coaching?.practiceHistory?.[0].cueLessonId).toBe("mistake");
     expect(state.coaching?.pendingMentalCueLessonId).toBe("mistake");
-    expect(mentalCueText("mistake")).toBe("Reset i następne zadanie.");
+    expect(mentalCueText("mistake")).toBe("Ta kula się skończyła. Co jest teraz?");
     expect(() =>
       selectPracticeCue(
         startPractice(emptyState, "mental-reset", 2, "adult"),

@@ -39,7 +39,7 @@ test("a mental practice cue survives reload and is consumed by only the next new
       name: "Wskazówka do następnej serii",
       exact: true,
     }),
-  ).toContainText("Reset i następne zadanie.");
+  ).toContainText("Ta kula się skończyła. Co jest teraz?");
   await page
     .getByRole("link", {
       name: "Przejdź do treningu technicznego",
@@ -49,11 +49,11 @@ test("a mental practice cue survives reload and is consumed by only the next new
   await page.getByRole("link", { name: /^Puenta Puenta podstawowa/ }).click();
   await page.getByRole("button", { name: "Zaczynam", exact: true }).click();
   await expect(page.getByLabel("Twoja wskazówka mentalna")).toContainText(
-    "Reset i następne zadanie.",
+    "Ta kula się skończyła. Co jest teraz?",
   );
   await page.reload();
   await expect(page.getByLabel("Twoja wskazówka mentalna")).toContainText(
-    "Reset i następne zadanie.",
+    "Ta kula się skończyła. Co jest teraz?",
   );
   await page.screenshot({
     path: "test-results/next-steps-mental-cue.png",

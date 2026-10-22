@@ -138,7 +138,7 @@ Zasady triage, retry i ewentualnej quarantine opisuje [FLAKINESS.md](docs/FLAKIN
 
 ## Aplikacja, na której pracują testy
 
-Jedna kula łączy 30 ćwiczeń technicznych, trening mentalny, decyzje meczowe i postęp oparty na zapisanych wynikach. Działa bez konta, a po przygotowaniu cache także offline. Jest przeznaczona przede wszystkim dla dorosłych graczy rekreacyjnych, klubowych i turniejowych; juniorzy mają dostęp do tych samych funkcji.
+Jedna kula łączy 30 ćwiczeń technicznych, trening mentalny, decyzje meczowe i postęp oparty na zapisanych wynikach. Moduł mentalno-taktyczny obejmuje 31 mikro-lekcji oraz zadania na boisko z refleksją po treningu; korzysta z istniejącego Skill Tree i progresu. [Audyt, mapa kompetencji i weryfikacja](docs/MENTAL_TACTICAL.md). Działa bez konta, a po przygotowaniu cache także offline. Jest przeznaczona przede wszystkim dla dorosłych graczy rekreacyjnych, klubowych i turniejowych; juniorzy mają dostęp do tych samych funkcji.
 
 [Poznaj aktualne możliwości i cele aplikacji z perspektywy gracza](docs/APLIKACJA.md).
 

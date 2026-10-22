@@ -5,6 +5,7 @@ test("five competencies, three levels and practical exercises keep lesson progre
   context,
 }) => {
   await page.goto("/lessons");
+  await page.getByText("Pełna biblioteka · 31 lekcji", { exact: true }).click();
   for (const name of [
     "Koncentracja",
     "Reset",
@@ -15,17 +16,20 @@ test("five competencies, three levels and practical exercises keep lesson progre
     await expect(
       page.getByRole("heading", { name, exact: true }),
     ).toBeVisible();
-  await expect(page.locator(".lesson-card")).toHaveCount(25);
+  await expect(page.locator(".lesson-card")).toHaveCount(31);
   await page
     .getByLabel("Kompetencja", { exact: true })
     .selectOption("complete");
   await page
     .getByLabel("Poziom mentalny", { exact: true })
     .selectOption("advanced");
-  await expect(page.locator(".lesson-card")).toHaveCount(1);
+  await expect(page.locator(".lesson-card")).toHaveCount(2);
   await page.reload();
-  await expect(page.locator(".lesson-card")).toHaveCount(1);
-  await page.getByRole("link", { name: /Przygotowanie przed meczem/ }).click();
+  await expect(page.locator(".lesson-card")).toHaveCount(2);
+  await page
+    .locator(".lesson-card")
+    .filter({ hasText: "Przygotowanie przed meczem" })
+    .click();
   await page.getByRole("button", { name: "Zaliczone · zapamiętuję" }).click();
   await expect(
     page.getByRole("button", { name: "Zaliczone", exact: true }),
@@ -51,7 +55,9 @@ test("five competencies, three levels and practical exercises keep lesson progre
     .getByRole("button", { name: "Wykonane · następny krok", exact: true })
     .click();
   // The next step appears only after save completes; do not reload mid-transaction.
-  await expect(page.getByText("2 MIN · KROK 2 / 4", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("2 MIN · KROK 2 / 4", { exact: true }),
+  ).toBeVisible();
   await page.evaluate(() => navigator.serviceWorker.ready);
   await expect
     .poll(() => page.evaluate(() => !!navigator.serviceWorker.controller))
@@ -73,7 +79,7 @@ test("five competencies, three levels and practical exercises keep lesson progre
   await expect(page.getByText(/Ostatni moduł zapisany:/)).toBeVisible();
   await page.goto("/lessons");
   await expect(
-    page.getByText("1 / 25 zaliczonych", { exact: true }),
+    page.getByText("1 / 31 zaliczonych", { exact: true }),
   ).toBeVisible();
 });
 
@@ -110,7 +116,7 @@ test("adult and junior profiles use the same features and optional age survives 
     .selectOption("advanced");
   await expect(
     page.getByRole("button", { name: "Zacznij moduł", exact: true }),
-  ).toHaveCount(6);
+  ).toHaveCount(7);
 });
 
 test("all match situations support persisted choice, throw and optional independent review", async ({

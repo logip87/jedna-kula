@@ -1,5 +1,6 @@
+import { CountBeforeChoice } from "../mental/CountBeforeChoice";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useApp } from "../../app-context";
 import { localDay } from "../../domain";
 import { tacticCases } from "../adventure/data";
@@ -24,6 +25,7 @@ function Back() {
   );
 }
 export function MatchMode() {
+  const [params] = useSearchParams();
   const { state, save, busy } = useApp();
   const [own, setOwn] = useState(0),
     [opponent, setOpponent] = useState(0),
@@ -42,6 +44,12 @@ export function MatchMode() {
         title="Tryb meczowy"
         subtitle="Decyzja → analiza → wynik rozgrywki → następna sytuacja."
       />
+      {m && params.has("case") && (
+        <p className="notice">
+          Kontynuujesz zapisany mecz. Powiązaną sytuację możesz wybrać przy
+          kolejnym starcie.
+        </p>
+      )}
       {!m && (
         <>
           <p className="notice">
@@ -76,7 +84,15 @@ export function MatchMode() {
             <button
               className="button"
               disabled={busy}
-              onClick={() => void save(startMatch(state, [own, opponent]))}
+              onClick={() =>
+                void save(
+                  startMatch(
+                    state,
+                    [own, opponent],
+                    params.get("case") ?? undefined,
+                  ),
+                )
+              }
             >
               Zacznij trening meczowy
             </button>
@@ -100,19 +116,30 @@ export function MatchMode() {
           <h2>{scenario.title}</h2>
           <p>{scenario.description}</p>
           <h2>{scenario.own === 0 ? "Co obserwujesz?" : "Co grasz?"}</h2>
-          <div className="tactic-options">
-            {scenario.options.map((o, i) => (
-              <button
-                key={o.title}
-                className="secondary"
-                aria-pressed={m.choice === i}
-                disabled={busy || m.choice !== undefined}
-                onClick={() => void save(chooseMatch(state, i))}
-              >
-                {o.title}
-              </button>
-            ))}
-          </div>
+          <CountBeforeChoice
+            key={`${m.id}:${m.ends.length}`}
+            own={scenario.own}
+            opponent={scenario.opponent}
+            enabled={
+              params.get("lesson") === "ball-count" &&
+              scenario.id === "last" &&
+              m.choice === undefined
+            }
+          >
+            <div className="tactic-options">
+              {scenario.options.map((o, i) => (
+                <button
+                  key={o.title}
+                  className="secondary"
+                  aria-pressed={m.choice === i}
+                  disabled={busy || m.choice !== undefined}
+                  onClick={() => void save(chooseMatch(state, i))}
+                >
+                  {o.title}
+                </button>
+              ))}
+            </div>
+          </CountBeforeChoice>
           {m.choice !== undefined && (
             <>
               <TacticalFeedback scenario={scenario} choice={m.choice} />

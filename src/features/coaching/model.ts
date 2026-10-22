@@ -654,6 +654,7 @@ export function selfChallenge(state: State): Session | null {
     situationChoice: undefined,
     score: 0,
     results: [],
+    lessonReflection: undefined,
     routineUsed: undefined,
     mentalExerciseDone: undefined,
     stressLevel: undefined,

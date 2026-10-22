@@ -1,3 +1,4 @@
+import { enrichLesson } from "./content";
 import type { Lesson, Mode, Attempt } from "../../domain";
 
 export const mentalCompetencies = [
@@ -336,7 +337,73 @@ export const mentalLessons: Lesson[] = [
     "Przygotuj checklistę: teren, cele rzutów, rutyna, role, przerwy. Oceń ją po treningu.",
     "Przygotuj warunki, cel i współpracę.",
   ),
-];
+  lesson(
+    "reset",
+    "basics",
+    "anger",
+    "Złość nie rzuca następnej kuli",
+    "Jedno pudło kosztuje jedną kulę. Złość może kosztować kolejne.",
+    "Zauważ złość, przerwij reakcję i wróć do układu na boisku.",
+    "Po pudle chcesz powiedzieć: dzisiaj nic nie trafiam. Zatrzymujesz komentarz, robisz wydech i sprawdzasz, kto ma punkt.",
+    "Przy najbliższej frustracji przerwij komentarz. Zrób wydech, sprawdź układ i nazwij następne zagranie. Po serii oceń reakcję.",
+    "Zauważ. Wydech. Co gramy teraz?",
+  ),
+  lesson(
+    "complete",
+    "tournament",
+    "risk",
+    "Cena ryzyka",
+    "Sama szansa trafienia nie mówi, czy warto strzelać.",
+    "Porównaj zysk, stratę po błędzie, pozostałe kule i późniejszą odpowiedź rywala.",
+    "Masz jedną kulę, rywal trzy i punkt. Nawet celny strzał pozostawia mu odpowiedź. Porównaj to z puentą ograniczającą stratę.",
+    "Przed trzema ważnymi decyzjami odpowiedz: co zyskamy, co stracimy, ile kul zostanie i co potem może rywal? Dopiero wybierz zagranie.",
+    "Zysk. Strata. Kule. Odpowiedź.",
+  ),
+  lesson(
+    "complete",
+    "basics",
+    "ball-count",
+    "Policz, zanim wybierzesz",
+    "Bez liczby kul możesz wybrać plan, którego nie da się dokończyć.",
+    "Przed decyzją ustal, kto ma punkt i ile kul zostało obu drużynom.",
+    "Widzisz łatwy strzał, ale masz ostatnią kulę, a rywal trzy. Najpierw liczysz i przewidujesz jego odpowiedź.",
+    "Przed pięcioma decyzjami powiedz: punkt ma…, my mamy… kul, rywal… kul. Jeśli nie wiesz, sprawdź z drużyną przed rzutem.",
+    "Punkt. Nasze kule. Ich kule.",
+  ),
+  lesson(
+    "complete",
+    "tournament",
+    "strategy-change",
+    "Zmień plan z powodu informacji",
+    "Dwie krótkie puenty nie muszą oznaczać złej strategii.",
+    "Sprawdź: co działa, co nie działa, decyzja czy wykonanie, co możemy zmienić?",
+    "Wybrane lądowanie odbija w bok mimo trafienia w strefę. Zmieniasz strefę. Gdy kula tylko ląduje za krótko, najpierw korygujesz wykonanie.",
+    "Po każdej z trzech men odpowiedz na cztery pytania. Uzgodnij jedną zmianę i warunek kolejnej oceny, zamiast zmieniać wszystko po pudle.",
+    "Co działa? Co zmieniamy i dlaczego?",
+  ),
+  lesson(
+    "complete",
+    "basics",
+    "terrain-reading",
+    "Teren jest informacją",
+    "To samo zagranie zachowuje się inaczej na twardej i kamienistej strefie.",
+    "Obserwuj twardość, kamienie, nachylenie i zachowanie kuli po lądowaniu. Wybierz przewidywalną strefę.",
+    "Na twardym spadku kula długo się toczy. Porównujesz krótszą portée i wyższy lot z lądowaniem za kamieniami. Rotację zmieniasz tylko w opanowanym zakresie.",
+    "Porównaj po trzy puenty na dwóch strefach. Zapisz odbicie i toczenie. Dobierz portée, wysokość i styl puenty; przy strzale oceń tor po odbiciu i możliwość strzału bezpośredniego.",
+    "Obserwuj odbicie. Wybierz lądowanie.",
+  ),
+  lesson(
+    "complete",
+    "advanced",
+    "decision-error",
+    "Zła decyzja czy złe wykonanie?",
+    "Pudło może wynikać z wykonania dobrego planu. Trafienie nie dowodzi dobrej decyzji.",
+    "Oceń wybór według informacji sprzed rzutu, a wykonanie według zamierzonego efektu.",
+    "Strzał trafia, ale druga kula rywala nadal ma punkt i nie masz już kul: sprawdź decyzję. Rozsądna puenta ląduje metr za krótko: nazwij błąd wykonania.",
+    "Po trzech rzutach sytuacyjnych oceń plan osobno w istniejącej ocenie decyzji. Dla wykonania nazwij: krótko, długo, lewo lub prawo. Gdy brakuje informacji, wybierz trudno ocenić.",
+    "Najpierw plan, potem wykonanie.",
+  ),
+].map(enrichLesson);
 export const completedMentalLessons = (ids: string[]) =>
   mentalLessons.filter((l) => ids.includes(l.id)).length;
 export function technicalMentalCue(

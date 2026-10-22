@@ -1,3 +1,4 @@
+import { CountBeforeChoice } from "../mental/CountBeforeChoice";
 import { TacticBoard, TacticalFeedback } from "../situations/Board";
 import { useState } from "react";
 import { LobSetup } from "../../LobSetup";
@@ -672,27 +673,37 @@ export function Tactics() {
       <TacticBoard scenario={scenario} />
       <h2>{scenario.title}</h2>
       <p>{scenario.description}</p>
-      <div className="tactic-options">
-        {scenario.options.map((o, i) => (
-          <button
-            className="secondary"
-            aria-pressed={answer === i}
-            disabled={busy}
-            key={o.title}
-            onClick={() =>
-              save({
-                ...state,
-                adventure: {
-                  ...state.adventure,
-                  tactics: { ...state.adventure?.tactics, [scenario.id]: i },
-                },
-              })
-            }
-          >
-            {o.title}
-          </button>
-        ))}
-      </div>
+      <CountBeforeChoice
+        key={scenario.id}
+        own={scenario.own}
+        opponent={scenario.opponent}
+        enabled={
+          new URLSearchParams(location.search).get("lesson") === "ball-count" &&
+          scenario.id === "last"
+        }
+      >
+        <div className="tactic-options">
+          {scenario.options.map((o, i) => (
+            <button
+              className="secondary"
+              aria-pressed={answer === i}
+              disabled={busy}
+              key={o.title}
+              onClick={() =>
+                save({
+                  ...state,
+                  adventure: {
+                    ...state.adventure,
+                    tactics: { ...state.adventure?.tactics, [scenario.id]: i },
+                  },
+                })
+              }
+            >
+              {o.title}
+            </button>
+          ))}
+        </div>
+      </CountBeforeChoice>
       {answer !== undefined && (
         <>
           <TacticalFeedback scenario={scenario} choice={answer} />

@@ -1,3 +1,4 @@
+import { mentalLessons } from "../mental/catalog";
 import { drills } from "../../data";
 import {
   localDay,
@@ -105,6 +106,16 @@ export function skillScores(state: State, now = new Date()): SkillScore[] {
   ).length;
   const situations = Object.keys(state.adventure?.tactics ?? {}).length;
   const week = weeklyProgress(state, now);
+  const appliedLessons = (tag: "mental" | "tactical") =>
+    sessions.filter(
+      (s) =>
+        s.lessonReflection === "applied" &&
+        mentalLessons.some(
+          (l) => l.id === s.mentalCueLessonId && l.tags?.includes(tag),
+        ),
+    ).length;
+  const lessonEvidence = (tag: "mental" | "tactical") =>
+    ` Potwierdzone zastosowania w pełnych treningach: ${appliedLessons(tag)} (samoocena).`;
   return [
     ...technical,
     {
@@ -116,7 +127,7 @@ export function skillScores(state: State, now = new Date()): SkillScore[] {
           : null,
       rate: null,
       samples: correct + situations,
-      evidence: `${correct} poprawnych odpowiedzi zasad · ${situations} przeanalizowanych sytuacji. Poziom wiedzy; decyzji sytuacyjnych nie oceniamy jako jednoznacznie dobrych.`,
+      evidence: `${correct} poprawnych odpowiedzi zasad · ${situations} przeanalizowanych sytuacji. Poziom wiedzy; decyzji sytuacyjnych nie oceniamy jako jednoznacznie dobrych.${lessonEvidence("tactical")}`,
     },
     {
       id: "mental",
@@ -128,9 +139,10 @@ export function skillScores(state: State, now = new Date()): SkillScore[] {
       rate: routineRate,
       samples: checkins.length,
       evidence:
-        routineRate === null
+        (routineRate === null
           ? "Zapisz samoocenę rutyny w co najmniej 5 pełnych sesjach."
-          : `Rutyna w ${routineRate}% z ${checkins.length} pełnych sesji. To regularność procesu, nie ocena odporności psychicznej.`,
+          : `Rutyna w ${routineRate}% z ${checkins.length} pełnych sesji. To regularność procesu, nie ocena odporności psychicznej.`) +
+        lessonEvidence("mental"),
     },
     {
       id: "regularity",
@@ -558,6 +570,7 @@ export function createMastery(
     missionTitle: undefined,
     missionCue: undefined,
     mentalExerciseDone: undefined,
+    lessonReflection: undefined,
     routineUsed: undefined,
     recovery: undefined,
     stressLevel: undefined,
@@ -674,6 +687,7 @@ export function createGoalSession(
     situationChoice: undefined,
     results: [],
     score: 0,
+    lessonReflection: undefined,
     routineUsed: undefined,
     recovery: undefined,
     stressLevel: undefined,
