@@ -14,7 +14,7 @@ import {
   weekStart,
   weeklyProgress,
 } from "../coaching/model";
-import { questions } from "../rules/quiz";
+import { correctRuleAnswers } from "../rules/answer-key";
 import type {
   SkillScore,
   TrainingGoal,
@@ -101,9 +101,7 @@ export function skillScores(state: State, now = new Date()): SkillScore[] {
   const checkins = sessions.filter((s) => typeof s.routineUsed === "boolean");
   const routineRate =
     checkins.length >= 5 ? percent(routine, checkins.length) : null;
-  const correct = questions.filter(
-    (q) => state.rulesQuiz?.answers[q.id] === q.correct,
-  ).length;
+  const correct = correctRuleAnswers(state.rulesQuiz?.answers ?? {});
   const situations = Object.keys(state.adventure?.tactics ?? {}).length;
   const week = weeklyProgress(state, now);
   const appliedLessons = (tag: "mental" | "tactical") =>
@@ -418,11 +416,10 @@ export function awardDevelopment(
   const quiz = next.rulesQuiz;
   if (
     quiz &&
-    questions.filter((q) => quiz.answers[q.id] === q.correct).length >= 3 &&
+    correctRuleAnswers(quiz.answers) >= 3 &&
     (!previous.rulesQuiz ||
       previous.rulesQuiz.startedAt !== quiz.startedAt ||
-      questions.filter((q) => previous.rulesQuiz!.answers[q.id] === q.correct)
-        .length < 3)
+      correctRuleAnswers(previous.rulesQuiz.answers) < 3)
   )
     add(`quiz:${quiz.startedAt}`, "quiz", 15, now.toISOString(), 1);
   const week = weeklyProgress(next, now);

@@ -1,0 +1,76 @@
+{
+  "baselineCommit": "d002b65",
+  "date": "2026-10-22",
+  "before": {
+    "runs": 7,
+    "conditions": "Chromium; fresh context; 4x CPU; 100ms latency; 200kB/s; gzip; SW blocked",
+    "medianReadyMs": 1440,
+    "medianJsBytes": 197267,
+    "samples": [
+      {
+        "readyMs": 1443,
+        "jsBytes": 197267
+      },
+      {
+        "readyMs": 1441,
+        "jsBytes": 197267
+      },
+      {
+        "readyMs": 1440,
+        "jsBytes": 197267
+      },
+      {
+        "readyMs": 1439,
+        "jsBytes": 197267
+      },
+      {
+        "readyMs": 1440,
+        "jsBytes": 197267
+      },
+      {
+        "readyMs": 1439,
+        "jsBytes": 197267
+      },
+      {
+        "readyMs": 1432,
+        "jsBytes": 197267
+      }
+    ]
+  },
+  "after": {
+    "runs": 7,
+    "conditions": "Chromium; fresh context; 4x CPU; 100ms latency; 200kB/s; gzip; SW blocked",
+    "medianReadyMs": 1158,
+    "medianJsBytes": 139260,
+    "samples": [
+      {
+        "readyMs": 1155,
+        "jsBytes": 139260
+      },
+      {
+        "readyMs": 1163,
+        "jsBytes": 139260
+      },
+      {
+        "readyMs": 1158,
+        "jsBytes": 139260
+      },
+      {
+        "readyMs": 1161,
+        "jsBytes": 139260
+      },
+      {
+        "readyMs": 1154,
+        "jsBytes": 139260
+      },
+      {
+        "readyMs": 1150,
+        "jsBytes": 139260
+      },
+      {
+        "readyMs": 1162,
+        "jsBytes": 139260
+      }
+    ]
+  }
+}

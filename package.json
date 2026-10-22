@@ -9,7 +9,7 @@
     "deploy:check": "python3 scripts/cal-ftp.py check",
     "deploy": "npm run build && python3 scripts/cal-ftp.py upload",
     "dev": "vite --host 0.0.0.0",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/check-bundle.mjs",
     "typecheck": "tsc -b",
     "preview": "vite preview --host 0.0.0.0",
     "test": "vitest run",
@@ -29,7 +29,8 @@
     "qa:resilience": "npm run qa:browsers -- --project showcase-android --grep @resilience",
     "qa:repeat": "npm run qa:browsers -- --project showcase-android --grep \"@smoke|@resilience\" --repeat-each=5",
     "qa:generate": "node --experimental-strip-types scripts/qa-generate.ts",
-    "qa:generate:check": "npm run qa:generate -- --check"
+    "qa:generate:check": "npm run qa:generate -- --check",
+    "check:bundle": "node scripts/check-bundle.mjs"
   },
   "dependencies": {
     "idb": "^8.0.3",

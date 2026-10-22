@@ -176,3 +176,10 @@ React · TypeScript · Vite · Tailwind CSS · React Router · IndexedDB (`idb`)
 - [Formularz kontaktowy](docs/FEEDBACK.md)
 
 Statyczne wdrożenie: `dist/` przez HTTPS, ze SPA fallback do `index.html`. Skrypt FTPS `scripts/cal-ftp.py` przechowuje hasło w Pęku kluczy i kopie zastępowanych plików w `release/`. Dane treningowe pozostają lokalne; formularz zgłoszeń wysyła wyłącznie treść świadomie wpisaną przez użytkownika i opcjonalny e-mail.
+
+
+### Rozmiar JavaScript i start aplikacji
+
+Ekran „Dzisiaj” uruchamia się bez pobierania kodu pozostałych ekranów przez główny dokument. Pozostałe moduły są ładowane na żądanie, a PWA zapisuje komplet plików w tle, aby działały również przy pierwszym wejściu offline po przygotowaniu cache.
+
+`npm run build` kontroluje rozmiar całego startowego grafu importów (maksymalnie 475 kB) i każdego pliku JavaScript (maksymalnie 500 kB). Raport można powtórzyć przez `npm run check:bundle`. [Zmiany, pomiary i procedura weryfikacji](docs/JAVASCRIPT_PERFORMANCE.md).

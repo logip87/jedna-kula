@@ -1,3 +1,4 @@
+import { cachedApp } from "../support/training";
 import { expect, test, type Locator } from "@playwright/test";
 import { expectNoHorizontalOverflow as fitsViewport } from "../support/ui-layout";
 
@@ -90,7 +91,8 @@ test.describe("Narrow screens and touch controls", { tag: "@showcase" }, () => {
     page,
     context,
   }) => {
-    await page.goto("/");
+    // Offline navigation requires a completed PWA cache, including deferred screens.
+    await cachedApp(page);
     await expect(
       page.getByRole("heading", { name: "Dzisiaj", exact: true }),
     ).toBeVisible();

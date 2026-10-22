@@ -1,3 +1,4 @@
+import { ruleAnswerKey } from "./answer-key";
 import type { QuizQuestion, RulesQuizProgress } from "./model";
 import { contentVersion } from "./model";
 import { findRule } from "./catalog";
@@ -7,7 +8,6 @@ export const questions: QuizQuestion[] = [
     ruleId: "jack-out",
     situation: "Świnka wypadła na aut. Masz 2 kule, rywal żadnej. Jaki wynik?",
     options: ["2 punkty dla Ciebie", "0 punktów", "2 punkty dla rywala"],
-    correct: 0,
     explanation: "",
   },
   {
@@ -19,7 +19,6 @@ export const questions: QuizQuestion[] = [
       "Rozgrywka anulowana, 0 punktów",
       "Każdy rzuca pozostałe kule",
     ],
-    correct: 1,
     explanation: "",
   },
   {
@@ -31,7 +30,6 @@ export const questions: QuizQuestion[] = [
       "Mierzysz od linii",
       "Anulujesz rozgrywkę bez punktów",
     ],
-    correct: 2,
     explanation: "",
   },
   {
@@ -40,7 +38,6 @@ export const questions: QuizQuestion[] = [
     situation:
       "Kula częściowo leży nad linią autową, ale jej nie przekroczyła w całości.",
     options: ["Jest ważna", "Jest martwa", "Trzeba ją odsunąć od linii"],
-    correct: 0,
     explanation: "",
   },
   {
@@ -52,7 +49,6 @@ export const questions: QuizQuestion[] = [
       "Pozostaje martwa",
       "Zależy od najbliższej kuli",
     ],
-    correct: 1,
     explanation: "",
   },
   {
@@ -65,7 +61,6 @@ export const questions: QuizQuestion[] = [
       "Jest ważna, jeśli wróci",
       "Jest autowa",
     ],
-    correct: 2,
     explanation: "",
   },
   {
@@ -74,7 +69,6 @@ export const questions: QuizQuestion[] = [
     situation:
       "Poprzednia kula się zatrzymała, pomiar nie jest potrzebny. Kiedy zaczyna się Twoja minuta?",
     options: ["Teraz", "Gdy wejdziesz do kółka", "Gdy weźmiesz kulę do ręki"],
-    correct: 0,
     explanation: "",
   },
   {
@@ -86,7 +80,6 @@ export const questions: QuizQuestion[] = [
       "Po zakończeniu pomiaru",
       "Po podniesieniu miarki przez zawodnika",
     ],
-    correct: 1,
     explanation: "",
   },
   {
@@ -98,7 +91,6 @@ export const questions: QuizQuestion[] = [
       "Tak, jeśli kula trafi cel",
       "Nie, trzeba czekać do kontaktu z ziemią",
     ],
-    correct: 2,
     explanation: "",
   },
   {
@@ -107,7 +99,6 @@ export const questions: QuizQuestion[] = [
     situation:
       "Chcesz narysować własne kółko. Który zakres średnic jest właściwy?",
     options: ["35–50 cm", "20–30 cm", "60–80 cm"],
-    correct: 0,
     explanation: "",
   },
   {
@@ -115,7 +106,6 @@ export const questions: QuizQuestion[] = [
     ruleId: "circle-position",
     situation: "Kółko leży 60 cm od przeszkody. Czy spełnia minimum?",
     options: ["Tak", "Nie, minimum to 1 m", "Tak, jeśli wszyscy się zgodzą"],
-    correct: 1,
     explanation: "",
   },
   {
@@ -128,7 +118,6 @@ export const questions: QuizQuestion[] = [
       "Ważna, jeśli rywal ma punkt",
       "Nieprawidłowy dystans początkowy",
     ],
-    correct: 2,
     explanation: "",
   },
   {
@@ -140,7 +129,6 @@ export const questions: QuizQuestion[] = [
       "Masz jeszcze dwie próby",
       "Rywal ustawia i rzuca pierwszą kulę",
     ],
-    correct: 0,
     explanation: "",
   },
   {
@@ -152,7 +140,6 @@ export const questions: QuizQuestion[] = [
       "Nie spełnia minimum 50 cm",
       "Dopuszczalne przy dobrym rzucie",
     ],
-    correct: 1,
     explanation: "",
   },
   {
@@ -164,7 +151,6 @@ export const questions: QuizQuestion[] = [
       "Rozgrywka zawsze anulowana",
       "Przywracasz oznaczoną pozycję",
     ],
-    correct: 2,
     explanation: "",
   },
   {
@@ -177,7 +163,6 @@ export const questions: QuizQuestion[] = [
       "Tak, po zgodzie partnera",
       "Tak, zawsze mierząc od kółka",
     ],
-    correct: 0,
     explanation: "",
   },
   {
@@ -186,7 +171,6 @@ export const questions: QuizQuestion[] = [
     situation:
       "Twoja kula jest najbliżej świnki, rywal ma jeszcze kule. Kto rzuca?",
     options: ["Ty", "Rywal", "Zwycięzca losowania"],
-    correct: 1,
     explanation: "",
   },
   {
@@ -199,7 +183,6 @@ export const questions: QuizQuestion[] = [
       "Zespół z większą liczbą kul",
       "Strona, która rzucała ostatnio",
     ],
-    correct: 2,
     explanation: "",
   },
   {
@@ -211,7 +194,6 @@ export const questions: QuizQuestion[] = [
       "Po jednym punkcie dla obu",
       "Losowanie punktu",
     ],
-    correct: 0,
     explanation: "",
   },
   {
@@ -223,7 +205,6 @@ export const questions: QuizQuestion[] = [
       "Ostatnio rzucający lub jego partner",
       "Osoba z największym stażem",
     ],
-    correct: 1,
     explanation: "",
   },
   {
@@ -235,7 +216,6 @@ export const questions: QuizQuestion[] = [
       "Dozwolone za zgodą rywala",
       "Niedozwolone — użyj przyrządu",
     ],
-    correct: 2,
     explanation: "",
   },
   {
@@ -247,7 +227,6 @@ export const questions: QuizQuestion[] = [
       "Powtarzasz poprzedni rzut",
       "Rywal dostaje 3 punkty",
     ],
-    correct: 0,
     explanation: "",
   },
   {
@@ -260,7 +239,6 @@ export const questions: QuizQuestion[] = [
       "Kula jest nieważna i nie można żądać za nią punktu",
       "Nic się nie zmienia",
     ],
-    correct: 1,
     explanation: "",
   },
   {
@@ -272,7 +250,6 @@ export const questions: QuizQuestion[] = [
       "Kula automatycznie na aucie",
       "Ostrzeżenie; kula ważna, wymiana na własną",
     ],
-    correct: 2,
     explanation: "",
   },
   {
@@ -284,7 +261,6 @@ export const questions: QuizQuestion[] = [
       "Wolno, jeśli użyjesz własnej kuli",
       "Wolno raz na rozgrywkę",
     ],
-    correct: 0,
     explanation: "",
   },
   {
@@ -297,7 +273,6 @@ export const questions: QuizQuestion[] = [
       "Zabroniona modyfikacja",
       "Dopuszczalne w dublecie",
     ],
-    correct: 1,
     explanation: "",
   },
   {
@@ -310,7 +285,6 @@ export const questions: QuizQuestion[] = [
       "Tak, do 17 lat",
       "Nie, wyjątek dotyczy zawodów przeznaczonych do 11 lat",
     ],
-    correct: 2,
     explanation: "",
   },
   {
@@ -318,7 +292,6 @@ export const questions: QuizQuestion[] = [
     ruleId: "teams",
     situation: "Grasz w triplecie. Ile kul ma każdy zawodnik?",
     options: ["2", "3", "6"],
-    correct: 0,
     explanation: "",
   },
   {
@@ -327,7 +300,6 @@ export const questions: QuizQuestion[] = [
     situation:
       "Masz 3 kule bliżej celu niż najlepsza rywala. Ile punktów zdobywasz?",
     options: ["1", "3", "6"],
-    correct: 1,
     explanation: "",
   },
   {
@@ -340,7 +312,6 @@ export const questions: QuizQuestion[] = [
       "Tylko rzucającego",
       "Wszystkich zawodników drużyny",
     ],
-    correct: 2,
     explanation: "",
   },
   {
@@ -349,7 +320,6 @@ export const questions: QuizQuestion[] = [
     situation:
       "W eliminacjach MPSP 2026 zakończyłeś figurę 1 na 6 m. Co teraz?",
     options: ["Ta sama figura na 7 m", "Figura 2 na 6 m", "Figura 5 na 9 m"],
-    correct: 0,
     explanation: "",
   },
   {
@@ -362,7 +332,6 @@ export const questions: QuizQuestion[] = [
       "Nieważny strzał",
       "Ważny, jeśli cel wyleci",
     ],
-    correct: 1,
     explanation: "",
   },
   {
@@ -370,7 +339,6 @@ export const questions: QuizQuestion[] = [
     ruleId: "shoot-points",
     situation: "Figura 5: trafiłeś świnkę, ale została w kole. Ile punktów?",
     options: ["1", "5", "3"],
-    correct: 2,
     explanation: "",
   },
   {
@@ -379,7 +347,6 @@ export const questions: QuizQuestion[] = [
     situation:
       "Figura 1: kula celu poza kołem, Twoja w kole. Ważne lądowanie. Ile punktów?",
     options: ["5", "3", "1"],
-    correct: 0,
     explanation: "",
   },
   {
@@ -392,7 +359,6 @@ export const questions: QuizQuestion[] = [
       "Jest ponownie losowany",
       "Sam wybierasz partnerów",
     ],
-    correct: 1,
     explanation: "",
   },
   {
@@ -401,10 +367,13 @@ export const questions: QuizQuestion[] = [
     situation:
       "Turniej finałowy MPDM według regulaminu 30.12.2025. Jaki limit czasu?",
     options: ["50 min jak w kwalifikacjach", "70 min", "Bez limitu czasu"],
-    correct: 2,
     explanation: "",
   },
-].map((q) => ({ ...q, explanation: findRule(q.ruleId)!.shortAnswer }));
+].map((q) => ({
+  ...q,
+  correct: ruleAnswerKey[q.id],
+  explanation: findRule(q.ruleId)!.shortAnswer,
+}));
 export function newQuiz(length: number): RulesQuizProgress {
   const shuffled = [...questions];
   for (let i = shuffled.length - 1; i > 0; i--) {
