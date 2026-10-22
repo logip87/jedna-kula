@@ -42,7 +42,7 @@ export function MatchMode() {
       <Back />
       <AdventureHeading
         title="Tryb meczowy"
-        subtitle="Decyzja → analiza → wynik rozgrywki → następna sytuacja."
+        subtitle="Policz kule, uwzględnij wynik, porównaj korzyść, ryzyko i alternatywę. Przećwicz sposób analizy przed kolejnym meczem."
       />
       {m && params.has("case") && (
         <p className="notice">

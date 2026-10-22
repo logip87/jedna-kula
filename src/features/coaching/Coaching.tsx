@@ -1,3 +1,5 @@
+import { TrainingIntent } from "../profile/TrainingIntent";
+import { goalStep, productMessage, trainingGoals } from "../profile/intent";
 import { ProgressionInfo } from "../product/ProgressionInfo";
 import { lastRepeatableTraining, repeatLastTraining } from "./repeat";
 import { RoutineGuide } from "../mental/RoutineGuide";
@@ -9,7 +11,6 @@ import {
   mentalRecommendation,
   progressEvidence,
 } from "../product/model";
-import { audience } from "../development/model";
 import {
   competitionTraining,
   daysUntilCompetition,
@@ -44,7 +45,6 @@ export function Today({ guide }: { guide?: ReactNode }) {
     week = weeklyProgress(state),
     proposal = adaptation(state),
     mental = mentalRecommendation(state),
-    athlete = audience(state) === "athlete",
     dashboard = dashboardEvidence(state),
     lastTraining = lastRepeatableTraining(state);
   const start = async (adapt = false) => {
@@ -69,11 +69,19 @@ export function Today({ guide }: { guide?: ReactNode }) {
           <p className="eyebrow">TWÓJ TRENING I WYNIKI</p>
           <h1>Dzisiaj</h1>
           <p className="muted">
-            {state.player ? `${state.player.name}, ` : ""}jedno zadanie i jasny
-            następny krok.
+            {state.player?.name ? `${state.player.name}, ` : ""}jedno zadanie i
+            jasny następny krok.
           </p>
         </div>
       </div>
+      {!state.player &&
+        !state.sessions.some((session) => session.completedAt) && (
+          <section className="card">
+            <h2>Od grania do trenowania.</h2>
+            <p>{productMessage}</p>
+          </section>
+        )}
+      {!state.draft && <TrainingIntent />}
       <section className="coach-main">
         <p className="eyebrow">TWÓJ TRENING NA DZIŚ</p>
         <h2>
@@ -251,27 +259,53 @@ export function Today({ guide }: { guide?: ReactNode }) {
           Wybierz krótkie zadanie
         </Link>
       </section>
-      {athlete ? (
+      <section className="card">
+        <h2>
+          {state.player?.trainingGoal
+            ? trainingGoals[state.player.trainingGoal]
+            : "Twój kolejny krok"}
+        </h2>
+        <p>{goalStep(state.player?.trainingGoal).reason}</p>
+        <Link
+          className="text-link"
+          to={goalStep(state.player?.trainingGoal).to}
+        >
+          {goalStep(state.player?.trainingGoal).title} →
+        </Link>
+        <p className="muted small">
+          Cel możesz zmienić w <Link to="/profile">profilu</Link>. Dzisiejsza
+          propozycja techniczna korzysta z porównywalnych wyników, gdy jest ich
+          wystarczająco dużo.
+        </p>
+      </section>
+      <div className="coach-links">
+        <Link to="/coach/week">Mój tydzień</Link>
+        <Link to="/coach/weaknesses">Do poprawy</Link>
+        <Link to="/lessons/routine">Rutyna przed rzutem</Link>
+        <Link to="/coach/competition">Mam zawody</Link>
+      </div>
+      <details className="rules-notes">
+        <summary>Poznaj pozostałe możliwości</summary>
         <div className="coach-links">
-          <Link to="/training?group=Testy">Testy kontrolne</Link>
-          <Link to="/coach/competition">Mam zawody</Link>
-          <Link to="/coach/generator?focus=presja">Presja</Link>
+          <Link to="/adventure">Misje i taktyka</Link>
+          <Link to="/coach/development">Mój rozwój</Link>
           <Link to="/coach/match">Tryb meczowy</Link>
         </div>
-      ) : (
-        <details className="rules-notes">
-          <summary>Poznaj pozostałe możliwości</summary>
-          <div className="coach-links">
-            <Link to="/adventure">Misje i taktyka</Link>
-            <Link to="/coach/development">Mój rozwój</Link>
-            <Link to="/coach/weaknesses">Do poprawy</Link>
-            <Link to="/coach/challenge">Pokonaj siebie</Link>
-            <Link to="/coach/week">Mój tydzień</Link>
-            <Link to="/training?group=Testy">Testy kontrolne</Link>
-          </div>
-          {guide}
-        </details>
-      )}
+        {guide}
+      </details>
+      <details className="rules-notes">
+        <summary>Zaawansowane warianty i sprawdziany</summary>
+        <p>
+          Spróbuj, gdy masz już punkt odniesienia z regularnych serii. Wyniki
+          porównujesz z własnymi treningami.
+        </p>
+        <div className="coach-links">
+          <Link to="/training?group=Testy">Testy kontrolne</Link>
+          <Link to="/coach/mastery">Próby mistrzowskie</Link>
+          <Link to="/coach/challenge">Pokonaj siebie</Link>
+          <Link to="/coach/generator?focus=presja">Trening z presją</Link>
+        </div>
+      </details>
       <ProgressionInfo
         session={state.draft ?? competition ?? undefined}
         distances={[r.distance]}

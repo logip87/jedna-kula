@@ -1,3 +1,4 @@
+import { playingStyles, trainingGoals } from "../profile/intent";
 import { throwScenarios, decisionReviews } from "../situations/throw-scenarios";
 import { tacticCases } from "../adventure/data";
 import { bossChapters, matchScore } from "../situations/model";
@@ -280,6 +281,8 @@ const stateValidator = object({
       level: optional(
         choice(["beginner", "intermediate", "advanced", "tournament"]),
       ),
+      playingStyle: optional(choice(Object.keys(playingStyles))),
+      trainingGoal: optional(choice(Object.keys(trainingGoals))),
       preferredRole: text,
       preferredHand: text,
       createdAt: date,

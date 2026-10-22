@@ -6,6 +6,8 @@ Zawodnik kończy trening na boisku, traci internet i zamyka telefon. Po powrocie
 
 Jedna kula to działająca aplikacja do treningu pétanque: React, TypeScript, IndexedDB i PWA z service workerem. Jej jakość sprawdzają testy logiki, integracji, interfejsu, offline, dostępności, obrazu i bezpieczeństwa. Osobna demonstracja pokazuje kontrolowany proces AI-assisted QA.
 
+**Od grania do trenowania.** Produkt jest skierowany przede wszystkim do ambitnych graczy klubowych, juniorów oraz osób początkujących i średniozaawansowanych, które potrzebują struktury treningu. [Pozycjonowanie i persona](docs/POSITIONING.md).
+
 **Zacznij od:** [strategii testów](docs/TEST_STRATEGY.md), [scenariuszy showcase](#quality-engineering) lub [opisu aplikacji dla gracza](docs/APLIKACJA.md).
 
 ## Quality Engineering

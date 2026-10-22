@@ -1,3 +1,9 @@
+import { IntentFields } from "./features/profile/TrainingIntent";
+import {
+  productMessage,
+  type PlayingStyle,
+  type TrainingGoal,
+} from "./features/profile/intent";
 import { FieldTaskAction, FieldReflection } from "./features/mental/FieldTask";
 import {
   throwScenarios,
@@ -404,12 +410,14 @@ function Start() {
         <div>
           <p className="eyebrow">TWÓJ PLAN NA DZIŚ</p>
           <h1>
-            Cześć{state.player ? `, ${state.player.name}` : ""}{" "}
+            Cześć{state.player?.name ? `, ${state.player.name}` : ""}{" "}
             <span className="wave" aria-hidden="true">
               ✦
             </span>
           </h1>
-          <p className="muted">Gotowość przychodzi z pierwszym rzutem.</p>
+          <p className="muted">
+            Od grania do trenowania. Jedno zadanie na dziś.
+          </p>
         </div>
         <div className="streak">
           <Flame size={20} />
@@ -446,15 +454,11 @@ function Start() {
             <Zap size={14} /> MAŁA SESJA. DOBRY POCZĄTEK.
           </span>
           <h2>
-            Twoja gra.
+            Od grania
             <br />
-            Twoje tempo<span className="hero-dot">.</span>
+            do trenowania<span className="hero-dot">.</span>
           </h2>
-          <p>
-            Nie potrzebujesz doświadczenia.
-            <br />
-            Weź kule. Zrób pierwszy krok.
-          </p>
+          <p>{productMessage}</p>
           <Link
             className="button cream"
             to={state.draft ? "/session" : "/training/point-basic?level=easy"}
@@ -469,7 +473,7 @@ function Start() {
         </div>
         <div className="hero-art">
           <span className="art-note">
-            <Sparkles size={16} /> Każdy kiedyś zaczynał.
+            <Sparkles size={16} /> Jeden cel. Regularna praca.
           </span>
           <Boules />
           <span className="art-sticker">
@@ -674,7 +678,8 @@ function Library() {
   return (
     <>
       <Heading eyebrow="WYJDŹ. SPRÓBUJ. POWTÓRZ." title="Wybierz trening">
-        Dziś blisko celu, jutro pewny strzał. Wszystko w Twoim tempie.
+        Wybierz jeden element: puentę, strzał lub lądowanie. Zapisz serię i
+        powtórz ją w tych samych warunkach, aby sprawdzić postęp.
       </Heading>
       <Link className="secondary" to="/coach/generator">
         Ułóż trening na 10, 20 lub 30 minut
@@ -2351,12 +2356,20 @@ function Profile() {
     state.player?.level ??
       (state.player?.audience === "athlete" ? "advanced" : "beginner"),
   );
+  const [style, setStyle] = useState<PlayingStyle | "">(
+    state.player?.playingStyle ?? "",
+  );
+  const [goal, setGoal] = useState<TrainingGoal | "">(
+    state.player?.trainingGoal ?? "",
+  );
   const [saved, setSaved] = useState(false);
   return (
     <>
       <Back to="/more" />
       <Heading eyebrow="BEZ KONTA. PO SWOJEMU." title="Twój profil">
-        Każde ćwiczenie jest dostępne niezależnie od wieku i preferowanej roli.
+        Wybierz, jak dziś grasz i nad czym chcesz pracować. Cel pomaga zacząć;
+        kolejne propozycje uwzględniają Twoje wyniki. Każde ćwiczenie pozostaje
+        dostępne.
       </Heading>
       <form
         className="card config profile-form"
@@ -2366,6 +2379,8 @@ function Profile() {
             !(await save({
               ...state,
               player: {
+                playingStyle: style || undefined,
+                trainingGoal: goal || undefined,
                 id: state.player?.id ?? crypto.randomUUID(),
                 name: name.trim(),
                 ...(age ? { age: Number(age) } : {}),
@@ -2384,6 +2399,17 @@ function Profile() {
           setSaved(true);
         }}
       >
+        <IntentFields
+          style={style}
+          goal={goal}
+          onStyle={setStyle}
+          onGoal={setGoal}
+        />
+        <p className="muted small">
+          Poziom dobiera punkt wyjścia. „Zaawansowany” oznacza też gracza
+          klubowego pracującego nad konkretnym elementem; nie jest oceną
+          rankingową.
+        </p>
         <label>
           Jak masz na imię?
           <input
@@ -2454,7 +2480,12 @@ function More() {
       </Heading>
       <div className="more-links">
         {[
-          ["/profile", User, "Twój profil", "Nazwa, poziom gry, rola i ręka"],
+          [
+            "/profile",
+            User,
+            "Twój profil",
+            "Sposób gry, cel treningu, poziom i rola",
+          ],
           [
             "/coach/development",
             Trophy,
@@ -2471,7 +2502,7 @@ function More() {
             "/start",
             Home,
             "Pierwsze kroki",
-            "Przewodnik i dotychczasowy ekran startowy",
+            "Podstawy i wprowadzenie do świadomego treningu",
           ],
           [
             "/coach/weaknesses",
@@ -2528,6 +2559,41 @@ function More() {
           );
         })}
       </div>
+      <section className="card">
+        <h2>Od grania do trenowania.</h2>
+        <p>{productMessage}</p>
+        <p>
+          Dla ambitnych graczy klubowych, juniorów oraz osób początkujących i
+          średniozaawansowanych, które potrzebują planu i regularności. Możesz
+          korzystać z aplikacji także jako uzupełnienia pracy z trenerem.
+        </p>
+      </section>
+      <section className="card" aria-labelledby="author-title">
+        <h2 id="author-title">Kto tworzy Jedną Kulę?</h2>
+        <p>
+          Paweł jest twórcą i osobą techniczną stojącą za Jedną Kulą. Jest
+          Senior QA Automation Engineerem z ponad 12-letnim doświadczeniem w IT,
+          automatyzacji i jakości oprogramowania. Odpowiada za projekt produktu,
+          logikę aplikacji, testy i rozwój techniczny.
+        </p>
+        <p>
+          Jego rola w aplikacji jest techniczna i produktowa. Wskazówki
+          treningowe są materiałem do samodzielnej pracy; indywidualne uwagi o
+          technice warto omówić z trenerem.
+        </p>
+        <h3>Konsultacje merytoryczne</h3>
+        <p>
+          To miejsce na potwierdzone konsultacje treści z doświadczonymi
+          zawodnikami, trenerami i specjalistami. Nie publikujemy obecnie listy
+          potwierdzonych konsultantów.
+        </p>
+        <p className="muted small">
+          Przy każdym podpisie podamy zakres sprawdzonych treści, rolę i datę
+          konsultacji: recenzja treści, doradztwo trenerskie, wkład w metodykę
+          treningu lub recenzja psychologii sportu. Podpis będzie odpowiadał
+          rzeczywistemu wkładowi.
+        </p>
+      </section>
       <section className="card">
         <h2>Dobierz rolę do zadania drużyny.</h2>
         <p>
@@ -2770,7 +2836,7 @@ function App() {
               <CircleDot size={23} />
               <b>jedna kula</b>
             </Link>
-            <span className="desktop-label">TWÓJ TRENING. TWÓJ POSTĘP.</span>
+            <span className="desktop-label">OD GRANIA DO TRENOWANIA.</span>
             <div className="header-actions">
               {offline && (
                 <span className="offline">

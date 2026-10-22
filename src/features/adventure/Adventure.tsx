@@ -101,8 +101,10 @@ export function AdventureHome() {
       <details className="rules-notes" open={!state.adventure?.config}>
         <summary>Wybierz swoją ścieżkę</summary>
         <p>
-          Krótka seria: 6 prób i większe cele. Standardowa seria: 12 prób. To
-          warianty treningu, niezależne od kategorii zawodów.
+          Krótka seria: 6 prób i większe cele — dobry początek dla juniora lub
+          osoby uczącej się podstaw. Standardowa seria: 12 prób — na regularny
+          trening gracza klubowego. Wybierasz objętość, niezależnie od wieku i
+          kategorii zawodów.
         </p>
         <fieldset className="adventure-switch">
           <legend>Objętość treningu</legend>
@@ -146,9 +148,16 @@ export function AdventureHome() {
           trafień.
         </p>
       </details>
-      <Link className="button" to="/coach/boss">
-        Sprawdziany rozdziałów
-      </Link>
+      <details className="rules-notes">
+        <summary>Dodatkowe sprawdziany</summary>
+        <p>
+          Opcjonalny krok po regularnych seriach. Nie jest potrzebny, aby
+          kontynuować misje.
+        </p>
+        <Link className="secondary" to="/coach/boss">
+          Sprawdziany rozdziałów
+        </Link>
+      </details>
       <Link className="secondary" to="/coach/match">
         Tryb meczowy
       </Link>

@@ -46,7 +46,7 @@ export function ProfilePrompt() {
       <User size={22} aria-hidden="true" />
       <span>
         <b>Uzupełnij profil</b>
-        Dodaj imię, poziom gry i rękę, którą rzucasz. Możesz też zrobić to
+        Wybierz, jak dziś grasz i co chcesz osiągnąć. Możesz też zrobić to
         później w zakładce „Twój profil”.
       </span>
       <div className="profile-prompt-actions">

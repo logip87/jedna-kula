@@ -8,9 +8,17 @@ To narzędzie dla graczy rekreacyjnych, klubowych i turniejowych — od pierwszy
 
 ## Przyjdź na boisko z odpowiedzią: co dziś trenuję?
 
-Ekran **Dzisiaj** proponuje konkretny trening i pokazuje powód wyboru. Gdy aplikacja ma wystarczająco dużo porównywalnych wyników, pomaga wybrać obszar do dalszej pracy. Na początku proponuje prostą puentę na 6 metrów.
+Ekran **Dzisiaj** proponuje konkretny trening i pokazuje powód wyboru. Gdy aplikacja ma wystarczająco dużo porównywalnych wyników, pomaga wybrać obszar do dalszej pracy. Na początku proponuje prostą puentę na 6 metrów albo strzał, jeśli wybierzesz ten cel.
 
 Masz własny cel? Wybierz ćwiczenie z biblioteki albo ułóż sesję w generatorze. Dostępne plany trwają **10, 20, 30, 45 lub 60 minut**. Etapy prowadzą przez przygotowanie, rzuty i pracę mentalną. Możesz dopasować trening do czasu, który rzeczywiście masz.
+
+## Od grania do trenowania
+
+Jedna Kula pomaga graczom pétanque wejść poziom wyżej: uporządkować trening, zauważyć słabe strony i wybrać kolejny krok. Powstaje przede wszystkim dla ambitnych graczy klubowych, juniorów oraz osób początkujących i średniozaawansowanych potrzebujących struktury.
+
+Dwa opcjonalne pytania na ekranie Dzisiaj — „Jak dziś grasz?” i „Co chcesz osiągnąć?” — pomagają wybrać punkt wyjścia. Nie wymagają imienia, konta ani rankingu. Odpowiedzi można później zmienić w profilu. Cel podpowiada kolejny krok: technikę, rytm tygodnia, decyzje, rutynę lub przygotowanie do zawodów. Gdy zbierzesz wystarczająco dużo porównywalnych wyników, to one stanowią podstawę propozycji technicznych.
+
+Aplikacja wspiera samodzielną pracę i może uzupełniać trening z trenerem. Nie gwarantuje pozycji w rankingu. Informację o autorze technicznym i zasadach podpisywania konsultacji merytorycznych znajdziesz w zakładce Więcej.
 
 ## Rozwijaj rzut, którego potrzebuje Twoja gra
 

@@ -12,7 +12,8 @@ export default defineConfig({
       manifest: {
         name: "Jedna kula — trening pétanque",
         short_name: "Jedna kula",
-        description: "Twój trening techniki i spokojnej głowy.",
+        description:
+          "Od grania do trenowania. Plan i postęp dla ambitnych graczy pétanque.",
         lang: "pl",
         start_url: "/",
         scope: "/",

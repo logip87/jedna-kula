@@ -4,7 +4,11 @@
 
 Create a mobile-first web application for pétanque training, installable as a Progressive Web App (PWA).
 
-The primary audience is adult pétanque players: recreational, club and tournament players, from beginners to advanced players. Juniors can comfortably use every feature.
+Positioning: **Od grania do trenowania.** The primary audience is ambitious club players who need training structure, together with juniors, beginners and intermediate players.
+
+Primary persona: a club player with 1–5 years of regular play, familiar with the rules, starting or already playing tournaments, seeking improvement without a structured training plan or an individual coach. Advanced athletes may use the app as an additional tool.
+
+Prioritize a clear daily task, regularity, comparable results, decisions and mental routines. Elite coaching systems, national ranking predictions and guaranteed sporting outcomes are outside the product scope. See [positioning decisions](POSITIONING.md).
 
 The product is a modern sports training tool that develops versatility, decisions and mental habits across pointer, middle and shooter roles. Age never controls training access.
 

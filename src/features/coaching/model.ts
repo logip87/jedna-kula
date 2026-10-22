@@ -307,14 +307,17 @@ export function recommendation(
     const hasHistory = evidenceSessions(state).some(
       (s) => Date.parse(s.completedAt!) <= now.getTime(),
     );
+    const mode: Mode =
+      state.player?.trainingGoal === "shoot" ? "shoot" : "point";
+    const firstTask = mode === "shoot" ? "strzału" : "puenty";
     return {
-      mode: "point" as Mode,
+      mode,
       distance: 6,
       count: 0,
       rate: null,
       target: null,
       session: null,
-      reason: `${hasHistory ? "Zbieramy punkt odniesienia. Powtórz spokojną puentę na 6 m." : "Zacznij od spokojnej puenty na 6 m."} Do oceny wariantu potrzebujemy 20 prób z co najmniej 2 sesji w tych samych warunkach.`,
+      reason: `${hasHistory ? `Zbieramy punkt odniesienia. Spróbuj ${firstTask} na 6 m.` : `Zacznij od ${firstTask} na 6 m, aby poznać swoją powtarzalność.${state.player?.trainingGoal === "shoot" ? " To Twój wybrany cel." : ""}`} Do oceny wariantu potrzebujemy 20 prób z co najmniej 2 sesji w tych samych warunkach.`,
     };
   }
   const afterBreak =
@@ -326,7 +329,7 @@ export function recommendation(
         ? "Budujemy podstawę; ten wariant jest jeszcze bardzo trudny."
         : weak.rate > 75
           ? "Utrwal powtarzalność na znanym dystansie."
-          : "To priorytet w zakresie trudnym, ale osiągalnym.";
+          : "Na podstawie ostatnich wyników warto popracować nad tym wariantem.";
   return {
     ...weak,
     target: Math.min(100, (weak.trend?.recent ?? weak.rate) + 7),

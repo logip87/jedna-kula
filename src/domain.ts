@@ -26,6 +26,8 @@ export type Category =
 export type Mode = "point" | "shoot" | "target" | "boundary" | "lob";
 export type Difficulty = "łatwy" | "średni" | "trudny";
 export interface Player {
+  playingStyle?: import("./features/profile/intent").PlayingStyle;
+  trainingGoal?: import("./features/profile/intent").TrainingGoal;
   audience?: Audience;
   id: string;
   name: string;

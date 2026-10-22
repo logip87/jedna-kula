@@ -4020,3 +4020,13 @@ summary {
     min-width: 0;
   }
 }
+
+/* The quick start uses the same compact controls as the profile. */
+.profile-form form {
+  display: grid;
+  gap: 16px;
+}
+.profile-form select {
+  max-width: 100%;
+  min-width: 0;
+}

@@ -6,7 +6,8 @@ export const drills: Drill[] = [
     id: "point-basic",
     name: "Puenta podstawowa",
     category: "Puenta",
-    description: "Znajdź swój punkt. Zbliż kulę do świnki.",
+    description:
+      "Ćwicz powtarzalną puentę. Zapisz odległości i znajdź punkt odniesienia.",
     instructions:
       "Ustaw świnkę na wybranej odległości. Rzuć 6 kul i zmierz odległość każdej od świnki. Celuj w 30 cm. Możesz wybrać serię na wszystkich odległościach.",
     mode: "point",
@@ -19,7 +20,7 @@ export const drills: Drill[] = [
     id: "point-random",
     name: "Puenta na różne odległości",
     category: "Różne odległości",
-    description: "Nowa odległość. Nowa decyzja.",
+    description: "Sprawdź, jak zmiana dystansu wpływa na kontrolę długości.",
     instructions:
       "Przed każdym rzutem ustaw świnkę na wylosowanej odległości. Nie powtarzamy tej samej odległości dwa razy z rzędu.",
     mode: "point",
@@ -33,7 +34,8 @@ export const drills: Drill[] = [
     id: "boundary",
     name: "Gra przy linii",
     category: "Gra przy linii",
-    description: "Blisko linii, z pełną kontrolą.",
+    description:
+      "Ćwicz wybór bezpiecznego kierunku i kontrolę długości przy linii.",
     instructions:
       "Ustaw świnkę 20, 40 lub 60 cm od bocznej linii. Kula za linią daje 0 punktów. Pozostałe oceniaj według odległości od świnki.",
     mode: "boundary",
@@ -46,7 +48,7 @@ export const drills: Drill[] = [
     id: "target",
     name: "Puenta do celu",
     category: "Precyzja",
-    description: "Mały cel, spokojny ruch.",
+    description: "Powtarzaj puentę do wyznaczonego koła i porównuj trafienia.",
     instructions:
       "Wyznacz koło o wybranej średnicy. Zapisuj, czy kula zatrzymała się w kole.",
     mode: "target",
@@ -59,7 +61,8 @@ export const drills: Drill[] = [
     id: "lob",
     name: "Lob podstawowy",
     category: "Lob",
-    description: "Wysoki lot. Miękkie lądowanie.",
+    description:
+      "Sprawdź powtarzalność miejsca lądowania, osobno od końcowej pozycji kuli.",
     instructions:
       "Ustaw świnkę na wybranym dystansie. Na początek zaznacz koło o średnicy 50 cm ze środkiem 1 m przed świnką. Rzuć wysoko i oceń pierwszy kontakt kuli z ziemią w tym kole. Osobno zapisz końcową odległość od świnki.",
     mode: "lob",
@@ -85,7 +88,8 @@ export const drills: Drill[] = [
     id: "shoot-basic",
     name: "Strzał podstawowy",
     category: "Strzał",
-    description: "Jeden cel. Jeden pewny strzał.",
+    description:
+      "Zapisuj trafienia na stałym dystansie i sprawdzaj powtarzalność strzału.",
     instructions:
       "Ustaw kulę na wybranej odległości. Carreau: Twoja kula zostaje w miejscu celu (5 pkt). Czyste trafienie usuwa cel (3 pkt). Dotknięcie bez usunięcia: 1 pkt.",
     mode: "shoot",

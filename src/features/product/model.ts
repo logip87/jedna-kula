@@ -239,7 +239,7 @@ export function adaptation(state: State, now = new Date()) {
     evidence: `Trzy ostatnie porównywalne serie, minimum 30 prób: ${Math.round(rates.reduce((a, b) => a + b, 0) / progressionSessions)}%.`,
     reason:
       kind === "harder"
-        ? "Ten trening robi się dla Ciebie łatwy."
+        ? "Ostatnie porównywalne serie są powtarzalne. Możesz spróbować trudniejszego wariantu."
         : "Ten wariant jest obecnie bardzo trudny. Spróbujmy zbudować podstawę.",
     change: pressure
       ? "Ta sama odległość, jedna próba na ustawienie, bez cofania."

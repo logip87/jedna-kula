@@ -258,6 +258,10 @@ test("athlete instructions are concise and primary navigation fits 320px", async
   await page.goto("/");
   await expect(
     page.getByRole("link", { name: "Tryb meczowy", exact: true }),
+  ).toBeHidden();
+  await page.getByText("Poznaj pozostałe możliwości", { exact: true }).click();
+  await expect(
+    page.getByRole("link", { name: "Tryb meczowy", exact: true }),
   ).toBeVisible();
   const { default: AxeBuilder } = await import("@axe-core/playwright");
   for (const path of ["/", "/coach/generator", "/settings"]) {
