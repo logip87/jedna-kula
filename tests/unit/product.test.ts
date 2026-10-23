@@ -76,6 +76,37 @@ afterEach(() => {
   setEventSink(undefined);
 });
 describe("adaptive coach", () => {
+  it("continues an accepted distance through 7 m and 8 m without reusing the mastered 6 m", () => {
+    const data = state(Array(15).fill(100), 6);
+    const finish = (s: Session) => {
+      data.sessions.push({
+        ...s,
+        completedAt: now.toISOString(),
+        results: s.plan.map((a, i) => ({
+          ...a,
+          id: `${s.id}-${i}`,
+          result: choices.shoot[0].label,
+          points: choices.shoot[0].points,
+          hit: true,
+          carreau: false,
+          outside: false,
+        })),
+      });
+    };
+    finish(acceptedAdaptation(data, now));
+    expect(recommendation(data, now).distance).toBe(7);
+    expect(adaptation(data, now)).toBeNull();
+    for (let i = 0; i < 2; i++) {
+      const next = createRecommendedSession(data, now);
+      expect(next.plan.every((a) => a.distance === 7)).toBe(true);
+      finish(next);
+    }
+    expect(adaptation(data, now)?.distance).toBe(8);
+    finish(acceptedAdaptation(data, now));
+    expect(createRecommendedSession(data, now).plan[0].distance).toBe(8);
+    expect(adaptation(data, now)).toBeNull();
+  });
+
   it("prefers an attainable weakness and is deterministic", () => {
     const s = {
       ...emptyState,

@@ -1,9 +1,9 @@
-import { ProgressionInfo } from "../product/ProgressionInfo";
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowRight, Trophy, RotateCcw } from "lucide-react";
 import { useApp } from "../../app-context";
 import { surfaces } from "../adventure/model";
+import { seriesLengths, type SeriesLength } from "./selection";
 import {
   createRecommendedSession,
   generateTraining,
@@ -11,6 +11,7 @@ import {
   selfChallenge,
   weaknesses,
   type TrainingFocus,
+  trainingPlanDistances,
 } from "./model";
 export function Weaknesses() {
   const { state, save, busy } = useApp();
@@ -133,10 +134,60 @@ export function Generator() {
   const navigate = useNavigate();
   const [minutes, setMinutes] = useState<10 | 20 | 30 | 45 | 60>(20);
   const [search] = useSearchParams();
-  const [focus, setFocus] = useState<TrainingFocus>(
-    search.get("focus") === "presja" ? "presja" : "słabości",
+  const previous = state.sessions
+    .filter(
+      (s) =>
+        s.completedAt &&
+        Date.parse(s.completedAt) <= Date.now() &&
+        s.kind !== "test" &&
+        !s.mastery &&
+        !s.challenge &&
+        s.plan.length &&
+        s.results.length === s.plan.length,
+    )
+    .sort((a, b) => Date.parse(b.completedAt!) - Date.parse(a.completedAt!))[0];
+  const [distance, setDistance] = useState(previous?.plan[0].distance ?? 6);
+  const [attempts, setAttempts] = useState<SeriesLength>(
+    seriesLengths.includes(previous?.plan.length as SeriesLength)
+      ? (previous!.plan.length as SeriesLength)
+      : 20,
   );
-  const session = generateTraining(state, minutes, focus);
+  const [focus, setFocus] = useState<TrainingFocus>(
+    search.get("focus") === "presja"
+      ? "presja"
+      : ((
+          [
+            "wszystko",
+            "puenta",
+            "strzał",
+            "lob",
+            "przy linii",
+            "do celu",
+            "słabości",
+            "presja",
+            "lekko",
+          ] as const
+        ).find((f) => f === previous?.trainingPlan?.focus) ??
+          (
+            {
+              point: "puenta",
+              shoot: "strzał",
+              lob: "lob",
+              boundary: "przy linii",
+              target: "do celu",
+            } as const
+          )[previous?.plan[0].mode ?? "point"]),
+  );
+  const distances = trainingPlanDistances(
+    generateTraining(state, minutes, focus),
+  );
+  const selectedDistance = distances.includes(distance)
+    ? distance
+    : distances.at(-1)!;
+  const session = generateTraining(state, minutes, focus, new Date(), {
+    distance: selectedDistance,
+    attempts,
+  });
   return (
     <div className="coach-page">
       <Link className="back" to="/">
@@ -174,6 +225,8 @@ export function Generator() {
                 "puenta",
                 "strzał",
                 "lob",
+                "przy linii",
+                "do celu",
                 "słabości",
                 "presja",
                 "lekko",
@@ -189,11 +242,46 @@ export function Generator() {
             ))}
           </select>
         </label>
+        <div className="training-fields">
+          <label>
+            Odległość
+            <select
+              value={selectedDistance}
+              onChange={(e) => setDistance(Number(e.target.value))}
+            >
+              {distances.map((d) => (
+                <option key={d} value={d}>
+                  {d} m
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Łączna liczba rzutów
+            <select
+              value={attempts}
+              onChange={(e) =>
+                setAttempts(Number(e.target.value) as SeriesLength)
+              }
+            >
+              {seriesLengths.map((n) => (
+                <option key={n} value={n}>
+                  {n} rzutów
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <p className="muted small">
+          Liczba rzutów dotyczy całego planu. Etapy dzielą wybraną pulę; we
+          wszystkich rzucasz na {selectedDistance} m.
+        </p>
       </section>
       <section className="card">
         <h2>Plan na {minutes} minut</h2>
         <p className="muted">
-          Czasy są orientacyjne. Zapisujemy każdą kulę i etap.
+          {attempts} rzutów · {selectedDistance} m. Czasy etapów są orientacyjne
+          i obejmują przygotowanie oraz odpoczynek.
         </p>
         <ol className="coach-blocks">
           {session.trainingPlan!.blocks.map((b, i) => (
@@ -213,9 +301,17 @@ export function Generator() {
           ))}
         </ol>
         {state.draft ? (
-          <Link className="button" to="/session">
-            Wznów rozpoczęty trening
-          </Link>
+          <div className="notice">
+            <p>
+              Masz już rozpoczęty trening: {state.draft.results.length} z{" "}
+              {state.draft.plan.length} rzutów zapisanych. Powyższe ustawienia
+              dotyczą nowego planu, który możesz zacząć po zakończeniu
+              bieżącego.
+            </p>
+            <Link className="button" to="/session">
+              Wznów rozpoczęty trening
+            </Link>
+          </div>
         ) : (
           <button
             className="button"
@@ -229,7 +325,6 @@ export function Generator() {
           </button>
         )}
       </section>
-      <ProgressionInfo session={session} />
     </div>
   );
 }

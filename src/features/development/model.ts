@@ -9,6 +9,8 @@ import {
 } from "../../domain";
 import {
   conditionKey,
+  conditionDrillId,
+  normalizeConditionKey,
   personalBest,
   recommendation,
   weekStart,
@@ -258,7 +260,9 @@ export function goalProgress(
     };
   }
   const matching = sessions.filter(
-    (s) => conditionKey(s, goal.mode!, goal.distance!) === goal.conditionKey,
+    (s) =>
+      conditionKey(s, goal.mode!, goal.distance!) ===
+      normalizeConditionKey(goal.conditionKey ?? ""),
   );
   const attempts = matching
     .slice(-5)
@@ -292,7 +296,7 @@ export function createMicroGoal(state: State, now = new Date()): State {
     mode: r.mode,
     distance: r.distance,
     conditionKey: conditionKey(r.session, r.mode, r.distance),
-    drillId: r.session.drillId,
+    drillId: conditionDrillId(r.session, r.mode),
     difficulty: r.session.difficulty,
     targetSize: r.session.targetSize,
     boundary: r.session.boundary,
@@ -302,7 +306,7 @@ export function createMicroGoal(state: State, now = new Date()): State {
     state.coaching?.goals?.some(
       (g) =>
         g.kind === "accuracy" &&
-        g.conditionKey === goal.conditionKey &&
+        normalizeConditionKey(g.conditionKey ?? "") === goal.conditionKey &&
         !goalProgress(state, g, now).complete,
     )
   )

@@ -180,6 +180,8 @@ const session = object({
         "puenta",
         "strzał",
         "lob",
+        "przy linii",
+        "do celu",
         "słabości",
         "presja",
         "lekko",

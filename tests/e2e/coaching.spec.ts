@@ -1,3 +1,4 @@
+import { readStoredState } from "../support/indexeddb";
 import { test, expect, type Page } from "@playwright/test";
 import { emptyState, type Session } from "../../src/domain";
 const benchmark = (hits = 5): Session => {
@@ -45,6 +46,12 @@ test("Today starts directly, preserves the draft and works offline", async ({
   await expect(
     page.getByRole("heading", { name: "Dzisiaj", exact: true }),
   ).toBeVisible();
+  await page
+    .getByText("Podpowiedzi do treningu · opcjonalnie", { exact: true })
+    .click();
+  await page
+    .getByText("Plan → Oddech → Wykonanie → Reset", { exact: true })
+    .click();
   const introduction = page.getByRole("region", {
     name: "Wprowadzenie do rutyny",
   });
@@ -84,26 +91,30 @@ test("generated blocks resume, undo crosses block boundaries and mental completi
   await page
     .getByRole("button", { name: "ZACZNIJ TRENING", exact: true })
     .click();
+  const firstEnd = (await readStoredState(page)).draft!.trainingPlan!.blocks[1]
+    .end;
   await expect(
     page.getByRole("heading", { name: "Rozgrzewka", exact: true }),
   ).toBeVisible();
   await page
     .getByRole("button", { name: "Gotowe · przejdź do rzutów" })
     .click();
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < firstEnd; i++) {
     await expect(
-      page.getByText(`Rzut ${i + 1} / 14`, { exact: true }),
+      page.getByText(`Rzut ${i + 1} / 20`, { exact: true }),
     ).toBeVisible();
     await page
       .getByRole("button", { name: "Czyste trafienie +3 pkt", exact: true })
       .click();
   }
   await page.getByRole("button", { name: "Cofnij ostatni rzut" }).click();
-  await expect(page.getByText("Rzut 6 / 14", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText(`Rzut ${firstEnd} / 20`, { exact: true }),
+  ).toBeVisible();
   await page.reload();
-  for (let i = 5; i < 14; i++) {
+  for (let i = firstEnd - 1; i < 20; i++) {
     await expect(
-      page.getByText(`Rzut ${i + 1} / 14`, { exact: true }),
+      page.getByText(`Rzut ${i + 1} / 20`, { exact: true }),
     ).toBeVisible();
     await page
       .getByRole("button", { name: "Czyste trafienie +3 pkt", exact: true })

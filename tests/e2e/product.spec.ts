@@ -1,3 +1,4 @@
+import { readStoredState } from "../support/indexeddb";
 import { test, expect, type Page } from "@playwright/test";
 import {
   emptyState,
@@ -59,9 +60,12 @@ test("Today changes difficulty only after acceptance and resumes the accepted pl
   await expect(
     page.getByRole("heading", { name: "Strzał 8 m", exact: true }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("region", { name: "Zasady awansu" }),
-  ).toContainText("8 m: minimum 70%");
+  await page
+    .getByText("Podpowiedzi do treningu · opcjonalnie", { exact: true })
+    .click();
+  await expect(page.getByRole("region", { name: "Zasady awansu" })).toHaveCount(
+    0,
+  );
   await expect(
     page.getByRole("button", { name: "SPRÓBUJ TRUDNIEJ", exact: true }),
   ).toBeVisible();
@@ -69,9 +73,9 @@ test("Today changes difficulty only after acceptance and resumes the accepted pl
     .getByRole("button", { name: "SPRÓBUJ TRUDNIEJ", exact: true })
     .click();
   await expect(page.locator(".distance")).toContainText("9 m");
-  await expect(
-    page.getByRole("region", { name: "Zasady awansu" }),
-  ).toContainText("9 m: minimum 65%");
+  await expect(page.getByRole("region", { name: "Zasady awansu" })).toHaveCount(
+    0,
+  );
   await page.reload();
   await expect(page.locator(".distance")).toContainText("9 m");
   await page.goto("/");
@@ -130,9 +134,12 @@ test("mental recommendation leads into a persisted short routine before throws",
   }));
   await restore(page, { ...emptyState, sessions });
   await page.goto("/");
+  await page
+    .getByText("Podpowiedzi do treningu · opcjonalnie", { exact: true })
+    .click();
   await expect(page.getByText(/użyłeś rutyny 2 razy/)).toBeVisible();
   await page
-    .getByRole("button", { name: "ZACZNIJ TRENING", exact: true })
+    .getByRole("button", { name: "Zacznij proponowany trening", exact: true })
     .click();
   await expect(
     page.getByRole("heading", { name: "Rutyna przed serią", exact: true }),
@@ -150,16 +157,19 @@ test("60-minute plan has purpose-specific blocks and a final check without undo"
   await page.goto("/coach/generator");
   await page.getByRole("button", { name: "60 minut", exact: true }).click();
   await page.getByLabel("Chcę trenować").selectOption("strzał");
-  await expect(page.getByText(/Zmiana dystansu/).first()).toBeVisible();
+  await expect(page.getByText(/Kontrola dystansu/).first()).toBeVisible();
   await page
     .getByRole("button", { name: "ZACZNIJ TRENING", exact: true })
     .click();
+  const finalStart = (
+    await readStoredState(page)
+  ).draft!.trainingPlan!.blocks.at(-1)!.start;
   await page
     .getByRole("button", { name: "Gotowe · przejdź do rzutów", exact: true })
     .click();
-  for (let i = 0; i < 45; i++) {
+  for (let i = 0; i < finalStart; i++) {
     await expect(
-      page.getByText(`Rzut ${i + 1} / 51`, { exact: true }),
+      page.getByText(`Rzut ${i + 1} / 20`, { exact: true }),
     ).toBeVisible();
     await page
       .getByRole("button", { name: "Czyste trafienie +3 pkt", exact: true })
@@ -171,11 +181,13 @@ test("60-minute plan has purpose-specific blocks and a final check without undo"
   await page
     .getByRole("button", { name: "Rutyna gotowa · przejdź dalej", exact: true })
     .click();
-  await expect(page.getByText("Rzut 46 / 51", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText(`Rzut ${finalStart + 1} / 20`, { exact: true }),
+  ).toBeVisible();
   await page.reload();
-  for (let i = 45; i < 51; i++) {
+  for (let i = finalStart; i < 20; i++) {
     await expect(
-      page.getByText(`Rzut ${i + 1} / 51`, { exact: true }),
+      page.getByText(`Rzut ${i + 1} / 20`, { exact: true }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: "Cofnij ostatni rzut" }),
@@ -223,8 +235,8 @@ test("measurement is opt-in, local and contains only counts", async ({
     JSON.parse(localStorage.getItem("jedna-kula-product-counters")!),
   );
   const events = Object.values(counters)[0] as Record<string, number>;
-  expect(events.recommended_training_start).toBe(1);
-  expect(events.recommended_training_complete).toBe(1);
+  expect(events.manual_training_start).toBe(1);
+  expect(events.recommended_training_complete).toBeUndefined();
   expect(events.training_complete).toBe(1);
   expect(JSON.stringify(counters)).not.toMatch(
     /age|score|name|player|sessionId/,

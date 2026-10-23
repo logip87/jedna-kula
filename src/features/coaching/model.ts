@@ -6,6 +6,8 @@ import {
   type Session,
   type State,
 } from "../../domain";
+import { maximumPracticeDistance } from "../product/progression";
+import { drills } from "../../data";
 
 export const modeNames: Record<Mode, string> = {
   point: "Puenta",
@@ -82,15 +84,23 @@ export function changeWeeklyGoal(
     },
   };
 }
-// Keep conditions separate: different targets, terrain or difficulty are not comparable.
+// Compare actual exercise conditions, regardless of the menu, plan duration or
+// focus label used to start the session. Tests and special exercises stay separate.
+export function conditionDrillId(s: Session, mode: Mode) {
+  // A mixed generated plan uses one container drill for several techniques.
+  // Its pointing and shooting blocks still belong to their own basic drills,
+  // including when that saved plan is repeated manually.
+  return s.trainingPlan && s.plan.some((a) => a.mode !== mode)
+    ? drillForMode[mode]
+    : s.drillId;
+}
 export function conditionKey(s: Session, mode: Mode, distance: number) {
   return [
-    s.drillId,
+    conditionDrillId(s, mode),
     s.kind ?? "training",
     s.mastery?.tier ?? "regular",
     s.challenge?.kind ?? "practice",
     s.challenge?.kind === "boss" ? s.challenge.id : null,
-    s.trainingPlan?.focus ?? "practice",
     mode,
     distance,
     s.difficulty,
@@ -98,6 +108,18 @@ export function conditionKey(s: Session, mode: Mode, distance: number) {
     s.boundary,
     s.surface ?? "unknown",
   ].join(":");
+}
+// Older saved micro-goals include the plan's focus in the key. Normalize
+// those stored references when comparing them, without rewriting the backup.
+export function normalizeConditionKey(key: string) {
+  const parts = key.split(":");
+  if (parts.length !== 12) return key;
+  const [focus] = parts.splice(5, 1);
+  const mode = parts[5] as Mode;
+  if (focus === "wszystko" && Object.hasOwn(drillForMode, mode)) {
+    parts[0] = drillForMode[mode];
+  }
+  return parts.join(":");
 }
 const evidenceSessions = (state: State) =>
   state.sessions
@@ -154,7 +176,11 @@ export function trends(
     label: delta > 5 ? "POPRAWIA SIĘ" : delta < -5 ? "DO POPRAWY" : "STABILNIE",
   };
 }
-export function weaknesses(state: State, now = new Date()) {
+export function weaknesses(
+  state: State,
+  now = new Date(),
+  chosen: Session[] = [],
+) {
   const sessions = evidenceSessions(state).filter(
     (s) => new Date(s.completedAt!) <= now,
   );
@@ -191,7 +217,11 @@ export function weaknesses(state: State, now = new Date()) {
       const attempts = g.sessions.flatMap((s) =>
         s.results.filter((a) => a.mode === g.mode && a.distance === g.distance),
       );
-      if (attempts.length < 20 || g.sessions.length < 2) return [];
+      const isChosen = chosen.some((s) =>
+        s.plan.some((a) => conditionKey(s, a.mode, a.distance) === key),
+      );
+      if (!isChosen && (attempts.length < 20 || g.sessions.length < 2))
+        return [];
       const rate = percent(
         attempts.filter(successfulAttempt).length,
         attempts.length,
@@ -299,17 +329,56 @@ export function recommendation(
   state: State,
   now = new Date(),
   maximumDistance = 10,
+  preferredMode?: Mode,
 ) {
-  const weak = weaknesses(state, now).filter(
-    (r) => r.distance <= maximumDistance,
-  )[0];
+  // An accepted change establishes the player's new practice conditions.
+  // Keep it available while collecting evidence, rather than selecting the
+  // mastered distance again just because it has a larger historical sample.
+  const chosenByCondition = new Map<string, Session>();
+  for (const s of evidenceSessions(state).filter(
+    (s) =>
+      s.coach?.source === "adaptive" &&
+      s.kind !== "test" &&
+      s.results.length === s.plan.length &&
+      s.plan.every(
+        (a) => a.distance <= maximumPracticeDistance(state, s.drillId),
+      ) &&
+      Date.parse(s.completedAt!) <= now.getTime() &&
+      Date.parse(s.completedAt!) >= now.getTime() - 30 * 86400000,
+  )) {
+    for (const a of s.plan)
+      chosenByCondition.set(conditionKey(s, a.mode, 0), s);
+  }
+  const chosen = [...new Set(chosenByCondition.values())];
+  const weak = weaknesses(state, now, chosen).filter((r) => {
+    const accepted = chosenByCondition.get(conditionKey(r.session, r.mode, 0));
+    return (
+      r.distance <=
+        Math.min(
+          maximumDistance,
+          maximumPracticeDistance(state, r.session.drillId),
+        ) &&
+      (!preferredMode || r.mode === preferredMode) &&
+      (!accepted ||
+        accepted.plan.some(
+          (a) => conditionKey(accepted, a.mode, a.distance) === r.key,
+        ))
+    );
+  })[0];
   if (!weak) {
     const hasHistory = evidenceSessions(state).some(
       (s) => Date.parse(s.completedAt!) <= now.getTime(),
     );
     const mode: Mode =
-      state.player?.trainingGoal === "shoot" ? "shoot" : "point";
-    const firstTask = mode === "shoot" ? "strzału" : "puenty";
+      preferredMode ??
+      (state.player?.trainingGoal === "shoot" ? "shoot" : "point");
+    const firstTask = {
+      point: "puenty",
+      shoot: "strzału",
+      lob: "lobu",
+      boundary: "puenty przy linii",
+      target: "puenty do celu",
+    }[mode];
     return {
       mode,
       distance: 6,
@@ -339,13 +408,16 @@ export function recommendation(
 export function createRecommendedSession(
   state: State,
   now = new Date(),
+  preferredMode?: Mode,
 ): Session {
-  const r = recommendation(state, now);
+  const r = recommendation(state, now, 10, preferredMode);
   return {
     id: crypto.randomUUID(),
     drillId:
       r.session?.kind !== "test"
-        ? (r.session?.drillId ?? drillForMode[r.mode])
+        ? r.session
+          ? conditionDrillId(r.session, r.mode)
+          : drillForMode[r.mode]
         : drillForMode[r.mode],
     kind: "training",
     coach: { source: "recommended" },
@@ -481,8 +553,106 @@ export function personalBest(session: Session, history: Session[]) {
 }
 
 export type TrainingFocus =
-  "wszystko" | "puenta" | "strzał" | "lob" | "słabości" | "presja" | "lekko";
+  | "wszystko"
+  | "puenta"
+  | "strzał"
+  | "lob"
+  | "przy linii"
+  | "do celu"
+  | "słabości"
+  | "presja"
+  | "lekko";
+function focusMode(focus: TrainingFocus): Mode | undefined {
+  if (focus === "strzał" || focus === "presja") return "shoot";
+  if (focus === "lob") return "lob";
+  if (focus === "przy linii") return "boundary";
+  if (focus === "do celu") return "target";
+  if (focus === "puenta" || focus === "lekko") return "point";
+  return undefined;
+}
+export function trainingPlanDistances(session: Session) {
+  const modes = [...new Set(session.plan.map((a) => a.mode))];
+  return [6, 7, 8, 9, 10].filter((distance) =>
+    modes.every((mode) =>
+      drills
+        .find((d) => d.id === drillForMode[mode])!
+        .distances.includes(distance),
+    ),
+  );
+}
 export function generateTraining(
+  state: State,
+  minutes: 10 | 20 | 30 | 45 | 60,
+  focus: TrainingFocus,
+  now = new Date(),
+  selection?: { distance: number; attempts: 6 | 10 | 20 },
+): Session {
+  const session = generateTrainingPlan(state, minutes, focus, now);
+  if (!selection) return session;
+  if (
+    ![6, 10, 20].includes(selection.attempts) ||
+    !trainingPlanDistances(session).includes(selection.distance)
+  ) {
+    throw new Error("Wybierz dostępny dystans oraz 6, 10 lub 20 rzutów.");
+  }
+  const throwBlocks = session.trainingPlan!.blocks.filter(
+    (b) => b.kind === "throws",
+  );
+  const weight = throwBlocks.reduce((sum, b) => sum + b.end - b.start, 0);
+  const remaining = selection.attempts - throwBlocks.length;
+  const portions = throwBlocks.map((b, index) => {
+    const exact = (remaining * (b.end - b.start)) / weight;
+    return { index, count: 1 + Math.floor(exact), remainder: exact % 1 };
+  });
+  const missing =
+    selection.attempts - portions.reduce((sum, p) => sum + p.count, 0);
+  const order = [...portions].sort(
+    (a, b) => b.remainder - a.remainder || a.index - b.index,
+  );
+  for (let i = 0; i < missing; i++) order[i].count++;
+  const plan: Session["plan"] = [];
+  let index = 0;
+  const blocks = session.trainingPlan!.blocks.map((block) => {
+    const start = plan.length;
+    if (block.kind !== "throws") return { ...block, start, end: start };
+    const count = portions[index++].count;
+    const mode = session.plan[block.start].mode;
+    const title =
+      block.title === "Zmiana dystansu"
+        ? "Kontrola dystansu"
+        : block.title === "Twój priorytet"
+          ? "Główna seria"
+          : block.title === "Presja 2/3"
+            ? "Seria z presją"
+            : block.title;
+    const instruction =
+      title === "Technika"
+        ? "Pełna rutyna przed każdą kulą. Szukaj powtarzalnego ruchu."
+        : title === "Kontrola dystansu"
+          ? "Nazwij siłę rzutu i utrzymaj kontrolę długości na wybranym dystansie."
+          : title === "Seria z presją" || title === "Jedna próba"
+            ? "Jedna próba na ustawienie. Po błędzie jeden oddech i następne zadanie."
+            : title === "Krótki test końcowy"
+              ? "Jedna próba bez cofania. To sprawdzian tego planu, osobny od testu kontrolnego."
+              : "Ten sam wybrany dystans. Skup się na jakości wykonania i rutynie.";
+    for (let i = 0; i < count; i++)
+      plan.push({ mode, distance: selection.distance, phase: title });
+    return {
+      ...block,
+      title,
+      instruction: `${count} rzutów na ${selection.distance} m. ${instruction}`,
+      start,
+      end: plan.length,
+    };
+  });
+  return {
+    ...session,
+    plan,
+    trainingPlan: { ...session.trainingPlan!, blocks },
+  };
+}
+
+function generateTrainingPlan(
   state: State,
   minutes: 10 | 20 | 30 | 45 | 60,
   focus: TrainingFocus,
@@ -490,8 +660,9 @@ export function generateTraining(
 ): Session {
   if (minutes >= 45)
     return generateLongTraining(state, minutes as 45 | 60, focus, now);
-  const base = createRecommendedSession(state, now);
-  const r = recommendation(state, now);
+  const selectedMode = focusMode(focus);
+  const base = createRecommendedSession(state, now, selectedMode);
+  const r = recommendation(state, now, 10, selectedMode);
   const mode: Mode =
     focus === "strzał" || focus === "presja"
       ? "shoot"
@@ -675,8 +846,9 @@ function generateLongTraining(
   focus: TrainingFocus,
   now: Date,
 ): Session {
-  const base = createRecommendedSession(state, now),
-    r = recommendation(state, now);
+  const selectedMode = focusMode(focus);
+  const base = createRecommendedSession(state, now, selectedMode),
+    r = recommendation(state, now, 10, selectedMode);
   const mode: Mode =
     focus === "strzał" || focus === "presja"
       ? "shoot"
@@ -686,10 +858,7 @@ function generateLongTraining(
           ? "point"
           : r.mode;
   const distance = r.mode === mode ? r.distance : 7,
-    max =
-      (state.player?.audience ?? state.adventure?.config?.audience) === "junior"
-        ? 7
-        : 10;
+    max = maximumPracticeDistance(state, drillForMode[mode]);
   const blocks: NonNullable<Session["trainingPlan"]>["blocks"] = [],
     plan: Session["plan"] = [];
   const durations =

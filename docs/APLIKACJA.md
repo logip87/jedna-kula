@@ -8,15 +8,17 @@ To narzędzie dla graczy rekreacyjnych, klubowych i turniejowych — od pierwszy
 
 ## Przyjdź na boisko z odpowiedzią: co dziś trenuję?
 
-Ekran **Dzisiaj** proponuje konkretny trening i pokazuje powód wyboru. Gdy aplikacja ma wystarczająco dużo porównywalnych wyników, pomaga wybrać obszar do dalszej pracy. Na początku proponuje prostą puentę na 6 metrów albo strzał, jeśli wybierzesz ten cel.
+Na ekranie **Dzisiaj** wybierasz puentę, strzał, lob, grę przy linii, taktykę lub trening mentalny. W ćwiczeniach rzutowych samodzielnie ustawiasz dystans i serię **6, 10 albo 20 rzutów**. Kolejny trening korzysta z ostatnich zapisanych ustawień danego ćwiczenia. Możesz trenować na 8 m także wtedy, gdy wyniki na 6 m są jeszcze słabe.
 
-Masz własny cel? Wybierz ćwiczenie z biblioteki albo ułóż sesję w generatorze. Dostępne plany trwają **10, 20, 30, 45 lub 60 minut**. Etapy prowadzą przez przygotowanie, rzuty i pracę mentalną. Możesz dopasować trening do czasu, który rzeczywiście masz.
+Podpowiedzi na podstawie wyników oraz dłuższe plany są opcjonalne. Statystyki zapisują rzeczywisty dystans i warunki wybranej serii. Rozpoczęty trening możesz wznowić bez zmiany ustawień.
+
+Masz własny cel? Wybierz ćwiczenie z biblioteki albo ułóż sesję w generatorze. Dostępne plany trwają **10, 20, 30, 45 lub 60 minut**. Przed startem wybierasz dystans oraz łącznie **6, 10 lub 20 rzutów** dla całego planu. Etapy dzielą tę pulę i zachowują wybraną odległość. Czas obejmuje przygotowanie, rzuty, odpoczynek i pracę mentalną. Możesz dopasować trening do czasu, który rzeczywiście masz.
 
 ## Od grania do trenowania
 
 Jedna Kula pomaga graczom pétanque wejść poziom wyżej: uporządkować trening, zauważyć słabe strony i wybrać kolejny krok. Powstaje przede wszystkim dla ambitnych graczy klubowych, juniorów oraz osób początkujących i średniozaawansowanych potrzebujących struktury.
 
-Dwa opcjonalne pytania na ekranie Dzisiaj — „Jak dziś grasz?” i „Co chcesz osiągnąć?” — pomagają wybrać punkt wyjścia. Nie wymagają imienia, konta ani rankingu. Odpowiedzi można później zmienić w profilu. Cel podpowiada kolejny krok: technikę, rytm tygodnia, decyzje, rutynę lub przygotowanie do zawodów. Gdy zbierzesz wystarczająco dużo porównywalnych wyników, to one stanowią podstawę propozycji technicznych.
+Dwa opcjonalne pytania w profilu — „Jak dziś grasz?” i „Co chcesz osiągnąć?” — pomagają dopasować podpowiedzi. Nie wymagają imienia, konta ani rankingu. Odpowiedzi można później zmienić w profilu. Cel podpowiada kolejny krok: technikę, rytm tygodnia, decyzje, rutynę lub przygotowanie do zawodów. Gdy zbierzesz wystarczająco dużo porównywalnych wyników, to one stanowią podstawę propozycji technicznych.
 
 Aplikacja wspiera samodzielną pracę i może uzupełniać trening z trenerem. Nie gwarantuje pozycji w rankingu. Informację o autorze technicznym i zasadach podpisywania konsultacji merytorycznych znajdziesz w zakładce Więcej.
 
@@ -88,7 +90,7 @@ Dane pozostają w tej przeglądarce; synchronizacja między urządzeniami nie je
 
 ## Twoja pierwsza sesja
 
-1. Otwórz **Dzisiaj** i wybierz proponowaną puentę albo przejdź do biblioteki.
+1. Otwórz **Dzisiaj**, wybierz rodzaj treningu, dystans i liczbę rzutów.
 2. Ustaw cel na boisku. Wybierz jeden element, na którym chcesz skupić uwagę.
 3. Wykonaj serię i zaznacz wynik po każdym rzucie.
 4. Zapisz trening oraz własną ocenę użycia rutyny.
@@ -104,6 +106,6 @@ Aplikacja porządkuje pracę i pokazuje zapisane efekty. Tempo poprawy zależy o
 
 ---
 
-Opis aktualnych możliwości: **12.10.2026**. [Dokumentacja techniczna i testy](../README.md) · [Założenia produktu](PRD.md).
+Opis aktualnych możliwości: **23.10.2026**. [Dokumentacja techniczna i testy](../README.md) · [Założenia produktu](PRD.md).
 
-Przed treningiem możesz skorzystać z wprowadzenia „Zanim rzucisz: poznaj rutynę” na ekranie Dzisiaj. Wyjaśnia Plan → Oddech → Wykonanie → Reset, przykład powrotu po rzucie oraz opcjonalną samoocenę po sesji. Nie wymaga zaliczania lekcji; pełna lekcja jest dostępna z linku.
+Przed treningiem możesz skorzystać z wprowadzenia „Zanim rzucisz: poznaj rutynę” w rozwijanych podpowiedziach na ekranie Dzisiaj. Wyjaśnia Plan → Oddech → Wykonanie → Reset, przykład powrotu po rzucie oraz opcjonalną samoocenę po sesji. Nie wymaga zaliczania lekcji; pełna lekcja jest dostępna z linku.

@@ -196,6 +196,9 @@ test("competition date persists and Today starts the taper plan", async ({
     page.getByRole("heading", { name: "Do zawodów: 1 dzień", exact: true }),
   ).toBeVisible();
   await page.goto("/");
+  await page
+    .getByText("Podpowiedzi do treningu · opcjonalnie", { exact: true })
+    .click();
   await expect(
     page.getByRole("heading", {
       name: "Przed zawodami: jakość i rutyna",
@@ -203,7 +206,10 @@ test("competition date persists and Today starts the taper plan", async ({
     }),
   ).toBeVisible();
   await page
-    .getByRole("button", { name: "ZACZNIJ TRENING", exact: true })
+    .getByRole("button", {
+      name: "Zacznij trening przed zawodami",
+      exact: true,
+    })
     .click();
   await page
     .getByRole("button", { name: "Gotowe · przejdź do rzutów" })

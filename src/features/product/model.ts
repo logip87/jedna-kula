@@ -4,6 +4,7 @@ import {
   progressionSessions,
   progressionAttempts,
   progressionWindowDays,
+  maximumPracticeDistance,
 } from "./progression";
 import {
   percent,
@@ -15,6 +16,7 @@ import {
 import {
   comparableSessions,
   conditionKey,
+  conditionDrillId,
   createRecommendedSession,
   modeNames,
   personalBest,
@@ -219,10 +221,7 @@ export function adaptation(state: State, now = new Date()) {
       ? "easier"
       : null;
   if (!kind) return null;
-  const max =
-    (state.player?.audience ?? state.adventure?.config?.audience) === "junior"
-      ? 7
-      : 10;
+  const max = maximumPracticeDistance(state, r.session.drillId);
   const distance =
     kind === "harder"
       ? Math.min(max, r.distance + 1)
@@ -252,7 +251,7 @@ export function acceptedAdaptation(state: State, now = new Date()): Session {
   const s = createRecommendedSession(state, now);
   return {
     ...s,
-    drillId: proposal.sourceSession.drillId,
+    drillId: conditionDrillId(proposal.sourceSession, proposal.mode),
     difficulty: proposal.sourceSession.difficulty,
     targetSize: proposal.sourceSession.targetSize,
     boundary: proposal.sourceSession.boundary,

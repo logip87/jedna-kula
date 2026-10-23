@@ -92,9 +92,10 @@ test("a wider difficulty proposal starts the affected skill only after explicit 
     ],
   });
   await page.reload();
+  await page.getByRole("button", { name: "Puenta", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: "Puenta 6 m", exact: true }),
-  ).toBeVisible();
+    page.getByRole("combobox", { name: "Odległość", exact: true }),
+  ).toHaveValue("6");
   await expect(
     page.getByText(/Po 3 ostatnie pełne serie na każdym z 2 dystansów/),
   ).toBeVisible();

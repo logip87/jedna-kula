@@ -1,6 +1,5 @@
-import { TrainingIntent } from "../profile/TrainingIntent";
-import { goalStep, productMessage, trainingGoals } from "../profile/intent";
-import { ProgressionInfo } from "../product/ProgressionInfo";
+import { TrainingPicker } from "./TrainingPicker";
+import { goalStep, trainingGoals } from "../profile/intent";
 import { lastRepeatableTraining, repeatLastTraining } from "./repeat";
 import { RoutineGuide } from "../mental/RoutineGuide";
 import {
@@ -17,7 +16,7 @@ import {
 } from "../development/model";
 import { type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Timer, RotateCcw } from "lucide-react";
+import { ArrowRight, RotateCcw } from "lucide-react";
 import { useApp } from "../../app-context";
 import { successfulAttempt } from "../../domain";
 import { drills } from "../../data";
@@ -32,7 +31,7 @@ export function Today({ guide }: { guide?: ReactNode }) {
     mental = mentalRecommendation(state),
     dashboard = dashboardEvidence(state),
     lastTraining = lastRepeatableTraining(state);
-  const start = async (adapt = false) => {
+  const startSuggestion = async (adapt = false) => {
     if (state.draft) {
       navigate("/session");
       return;
@@ -54,75 +53,30 @@ export function Today({ guide }: { guide?: ReactNode }) {
           <p className="eyebrow">TWÓJ TRENING I WYNIKI</p>
           <h1>Dzisiaj</h1>
           <p className="muted">
-            {state.player?.name ? `${state.player.name}, ` : ""}jedno zadanie i
-            jasny następny krok.
+            {state.player?.name ? `${state.player.name}, ` : ""}wybierz, nad
+            czym chcesz dziś popracować.
           </p>
         </div>
       </div>
-      {!state.player &&
-        !state.sessions.some((session) => session.completedAt) && (
-          <section className="card">
-            <h2>Od grania do trenowania.</h2>
-            <p>{productMessage}</p>
-          </section>
-        )}
-      {!state.draft && <TrainingIntent />}
-      <section className="coach-main">
-        <p className="eyebrow">TWÓJ TRENING NA DZIŚ</p>
-        <h2>
-          {state.draft
-            ? "Dokończ rozpoczętą sesję"
-            : competition
-              ? "Przed zawodami: jakość i rutyna"
-              : `${modeNames[r.mode]} ${r.distance} m`}
-        </h2>
-        <p>
-          {state.draft
-            ? `${state.draft.results.length} rzutów zapisanych. Wróć do swojej sesji.`
-            : competition
-              ? `Zawody ${daysUntilCompetition(state) === 0 ? "dzisiaj" : `za ${daysUntilCompetition(state)} dni`}. Krótka seria na znanym dystansie i spokojny reset.`
-              : r.reason}
-        </p>
-        {!state.draft && (
-          <>
-            <span className="coach-meta">
-              <Timer size={17} /> około{" "}
-              {competition?.trainingPlan?.minutes ??
-                (mental ? 20 : r.count ? 15 : 10)}{" "}
-              min · {competition?.plan.length ?? (r.count ? 20 : 6)} prób
-            </span>
-            {!competition && r.target !== null && (
-              <p className="coach-goal">
-                Cel: {r.rate}% → {r.target}% w tych samych warunkach.
-              </p>
-            )}
-            {mental && !competition && (
-              <p className="coach-goal">
-                {mental.reason} Zaczniemy od 2 minut rutyny.
-                <Link className="text-link" to={`/lessons/${mental.lessonId}`}>
-                  Krótka lekcja do tego zadania
-                </Link>
-              </p>
-            )}
-          </>
-        )}
-        {!state.draft && (
-          <a className="coach-light-link" href="#routine-guide">
-            Jak przygotować głowę do rzutu? ↓
-          </a>
-        )}
-        <button
-          className="button cream"
-          disabled={busy}
-          onClick={() => void start()}
-        >
-          {state.draft ? "Wznów trening" : "ZACZNIJ TRENING"}
-          <ArrowRight size={22} />
-        </button>
-        <Link className="coach-light-link" to="/coach/generator">
-          Zmień czas lub rodzaj treningu →
-        </Link>
-      </section>
+      {state.draft ? (
+        <section className="coach-main">
+          <p className="eyebrow">TRENING W TOKU</p>
+          <h2>Dokończ rozpoczętą sesję</h2>
+          <p>
+            {state.draft.results.length} z {state.draft.plan.length} rzutów
+            zapisanych. Twoje ustawienia i wyniki czekają.
+          </p>
+          <button
+            className="button cream"
+            disabled={busy}
+            onClick={() => navigate("/session")}
+          >
+            Wznów trening <ArrowRight size={22} />
+          </button>
+        </section>
+      ) : (
+        <TrainingPicker />
+      )}
       {!state.draft && lastTraining && (
         <button
           className="secondary"
@@ -134,15 +88,37 @@ export function Today({ guide }: { guide?: ReactNode }) {
         </button>
       )}
       {!state.draft && (
-        <RoutineGuide
-          expanded={
-            !state.lessons.includes("routine") &&
-            !state.sessions.some((s) => s.routineUsed === true)
-          }
-        />
+        <details className="rules-notes card">
+          <summary>Podpowiedzi do treningu · opcjonalnie</summary>
+          <RoutineGuide expanded={false} />
+          <h2>
+            {competition
+              ? "Przed zawodami: jakość i rutyna"
+              : "Propozycja na podstawie wyników"}
+          </h2>
+          <p>
+            {competition
+              ? `Zawody ${daysUntilCompetition(state) === 0 ? "dzisiaj" : `za ${daysUntilCompetition(state)} dni`}. Krótka seria na znanym dystansie i spokojny reset.`
+              : r.reason}
+          </p>
+          {mental && <p>{mental.reason}</p>}
+          <button
+            className="secondary"
+            disabled={busy}
+            onClick={() => void startSuggestion()}
+          >
+            {competition
+              ? "Zacznij trening przed zawodami"
+              : "Zacznij proponowany trening"}
+          </button>
+          <Link className="text-link" to="/coach/generator">
+            Ułóż dłuższy trening →
+          </Link>
+        </details>
       )}
       {proposal && !competition && !state.draft && (
         <section className="notice">
+          <p className="eyebrow">OPCJONALNA ZMIANA WARIANTU</p>
           <p>
             <b>{proposal.reason}</b>
           </p>
@@ -152,15 +128,15 @@ export function Today({ guide }: { guide?: ReactNode }) {
           <button
             className="secondary"
             disabled={busy}
-            onClick={() => void start(true)}
+            onClick={() => void startSuggestion(true)}
           >
             {proposal.kind === "harder"
               ? "SPRÓBUJ TRUDNIEJ"
               : "ŁATWIEJSZY WARIANT"}
           </button>
           <p className="muted small">
-            Zmiana tylko po Twoim wyborze. Zwykły start zachowuje dotychczasowe
-            warunki.
+            Możesz przyjąć propozycję lub samodzielnie ustawić dowolny dostępny
+            dystans powyżej.
           </p>
         </section>
       )}
@@ -258,9 +234,8 @@ export function Today({ guide }: { guide?: ReactNode }) {
           {goalStep(state.player?.trainingGoal).title} →
         </Link>
         <p className="muted small">
-          Cel możesz zmienić w <Link to="/profile">profilu</Link>. Dzisiejsza
-          propozycja techniczna korzysta z porównywalnych wyników, gdy jest ich
-          wystarczająco dużo.
+          Cel możesz zmienić w <Link to="/profile">profilu</Link>. To
+          podpowiedź; rodzaj treningu i dystans wybierasz sam.
         </p>
       </section>
       <div className="coach-links">
@@ -291,11 +266,6 @@ export function Today({ guide }: { guide?: ReactNode }) {
           <Link to="/coach/generator?focus=presja">Trening z presją</Link>
         </div>
       </details>
-      <ProgressionInfo
-        session={state.draft ?? competition ?? undefined}
-        distances={[r.distance]}
-        drillId={r.session?.drillId}
-      />
     </div>
   );
 }

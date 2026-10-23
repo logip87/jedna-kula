@@ -9,3 +9,17 @@ export function progressionThreshold(distance: number) {
 export const progressionSessions = 3;
 export const progressionAttempts = 10;
 export const progressionWindowDays = 30;
+import { drills } from "../../data";
+import type { State } from "../../domain";
+
+export function maximumPracticeDistance(state: State, drillId?: string) {
+  const audienceMaximum =
+    (state.player?.audience ?? state.adventure?.config?.audience) === "junior"
+      ? 7
+      : 10;
+  const distances = drills.find((d) => d.id === drillId)?.distances;
+  return Math.min(
+    audienceMaximum,
+    distances?.length ? Math.max(...distances) : audienceMaximum,
+  );
+}
