@@ -2334,6 +2334,12 @@ export function More() {
       <div className="more-links">
         {[
           [
+            "/match",
+            Trophy,
+            "Mecz",
+            "Wynik, kule i rozgrywki · 1 na 1, 2 na 2, 3 na 3",
+          ],
+          [
             "/profile",
             User,
             "Twój profil",

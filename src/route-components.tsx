@@ -1,4 +1,9 @@
 import { lazy } from "react";
+export const Match = lazy(() =>
+  import("./features/match/Match").then((module) => ({
+    default: module.Match,
+  })),
+);
 
 export const LessonList = lazy(() =>
   import("./features/mental/Lessons").then((module) => ({

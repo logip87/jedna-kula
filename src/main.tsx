@@ -19,6 +19,7 @@ import {
   LessonList,
   Feedback,
   MatchMode,
+  Match,
   BossTests,
   ExtraChallenges,
   Development,
@@ -67,6 +68,7 @@ import {
   Download,
   WifiOff,
   User,
+  Trophy,
 } from "lucide-react";
 import { registerSW } from "virtual:pwa-register";
 import { awardAchievements, type State } from "./domain";
@@ -177,6 +179,7 @@ function App() {
   const nav = [
     ["/", Home, "Dzisiaj"],
     ["/training", Target, "Trening"],
+    ["/match", Trophy, "Mecz"],
     ["/progress", ChartNoAxesCombined, "Postęp"],
     ["/more", Ellipsis, "Więcej"],
   ] as const;
@@ -272,6 +275,7 @@ function App() {
                     element={<Today guide={<BeginnerGuide />} />}
                   />
                   <Route path="/start" element={<Start />} />
+                  <Route path="/match" element={<Match />} />
                   <Route path="/coach/match" element={<MatchMode />} />
                   <Route path="/coach/boss" element={<BossTests />} />
                   <Route path="/coach/extras" element={<ExtraChallenges />} />

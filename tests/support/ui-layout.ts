@@ -1,6 +1,6 @@
 import { expect, type Locator, type Page } from "@playwright/test";
 
-const tabs = ["Dzisiaj", "Trening", "Postęp", "Więcej"];
+const tabs = ["Dzisiaj", "Trening", "Mecz", "Postęp", "Więcej"];
 
 export async function geometry(navigation: Locator) {
   return navigation.evaluate((nav) => {
@@ -63,17 +63,18 @@ function expectStableGeometry(actual: Geometry, initial: Geometry) {
 }
 
 export function expectEqualBottomNavigation(measurements: Geometry) {
+  // Five columns may differ by one browser layout unit (1/64 px).
   const first = measurements.items[0];
   expect(measurements.paddingLeft).toBe(measurements.paddingRight);
   const gaps: number[] = [];
   measurements.items.forEach((item, index) => {
     expect(item.box.width, `${item.label}: equal column width`).toBeCloseTo(
       first.box.width,
-      2,
+      1,
     );
     expect(item.box.height, `${item.label}: equal height`).toBeCloseTo(
       first.box.height,
-      2,
+      1,
     );
     expect(item.box.width).toBeGreaterThanOrEqual(44);
     expect(item.box.height).toBeGreaterThanOrEqual(44);
@@ -84,21 +85,21 @@ export function expectEqualBottomNavigation(measurements: Geometry) {
       const reference = first[part]!;
       expect(element.y, `${item.label}: ${part} baseline`).toBeCloseTo(
         reference.y,
-        2,
+        1,
       );
       if (part !== "labelBox") {
         expect(element.width, `${item.label}: ${part} width`).toBeCloseTo(
           reference.width,
-          2,
+          1,
         );
       }
       expect(element.height, `${item.label}: ${part} height`).toBeCloseTo(
         reference.height,
-        2,
+        1,
       );
       expect(element.x + element.width / 2).toBeCloseTo(
         item.box.x + item.box.width / 2,
-        2,
+        1,
       );
     }
     expect(item.viewBox).toBe("0 0 24 24");
@@ -108,11 +109,11 @@ export function expectEqualBottomNavigation(measurements: Geometry) {
       gaps.push(item.box.x - previous.x - previous.width);
     }
   });
-  gaps.forEach((gap) => expect(gap).toBeCloseTo(gaps[0], 2));
+  gaps.forEach((gap) => expect(gap).toBeCloseTo(gaps[0], 1));
   const last = measurements.items.at(-1)!.box;
   expect(first.box.x - measurements.box.x).toBeCloseTo(
     measurements.box.x + measurements.box.width - last.x - last.width,
-    2,
+    1,
   );
 }
 
