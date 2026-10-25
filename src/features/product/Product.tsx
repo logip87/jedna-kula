@@ -1,3 +1,4 @@
+import { TestSummary } from "../coaching/TestSummary";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useApp } from "../../app-context";
@@ -10,6 +11,13 @@ import {
   recordEvent,
 } from "./analytics";
 export function TrainingSummary({ session }: { session: Session }) {
+  return session.kind === "test" ? (
+    <TestSummary session={session} />
+  ) : (
+    <PracticeSummary session={session} />
+  );
+}
+function PracticeSummary({ session }: { session: Session }) {
   const { state } = useApp(),
     e = summaryEvidence(session, state);
   useEffect(() => {

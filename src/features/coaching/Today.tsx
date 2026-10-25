@@ -1,3 +1,4 @@
+import { TestReminders } from "./TestReminders";
 import { TrainingPicker } from "./TrainingPicker";
 import { goalStep, trainingGoals } from "../profile/intent";
 import { lastRepeatableTraining, repeatLastTraining } from "./repeat";
@@ -58,6 +59,7 @@ export function Today({ guide }: { guide?: ReactNode }) {
           </p>
         </div>
       </div>
+      <TestReminders />
       {state.draft ? (
         <section className="coach-main">
           <p className="eyebrow">TRENING W TOKU</p>

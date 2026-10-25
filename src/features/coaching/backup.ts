@@ -293,6 +293,7 @@ const stateValidator = object({
   ),
   lessons: array(choice(lessons.map((l) => l.id)), lessons.length),
   sessions: array(session),
+  dismissedTestReminders: optional(record(text)),
   draft: nullable(session),
   awards: optional(
     array(

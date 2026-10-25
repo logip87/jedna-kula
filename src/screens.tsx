@@ -1662,7 +1662,7 @@ function Result({
       )}
       <details className="product-details">
         <summary>Zobacz szczegóły</summary>
-        <ResultInsights session={session} />
+        {session.kind !== "test" && <ResultInsights session={session} />}
         {d.mode === "lob" && (
           <p className="notice">Trafienie w strefę lądowania: {sum.landing}%</p>
         )}
@@ -1678,9 +1678,16 @@ function Result({
             </div>
           ))}
           <p className="muted small">
-            Najlepsza: {sum.best?.distance ?? "—"} m · Do ćwiczenia:{" "}
-            {sum.weakest?.distance ?? "—"} m. Porównanie według procentu
-            punktów.
+            {sum.byDistance.length > 1 &&
+            new Set(sum.byDistance.map((r) => r.score)).size === 1 ? (
+              "Równy wynik punktowy na wszystkich dystansach."
+            ) : (
+              <>
+                Najlepsza: {sum.best?.distance ?? "—"} m · Do ćwiczenia:{" "}
+                {sum.weakest?.distance ?? "—"} m.
+              </>
+            )}{" "}
+            Porównanie według procentu punktów.
           </p>
         </div>
         {d.pressure && (
@@ -1952,8 +1959,8 @@ export function LessonDetail() {
             Wróć do listy lekcji <ChevronLeft size={20} />
           </Link>
           <p className="muted" role="status">
-            Lekcja zaliczona. Możesz na tym zakończyć — ćwiczenie mentalne
-            jest opcjonalne.
+            Lekcja zaliczona. Możesz na tym zakończyć — ćwiczenie mentalne jest
+            opcjonalne.
           </p>
         </>
       )}

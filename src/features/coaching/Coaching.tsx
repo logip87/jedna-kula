@@ -1,4 +1,4 @@
-import { boundaryDistance } from "../../domain";
+import { boundaryDistance, successfulAttempt } from "../../domain";
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowRight, Trophy, RotateCcw } from "lucide-react";
@@ -338,7 +338,7 @@ export function SelfChallenge() {
     ? (state.sessions.find((s) => s.id === session.coach?.referenceSessionId) ??
       null)
     : null;
-  const hits = previous?.results.filter((a) => a.hit).length ?? 0;
+  const hits = previous?.results.filter(successfulAttempt).length ?? 0;
   return (
     <div className="coach-page">
       <Link className="back" to="/">

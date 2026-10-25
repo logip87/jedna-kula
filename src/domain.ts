@@ -162,6 +162,7 @@ export interface Achievement {
   unlockedAt: string;
 }
 export interface State {
+  dismissedTestReminders?: Record<string, string>;
   situations?: SituationsState;
   coaching?: CoachingState;
   player: Player | null;

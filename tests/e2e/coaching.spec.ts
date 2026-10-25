@@ -158,12 +158,11 @@ test("standardized test compares to an imported benchmark and self challenge kee
         page.getByRole("button", { name: "Cofnij ostatni rzut" }),
       ).toHaveCount(0);
   }
-  await page.getByText("Zobacz szczegóły", { exact: true }).click();
-  await expect(page.getByText("7 m: 0% → 100% · +100 pp")).toBeVisible();
+  await expect(page.getByText("7 m: 0/5 → 5/5 trafień · 100%")).toBeVisible();
   await expect(
     page
-      .getByRole("region", { name: "Podsumowanie treningu" })
-      .getByText("Personal Best", { exact: true }),
+      .getByRole("region", { name: "Podsumowanie testu" })
+      .getByText(/Rekord w tych warunkach: 20\/20/),
   ).toBeVisible();
   await page.getByRole("button", { name: "Zapisz wynik", exact: true }).click();
   await expect(page.getByText("ZAPISANY TEST", { exact: true })).toBeVisible();
