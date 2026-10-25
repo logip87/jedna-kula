@@ -8,9 +8,9 @@ const improvements: Record<string, Partial<Lesson>> = {
   },
   one: {
     title: "Decyzja przed kołem",
-    rule: "Nazwij zagranie i cel przed wejściem do koła. W kole wykonuj; zmieniaj decyzję tylko po nowej informacji.",
+    rule: "Nazwij zagranie i cel przed wejściem do koła. W kole wykonuj; zmieniaj decyzję tylko po nowej informacji. Przykład: „Puentuję — chcę zatrzymać kulę 20 cm przed świnką”. Po wejściu do koła realizuj ten plan. Samo zwątpienie nie jest nową informacją; zauważony kamień w wybranym miejscu lądowania już nią jest.",
     exercise:
-      "Przez następne 10 rzutów przed wejściem do koła nazwij zagranie i cel. Jeśli zmienisz decyzję w kole, po serii przypomnij sobie powód.",
+      "Przez następne 10 rzutów przed wejściem do koła nazwij zagranie i cel. Przykład: powiedz „Puentuję — chcę zatrzymać kulę 20 cm przed świnką”, a potem wejdź do koła i wykonaj rzut. Jeśli zauważysz kamień w wybranym miejscu lądowania, wyjdź z koła, wybierz inne miejsce i ponownie nazwij plan. Jeśli zmienisz decyzję w kole, po serii przypomnij sobie powód.",
     matchCue: "Decyzja przed kołem. W kole wykonanie.",
   },
   mistake: {
