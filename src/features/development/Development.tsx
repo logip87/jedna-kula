@@ -46,6 +46,14 @@ import {
 } from "./practices";
 import type { WeeklyChallenge } from "./types";
 
+const stressLevels = [
+  "Brak stresu",
+  "Mały stres",
+  "Umiarkowany stres",
+  "Duży stres",
+  "Bardzo duży stres",
+];
+
 function PageTitle({ title, caption }: { title: string; caption: string }) {
   return (
     <>
@@ -460,7 +468,7 @@ export function PracticeLibrary({ kind }: { kind: "mental" | "physical" }) {
           Ostatni moduł zapisany:{" "}
           {practiceModules.find((m) => m.id === last.moduleId)?.title}
           {last.checkin
-            ? ` · napięcie ${last.checkin.before} → ${last.checkin.after}/5`
+            ? ` · stres ${last.checkin.before} → ${last.checkin.after}/5`
             : ""}
           .
         </p>
@@ -471,24 +479,26 @@ export function PracticeLibrary({ kind }: { kind: "mental" | "physical" }) {
             Na następną serię: „
             {mentalCueText(state.coaching.pendingMentalCueLessonId)}”
           </p>
-          <Link className="button" to="/training">
-            Przejdź do treningu technicznego
-          </Link>
-          <button
-            className="secondary"
-            disabled={busy}
-            onClick={() =>
-              void save({
-                ...state,
-                coaching: {
-                  ...state.coaching!,
-                  pendingMentalCueLessonId: undefined,
-                },
-              })
-            }
-          >
-            Usuń wskazówkę
-          </button>
+          <div className="notice-actions">
+            <Link className="button" to="/training">
+              Przejdź do treningu technicznego
+            </Link>
+            <button
+              className="secondary"
+              disabled={busy}
+              onClick={() =>
+                void save({
+                  ...state,
+                  coaching: {
+                    ...state.coaching!,
+                    pendingMentalCueLessonId: undefined,
+                  },
+                })
+              }
+            >
+              Usuń wskazówkę
+            </button>
+          </div>
         </section>
       )}
       <section className="card config">
@@ -536,14 +546,14 @@ export function PracticeLibrary({ kind }: { kind: "mental" | "physical" }) {
           </>
         ) : (
           <label>
-            Napięcie przed modułem (1–5)
+            Jak duży stres czujesz przed ćwiczeniem?
             <select
               value={before}
               onChange={(e) => setBefore(Number(e.target.value))}
             >
-              {[1, 2, 3, 4, 5].map((n) => (
-                <option key={n} value={n}>
-                  {n}
+              {stressLevels.map((label, index) => (
+                <option key={index + 1} value={index + 1}>
+                  {index + 1} — {label}
                 </option>
               ))}
             </select>
@@ -691,14 +701,14 @@ export function PracticeActive() {
       )}
       {last && draft.kind === "mental" && (
         <label>
-          Napięcie po module (1–5)
+          Jak duży stres czujesz po ćwiczeniu?
           <select
             value={after}
             onChange={(e) => setAfter(Number(e.target.value))}
           >
-            {[1, 2, 3, 4, 5].map((n) => (
-              <option key={n} value={n}>
-                {n}
+            {stressLevels.map((label, index) => (
+              <option key={index + 1} value={index + 1}>
+                {index + 1} — {label}
               </option>
             ))}
           </select>

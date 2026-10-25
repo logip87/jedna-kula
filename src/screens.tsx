@@ -1946,6 +1946,17 @@ export function LessonDetail() {
       >
         {done ? "Zaliczone" : "Zaliczone · zapamiętuję"} <Check size={20} />
       </button>
+      {done && (
+        <>
+          <Link className="button" to="/lessons">
+            Wróć do listy lekcji <ChevronLeft size={20} />
+          </Link>
+          <p className="muted" role="status">
+            Lekcja zaliczona. Możesz na tym zakończyć — ćwiczenie mentalne
+            jest opcjonalne.
+          </p>
+        </>
+      )}
       <Link className="secondary" to={`/coach/practice/mental?lesson=${l.id}`}>
         Wykonaj ćwiczenie mentalne
       </Link>

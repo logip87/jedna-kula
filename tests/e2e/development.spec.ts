@@ -113,7 +113,9 @@ test("mental module resumes offline, saves check-ins and does not farm XP", asyn
   context,
 }) => {
   await page.goto("/coach/practice/mental");
-  await page.getByLabel("Napięcie przed modułem (1–5)").selectOption("4");
+  await page
+    .getByLabel("Jak duży stres czujesz przed ćwiczeniem?")
+    .selectOption("4");
   await page
     .getByRole("button", { name: "Zacznij moduł", exact: true })
     .first()
@@ -137,11 +139,13 @@ test("mental module resumes offline, saves check-ins and does not farm XP", asyn
   await page
     .getByRole("button", { name: "Wykonane · następny krok", exact: true })
     .click();
-  await page.getByLabel("Napięcie po module (1–5)").selectOption("2");
+  await page
+    .getByLabel("Jak duży stres czujesz po ćwiczeniu?")
+    .selectOption("2");
   await page
     .getByRole("button", { name: "Zakończ i zapisz moduł", exact: true })
     .click();
-  await expect(page.getByText(/napięcie 4 → 2\/5/)).toBeVisible();
+  await expect(page.getByText(/stres 4 → 2\/5/)).toBeVisible();
   await context.setOffline(false);
   await page.goto("/coach/development");
   await expect(
