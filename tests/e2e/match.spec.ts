@@ -2,6 +2,49 @@ import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
 for (const size of [1, 2, 3]) {
+  test(`match ${size} vs ${size}: five ends of 3 points finish at 13:0`, async ({
+    page,
+  }) => {
+    await page.goto("/match");
+    await page
+      .getByRole("button", { name: `${size} na ${size}`, exact: true })
+      .click();
+    const label = size === 1 ? "Zawodnik" : "Drużyna";
+    await page.getByLabel(`${label} 1`, { exact: true }).fill("Ola");
+    await page.getByLabel(`${label} 2`, { exact: true }).fill("Jan");
+    await page
+      .getByRole("button", { name: "Rozpocznij mecz", exact: true })
+      .click();
+
+    const threePoints = page.getByRole("button", {
+      name: "Ola: 3 punkty",
+      exact: true,
+    });
+    const winnerScore = page.getByLabel("Wynik: Ola", { exact: true });
+    const opponentScore = page.getByLabel("Wynik: Jan", { exact: true });
+    for (const expected of [3, 6, 9, 12, 13]) {
+      await threePoints.click();
+      await expect(winnerScore).toHaveText(String(expected));
+      await expect(opponentScore).toHaveText("0");
+    }
+
+    await expect(
+      page.getByRole("heading", { name: "Mecz zakończony", exact: true }),
+    ).toBeVisible();
+    await expect(threePoints).toBeDisabled();
+    await expect(
+      page
+        .getByRole("region", { name: "Historia rozdań", exact: true })
+        .getByRole("button"),
+    ).toHaveCount(5);
+    await page.reload();
+    await expect(winnerScore).toHaveText("13");
+    await expect(opponentScore).toHaveText("0");
+    await expect(threePoints).toBeDisabled();
+  });
+}
+
+for (const size of [1, 2, 3]) {
   test(`match ${size} vs ${size}: one tap scores an end, corrections and recovery`, async ({
     page,
   }) => {
