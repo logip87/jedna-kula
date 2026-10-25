@@ -24,6 +24,7 @@ export type Category =
   | "Gra sytuacyjna"
   | "Trening mieszany";
 export type Mode = "point" | "shoot" | "target" | "boundary" | "lob";
+export const boundaryDistance = 20;
 export type Difficulty = "łatwy" | "średni" | "trudny";
 export interface Player {
   playingStyle?: import("./features/profile/intent").PlayingStyle;

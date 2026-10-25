@@ -88,8 +88,14 @@ for (const [title, mode, count] of [
       await page
         .getByText("Ustawienie ćwiczenia i sposób zapisu", { exact: true })
         .click();
-      if (mode === "boundary")
-        await page.getByLabel("Odległość świnki od linii").selectOption("20");
+      if (mode === "boundary") {
+        await expect(
+          page.getByText("Ustaw świnkę 20 cm od linii.", { exact: false }),
+        ).toBeVisible();
+        await expect(page.getByLabel("Odległość świnki od linii")).toHaveCount(
+          0,
+        );
+      }
     }
     if (mode === "lob")
       await expect(
@@ -132,6 +138,27 @@ test("tactics and mental practice have their own direct entries", async ({
     .getByRole("link", { name: "Trening mentalny", exact: true })
     .click();
   await expect(page).toHaveURL(/\/coach\/practice\/mental/);
+});
+
+test("boundary drill keeps the jack at 20 cm at every difficulty", async ({
+  page,
+}) => {
+  for (const difficulty of ["łatwy", "średni", "trudny"]) {
+    await page.goto("/training/boundary");
+    await page
+      .getByRole("combobox", { name: "Poziom", exact: true })
+      .selectOption(difficulty);
+    await expect(
+      page.getByText("Świnka zawsze 20 cm od linii.", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByLabel("Świnka od linii", { exact: true }),
+    ).toHaveCount(0);
+    await page.getByRole("button", { name: "Zaczynam", exact: true }).click();
+    await expect(page.getByText("Rzut 1 / 6", { exact: true })).toBeVisible();
+    expect((await readStoredState(page)).draft?.boundary).toBe(20);
+    await replaceStoredState(page, emptyState);
+  }
 });
 
 test("home choice fits mobile and desktop and passes accessibility checks", async ({

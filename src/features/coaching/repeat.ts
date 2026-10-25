@@ -1,5 +1,5 @@
 import { drills } from "../../data";
-import type { Session, State } from "../../domain";
+import { boundaryDistance, type Session, type State } from "../../domain";
 
 export function lastRepeatableTraining(state: State, now = new Date()) {
   return state.sessions
@@ -37,7 +37,9 @@ export function repeatLastTraining(
     startedAt: now.toISOString(),
     difficulty: previous.difficulty,
     targetSize: previous.targetSize,
-    boundary: previous.boundary,
+    boundary: previous.plan.some((a) => a.mode === "boundary")
+      ? boundaryDistance
+      : previous.boundary,
     surface: previous.surface,
     trackDirections: previous.trackDirections,
     plan: structuredClone(previous.plan),

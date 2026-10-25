@@ -1,5 +1,10 @@
 import { recommendation } from "../coaching/model";
-import type { State, Session, Mode } from "../../domain";
+import {
+  boundaryDistance,
+  type State,
+  type Session,
+  type Mode,
+} from "../../domain";
 export type Direction = "center" | "short" | "long" | "left" | "right";
 export type Surface = "smooth" | "gravel" | "rough";
 export interface AdventureConfig {
@@ -94,7 +99,7 @@ export function createPractice(
     startedAt: new Date().toISOString(),
     difficulty: "łatwy",
     targetSize: options.targetSize ?? 100,
-    boundary: 60,
+    boundary: mode === "boundary" ? boundaryDistance : 60,
     plan: Array.from({ length: attempts }, (_, i) => ({
       distance: distances[i % distances.length],
       mode,

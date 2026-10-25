@@ -9,6 +9,12 @@ import {
   parseBackup,
   serializeBackup,
 } from "../../src/features/coaching/backup";
+import { repeatLastTraining } from "../../src/features/coaching/repeat";
+import {
+  createRecommendedSession,
+  generateTraining,
+} from "../../src/features/coaching/model";
+import { createPractice } from "../../src/features/adventure/model";
 
 function completed(
   drillId: "point-basic" | "shoot-basic",
@@ -36,6 +42,41 @@ function completed(
 }
 
 describe("player-selected training", () => {
+  it("always uses a 20 cm boundary, including when repeating an older 60 cm session", () => {
+    const selection = trainingSelection(emptyState, "boundary");
+    expect(selection.boundary).toBe(20);
+    const session = createSelectedTraining({ ...selection, boundary: 60 });
+    expect(session.boundary).toBe(20);
+    const previous: Session = {
+      ...session,
+      boundary: 60,
+      completedAt: session.startedAt,
+      results: session.plan.map((a, i) => ({
+        ...a,
+        id: `${i}`,
+        result: "Pudło",
+        points: 0,
+        hit: false,
+        carreau: false,
+        outside: false,
+      })),
+    };
+    const state = { ...emptyState, sessions: [previous] };
+    expect(trainingSelection(state, "boundary").boundary).toBe(20);
+    expect(repeatLastTraining(state)?.boundary).toBe(20);
+    expect(
+      createRecommendedSession(state, new Date(), "boundary").boundary,
+    ).toBe(20);
+    for (const minutes of [10, 20, 30, 45, 60] as const) {
+      expect(generateTraining(state, minutes, "przy linii").boundary).toBe(20);
+    }
+    expect(
+      createPractice("boundary", "boundary", [6], 6, { surface: "gravel" })
+        .boundary,
+    ).toBe(20);
+    expect(previous.boundary).toBe(60);
+    expect(parseBackup(serializeBackup(state)).sessions[0].boundary).toBe(60);
+  });
   it("starts freely at every offered distance and series length without history", () => {
     for (const choice of trainingChoices)
       for (const attempts of [6, 10, 20] as const) {

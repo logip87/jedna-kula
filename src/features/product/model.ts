@@ -7,6 +7,7 @@ import {
   maximumPracticeDistance,
 } from "./progression";
 import {
+  boundaryDistance,
   percent,
   successfulAttempt,
   type Mode,
@@ -254,7 +255,10 @@ export function acceptedAdaptation(state: State, now = new Date()): Session {
     drillId: conditionDrillId(proposal.sourceSession, proposal.mode),
     difficulty: proposal.sourceSession.difficulty,
     targetSize: proposal.sourceSession.targetSize,
-    boundary: proposal.sourceSession.boundary,
+    boundary:
+      proposal.mode === "boundary"
+        ? boundaryDistance
+        : proposal.sourceSession.boundary,
     surface: proposal.sourceSession.surface,
     plan: Array.from({ length: 20 }, () => ({
       mode: proposal.mode,

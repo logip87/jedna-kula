@@ -182,26 +182,6 @@ export function TrainingPicker() {
                 ))}
               </select>
             </label>
-            {drill.mode === "boundary" && (
-              <label>
-                Odległość świnki od linii
-                <select
-                  value={selection.boundary}
-                  onChange={(e) =>
-                    setSelection({
-                      ...selection,
-                      boundary: Number(e.target.value),
-                    })
-                  }
-                >
-                  {[20, 40, 60].map((value) => (
-                    <option key={value} value={value}>
-                      {value} cm
-                    </option>
-                  ))}
-                </select>
-              </label>
-            )}
           </div>
           <label className="checkbox">
             <input

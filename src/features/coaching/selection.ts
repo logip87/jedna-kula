@@ -1,5 +1,5 @@
 import { drills } from "../../data";
-import type { Session, State } from "../../domain";
+import { boundaryDistance, type Session, type State } from "../../domain";
 
 export const trainingChoices = [
   {
@@ -81,7 +81,8 @@ export function trainingSelection(
       : 6,
     difficulty: previous?.difficulty ?? "łatwy",
     targetSize: previous?.targetSize ?? 100,
-    boundary: previous?.boundary ?? 60,
+    boundary:
+      drill.mode === "boundary" ? boundaryDistance : (previous?.boundary ?? 60),
     surface: previous ? previous.surface : "gravel",
     trackDirections: previous?.trackDirections ?? false,
   };
@@ -108,7 +109,7 @@ export function createSelectedTraining(
     startedAt: now.toISOString(),
     difficulty: selection.difficulty,
     targetSize: selection.targetSize,
-    boundary: selection.boundary,
+    boundary: drill.mode === "boundary" ? boundaryDistance : selection.boundary,
     surface: selection.surface,
     trackDirections: selection.trackDirections,
     plan: Array.from({ length: selection.attempts }, () => ({

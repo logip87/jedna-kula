@@ -37,7 +37,7 @@ export const drills: Drill[] = [
     description:
       "Ćwicz wybór bezpiecznego kierunku i kontrolę długości przy linii.",
     instructions:
-      "Ustaw świnkę 20, 40 lub 60 cm od bocznej linii. Kula za linią daje 0 punktów. Pozostałe oceniaj według odległości od świnki.",
+      "Ustaw świnkę 20 cm od bocznej linii. Kula za linią daje 0 punktów. Pozostałe oceniaj według odległości od świnki.",
     mode: "boundary",
     distances,
     attempts: 6,

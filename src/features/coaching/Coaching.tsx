@@ -1,3 +1,4 @@
+import { boundaryDistance } from "../../domain";
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowRight, Trophy, RotateCcw } from "lucide-react";
@@ -103,7 +104,8 @@ export function Weaknesses() {
                       : "point-basic",
                 difficulty: r.session.difficulty,
                 targetSize: r.session.targetSize,
-                boundary: r.session.boundary,
+                boundary:
+                  r.mode === "boundary" ? boundaryDistance : r.session.boundary,
                 surface: r.session.surface,
                 plan: Array.from({ length: 20 }, () => ({
                   mode: r.mode,

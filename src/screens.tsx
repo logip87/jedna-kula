@@ -66,6 +66,7 @@ import {
 } from "lucide-react";
 import { drills, lessons } from "./data";
 import {
+  boundaryDistance,
   choices,
   makePlan,
   summarize,
@@ -673,7 +674,16 @@ export function Detail() {
   const [targetSize, setTargetSize] = useState(
     d?.test ? (d.mode === "target" ? 100 : 50) : easy ? 100 : 50,
   );
-  const [boundary, setBoundary] = useState(d?.test ? 40 : easy ? 60 : 40);
+  const boundary =
+    d?.mode === "boundary"
+      ? boundaryDistance
+      : d?.test
+        ? 40
+        : difficulty === "łatwy"
+          ? 60
+          : difficulty === "średni"
+            ? 40
+            : 20;
   const [trackDirections, setTrackDirections] = useState(false);
   const [surface, setSurface] = useState<Surface>("gravel");
   if (!d) return <Missing />;
@@ -798,7 +808,6 @@ export function Detail() {
                 setDifficulty(v);
                 setDistance(v === "łatwy" ? 6 : v === "średni" ? 7 : 9);
                 setTargetSize(v === "łatwy" ? 100 : v === "średni" ? 50 : 30);
-                setBoundary(v === "łatwy" ? 60 : v === "średni" ? 40 : 20);
               }}
             >
               {["łatwy", "średni", "trudny"].map((x) => (
@@ -853,19 +862,7 @@ export function Detail() {
             </label>
           )}
           {d.mode === "boundary" && (
-            <label>
-              Świnka od linii
-              <select
-                value={boundary}
-                onChange={(e) => setBoundary(Number(e.target.value))}
-              >
-                {[20, 40, 60].map((x) => (
-                  <option key={x} value={x}>
-                    {x} cm
-                  </option>
-                ))}
-              </select>
-            </label>
+            <p>Świnka zawsze {boundaryDistance} cm od linii.</p>
           )}
           {d.mode === "lob" && (
             <LobSetup

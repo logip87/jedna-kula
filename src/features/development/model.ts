@@ -1,6 +1,7 @@
 import { mentalLessons } from "../mental/catalog";
 import { drills } from "../../data";
 import {
+  boundaryDistance,
   localDay,
   percent,
   type Session,
@@ -557,6 +558,9 @@ export function createMastery(
   });
   return {
     ...base,
+    boundary: base.plan.some((a) => a.mode === "boundary")
+      ? boundaryDistance
+      : base.boundary,
     id: crypto.randomUUID(),
     startedAt: new Date().toISOString(),
     completedAt: undefined,
@@ -605,7 +609,8 @@ export function competitionTraining(
     startedAt: now.toISOString(),
     difficulty: r.mode === mode ? (r.session?.difficulty ?? "łatwy") : "średni",
     targetSize: r.session?.targetSize ?? 50,
-    boundary: r.session?.boundary ?? 40,
+    boundary:
+      mode === "boundary" ? boundaryDistance : (r.session?.boundary ?? 40),
     surface: r.session?.surface,
     plan: [],
     situationChoice: undefined,
@@ -683,6 +688,9 @@ export function createGoalSession(
   if (!base) return null;
   return {
     ...base,
+    boundary: base.plan.some((a) => a.mode === "boundary")
+      ? boundaryDistance
+      : base.boundary,
     id: crypto.randomUUID(),
     startedAt: new Date().toISOString(),
     completedAt: undefined,

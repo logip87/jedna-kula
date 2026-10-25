@@ -1,4 +1,5 @@
 import {
+  boundaryDistance,
   localDay,
   percent,
   successfulAttempt,
@@ -424,7 +425,8 @@ export function createRecommendedSession(
     startedAt: now.toISOString(),
     difficulty: r.session?.difficulty ?? "łatwy",
     targetSize: r.session?.targetSize ?? 100,
-    boundary: r.session?.boundary ?? 60,
+    boundary:
+      r.mode === "boundary" ? boundaryDistance : (r.session?.boundary ?? 60),
     surface: r.session?.surface,
     plan: Array.from({ length: r.count ? 20 : 6 }, () => ({
       mode: r.mode,
@@ -748,7 +750,12 @@ function generateTrainingPlan(
     ...base,
     difficulty: r.mode === mode ? base.difficulty : "średni",
     targetSize: r.mode === mode ? base.targetSize : 50,
-    boundary: r.mode === mode ? base.boundary : 40,
+    boundary:
+      mode === "boundary"
+        ? boundaryDistance
+        : r.mode === mode
+          ? base.boundary
+          : 40,
     surface: r.mode === mode ? base.surface : "gravel",
     drillId: drillForMode[mode],
     plan,
@@ -822,6 +829,9 @@ export function selfChallenge(state: State): Session | null {
   if (!previous) return null;
   return {
     ...previous,
+    boundary: previous.plan.some((a) => a.mode === "boundary")
+      ? boundaryDistance
+      : previous.boundary,
     id: crypto.randomUUID(),
     startedAt: new Date().toISOString(),
     completedAt: undefined,
