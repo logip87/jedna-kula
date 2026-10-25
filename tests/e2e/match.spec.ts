@@ -166,3 +166,107 @@ test("match scoreboard fits narrow phones with long names", async ({
     fullPage: true,
   });
 });
+
+for (const size of [1, 2, 3]) {
+  for (const winner of ["Ola", "Jan"]) {
+    test(`match ${size} vs ${size}: ${winner} finishes at 13 and corrections reopen play`, async ({
+      page,
+    }) => {
+      await page.goto("/match");
+      await page.evaluate((size) => {
+        localStorage.setItem(
+          "jedna-kula-match-v1",
+          JSON.stringify({
+            size,
+            names: ["Ola", "Jan"],
+            ends: [
+              [3, 0],
+              [0, 3],
+              [3, 0],
+              [0, 3],
+              [3, 0],
+              [0, 3],
+              [2, 0],
+              [0, 2],
+              null,
+            ],
+          }),
+        );
+      }, size);
+      await page.reload();
+      const score = (name: string) =>
+        page.getByLabel(`Wynik: ${name}`, { exact: true });
+      await expect(score("Ola")).toHaveText("11");
+      await expect(score("Jan")).toHaveText("11");
+      const noPoints = page.getByRole("button", {
+        name: "Rozdanie bez punktów",
+        exact: true,
+      });
+      await expect(noPoints).toBeEnabled();
+      const count = size === 1 ? 3 : 6;
+      await page
+        .getByRole("button", {
+          name: `${winner}: ${count} ${count === 3 ? "punkty" : "punktów"}`,
+          exact: true,
+        })
+        .click();
+      await expect(score(winner)).toHaveText("13");
+      await expect(score(winner === "Ola" ? "Jan" : "Ola")).toHaveText("11");
+      await expect(
+        page.getByRole("heading", { name: "Mecz zakończony", exact: true }),
+      ).toBeVisible();
+      await expect(noPoints).toBeDisabled();
+      for (const button of await page
+        .getByRole("region", { name: "Tablica meczu" })
+        .getByRole("button")
+        .all())
+        await expect(button).toBeDisabled();
+      await page.reload();
+      await expect(score(winner)).toHaveText("13");
+      await expect(noPoints).toBeDisabled();
+      await page
+        .getByRole("button", { name: "Popraw wynik rozdania 9", exact: true })
+        .click();
+      await page
+        .getByRole("button", { name: `${winner}: 1 punkt`, exact: true })
+        .click();
+      await expect(score(winner)).toHaveText("12");
+      await expect(noPoints).toBeEnabled();
+      await page
+        .getByRole("button", { name: "Cofnij ostatnie rozdanie", exact: true })
+        .click();
+      await expect(score(winner)).toHaveText("11");
+      await noPoints.click();
+      await expect(score(winner)).toHaveText("11");
+    });
+  }
+}
+
+test("previously saved match above 13 displays the capped final score", async ({
+  page,
+}) => {
+  await page.goto("/match");
+  await page.evaluate(() =>
+    localStorage.setItem(
+      "jedna-kula-match-v1",
+      JSON.stringify({
+        size: 3,
+        names: ["Ola", "Jan"],
+        ends: [[6, 0], [0, 6], [5, 0], [0, 5], [3, 0], null],
+      }),
+    ),
+  );
+  await page.reload();
+  await expect(page.getByLabel("Wynik: Ola", { exact: true })).toHaveText("13");
+  await expect(page.getByLabel("Wynik: Jan", { exact: true })).toHaveText("11");
+  await expect(
+    page.getByRole("heading", { name: "Mecz zakończony", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Cofnij ostatnie rozdanie", exact: true })
+    .click();
+  await expect(page.getByLabel("Wynik: Ola", { exact: true })).toHaveText("11");
+  await expect(
+    page.getByRole("button", { name: "Rozdanie bez punktów", exact: true }),
+  ).toBeEnabled();
+});

@@ -8,6 +8,7 @@ type Game = {
   ends: (Pair | null)[];
 };
 const storageKey = "jedna-kula-match-v1";
+const winningScore = 13;
 const ballCount = (size: number) => (size === 1 ? 3 : 6);
 function readGame(): Game | null {
   try {
@@ -71,6 +72,7 @@ export function Match() {
   }, [game]);
 
   function record(result: Pair) {
+    if (finished && editing === null) return;
     setGame((previous) => {
       if (!previous) return previous;
       if (editing !== null)
@@ -88,9 +90,14 @@ export function Match() {
     setEditing(null);
   }
   const totals = game?.ends.reduce<Pair>(
-    (sum, end) => [sum[0] + (end?.[0] || 0), sum[1] + (end?.[1] || 0)],
+    (sum, end) => [
+      Math.min(winningScore, sum[0] + (end?.[0] || 0)),
+      Math.min(winningScore, sum[1] + (end?.[1] || 0)),
+    ],
     [0, 0],
   ) ?? [0, 0];
+  const winner = totals.findIndex((score) => score === winningScore);
+  const finished = winner !== -1;
 
   return (
     <div className="match-page">
@@ -173,17 +180,25 @@ export function Match() {
             <span className="pill">
               <Trophy size={16} /> {game.size} na {game.size}
             </span>
-            <b>Rozdanie {editing !== null ? editing + 1 : game.ends.length}</b>
+            <b>
+              {finished && editing === null
+                ? "Wynik końcowy"
+                : `Rozdanie ${editing !== null ? editing + 1 : game.ends.length}`}
+            </b>
           </div>
           <h2 ref={boardHeading} tabIndex={-1} className="match-entry-heading">
             {editing !== null
               ? `Popraw wynik rozdania ${editing + 1}`
-              : "Ile punktów po rozdaniu?"}
+              : finished
+                ? "Mecz zakończony"
+                : "Ile punktów po rozdaniu?"}
           </h2>
           <p className="muted match-hint">
             {editing !== null
               ? "Dotknij poprawnej liczby punktów pod zwycięzcą rozdania."
-              : "Dotknij liczby pod zwycięzcą rozdania. Wynik zapisze się od razu."}
+              : finished
+                ? `Wygrywa ${game.names[winner]} wynikiem ${totals[winner]}:${totals[1 - winner]}. Gramy do 13 punktów.`
+                : "Dotknij liczby pod zwycięzcą rozdania. Wynik zapisze się od razu."}
           </p>
           <section className="card match-board" aria-label="Tablica meczu">
             {game.names.map((name, side) => (
@@ -205,6 +220,7 @@ export function Match() {
                     <button
                       type="button"
                       key={index}
+                      disabled={finished && editing === null}
                       aria-label={`${name}: ${index + 1} ${index === 0 ? "punkt" : index < 4 ? "punkty" : "punktów"}`}
                       onClick={() =>
                         record(side === 0 ? [index + 1, 0] : [0, index + 1])
@@ -221,7 +237,11 @@ export function Match() {
             </span>
           </section>
           <div className="match-actions">
-            <button className="secondary" onClick={() => record([0, 0])}>
+            <button
+              className="secondary"
+              disabled={finished && editing === null}
+              onClick={() => record([0, 0])}
+            >
               Rozdanie bez punktów
             </button>
             {editing !== null ? (
