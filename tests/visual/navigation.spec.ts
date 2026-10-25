@@ -40,6 +40,7 @@ test.describe(
         for (const [index, label] of [
           "Dzisiaj",
           "Trening",
+          "Mecz",
           "Postęp",
           "Więcej",
         ].entries()) {

@@ -114,10 +114,16 @@ for (const action of ["last throw", "final result"] as const) {
       await releaseCommit(page);
       if (action === "last throw") {
         await expect(
-          page.getByText("6 rzutów zapisanych. Wróć do swojej sesji.", {
-            exact: true,
-          }),
+          page.getByText(
+            "6 z 6 rzutów zapisanych. Twoje ustawienia i wyniki czekają.",
+            {
+              exact: true,
+            },
+          ),
         ).toBeVisible();
+        await expect(
+          page.getByRole("button", { name: "Wznów trening", exact: true }),
+        ).toBeEnabled();
       } else {
         await expect(
           page.getByRole("button", { name: "ZACZNIJ TRENING", exact: true }),
