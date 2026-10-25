@@ -26,6 +26,8 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run qa:generate:check
+      - name: Use primary Ubuntu package mirror
+        run: echo 'http://archive.ubuntu.com/ubuntu/' | sudo tee /etc/apt/apt-mirrors.txt
       - name: Install browser dependencies
         timeout-minutes: 5
         run: npx playwright install --with-deps chromium firefox webkit
@@ -55,6 +57,8 @@ jobs:
           node-version: "24"
           cache: npm
       - run: npm ci
+      - name: Use primary Ubuntu package mirror
+        run: echo 'http://archive.ubuntu.com/ubuntu/' | sudo tee /etc/apt/apt-mirrors.txt
       - name: Install browser dependencies
         timeout-minutes: 5
         run: npx playwright install --with-deps chromium firefox webkit
