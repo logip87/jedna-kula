@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useApp } from "../../app-context";
 import type { Session } from "../../domain";
-import { modeNames } from "../coaching/model";
 import { summaryEvidence } from "./model";
 import {
   enableMeasurement,
@@ -91,17 +90,6 @@ export function TrainingSummary({ session }: { session: Session }) {
           </span>
         </section>
       )}
-      <section className="card">
-        <h2>Następny krok</h2>
-        <p>
-          {modeNames[e.next.mode]} {e.next.distance} m. {e.next.reason}
-        </p>
-        <p className="muted small">
-          {session.completedAt
-            ? "Kolejny trening dobieramy z zapisanych wyników."
-            : "Rekomendacja uwzględni ten wynik po zapisaniu."}
-        </p>
-      </section>
     </section>
   );
 }
