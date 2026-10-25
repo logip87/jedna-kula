@@ -236,6 +236,19 @@ describe("week and goals", () => {
     const state = chooseChallenge(junior, "shoot-attempts", now);
     expect(weeklyChallenge(state, now).distance).toBe(7);
     expect(audience(junior)).toBe("junior");
+    for (const level of [
+      "beginner",
+      "intermediate",
+      "advanced",
+      "tournament",
+    ] as const) {
+      const withLevel = { ...junior, player: { ...junior.player!, level } };
+      expect(audience(withLevel)).toBe("junior");
+      expect(parseBackup(serializeBackup(withLevel)).player).toMatchObject({
+        audience: "junior",
+        level,
+      });
+    }
   });
   it("does not count one-ball challenges or partial series toward Perfect Week", () => {
     const partial = { ...session(), results: session().results.slice(0, 4) };

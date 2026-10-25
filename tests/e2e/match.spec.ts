@@ -1,14 +1,11 @@
 import { expect, test } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 
 for (const size of [1, 2, 3]) {
-  test(`match ${size} vs ${size}: points, balls, corrections and recovery`, async ({
+  test(`match ${size} vs ${size}: one tap scores an end, corrections and recovery`, async ({
     page,
   }) => {
-    await page.goto("/");
-    await page
-      .getByRole("navigation", { name: "Nawigacja główna" })
-      .getByRole("link", { name: "Mecz", exact: true })
-      .click();
+    await page.goto("/match");
     await page
       .getByRole("button", { name: `${size} na ${size}`, exact: true })
       .click();
@@ -26,72 +23,113 @@ for (const size of [1, 2, 3]) {
     const board = page.getByRole("region", { name: "Tablica meczu" });
     const score = (name: string) =>
       board.getByLabel(`Wynik: ${name}`, { exact: true });
+    const points = (name: string, count: number) =>
+      board.getByRole("button", {
+        name: `${name}: ${count} ${count === 1 ? "punkt" : count < 5 ? "punkty" : "punktów"}`,
+        exact: true,
+      });
     const count = size === 1 ? 3 : 6;
     await expect(score("Ola")).toHaveText("0");
     await expect(score("Jan")).toHaveText("0");
     await expect(board.getByRole("button")).toHaveCount(count * 2);
-    const ball = board.getByRole("button", {
-      name: "Ola: kula 1",
+    // Each number immediately records one whole end, without a separate save/next step.
+    await points("Ola", count).click();
+    await expect(score("Ola")).toHaveText(String(count));
+    await expect(page.getByText("Rozdanie 2", { exact: true })).toBeVisible();
+    await points("Jan", 2).click();
+    await expect(score("Jan")).toHaveText("2");
+    await expect(page.getByText("Rozdanie 3", { exact: true })).toBeVisible();
+    await page
+      .getByRole("button", { name: "Popraw wynik rozdania 1", exact: true })
+      .click();
+    await expect(
+      page.getByRole("heading", {
+        name: "Popraw wynik rozdania 1",
+        exact: true,
+      }),
+    ).toBeFocused();
+    await points("Jan", 1).click();
+    await expect(score("Ola")).toHaveText("0");
+    await expect(score("Jan")).toHaveText("3");
+    await expect(page.getByText("Rozdanie 3", { exact: true })).toBeVisible();
+    await page
+      .getByRole("button", { name: "Popraw wynik rozdania 1", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Anuluj poprawianie", exact: true })
+      .click();
+    await expect(score("Jan")).toHaveText("3");
+    await page.reload();
+    await expect(score("Jan")).toHaveText("3");
+    await expect(page.getByText("Rozdanie 3", { exact: true })).toBeVisible();
+    await page
+      .getByRole("button", { name: "Rozdanie bez punktów", exact: true })
+      .click();
+    await expect(page.getByText("Rozdanie 4", { exact: true })).toBeVisible();
+    await expect(score("Jan")).toHaveText("3");
+    const undo = page.getByRole("button", {
+      name: "Cofnij ostatnie rozdanie",
       exact: true,
     });
-    await ball.click();
-    await expect(ball).toHaveAttribute("aria-pressed", "true");
-    await ball.click();
-    await expect(ball).toHaveAttribute("aria-pressed", "false");
-    await ball.click();
-    await page
-      .getByRole("button", { name: "Przyznaj punkty", exact: true })
-      .click();
-    await page
-      .getByRole("combobox", { name: "Liczba punktów", exact: true })
-      .selectOption(String(count));
-    await page
-      .getByRole("button", { name: "Zapisz punkty", exact: true })
-      .click();
-    await expect(score("Ola")).toHaveText(String(count));
-    await page
-      .getByRole("button", { name: "Następna rozgrywka", exact: true })
-      .click();
-    await expect(ball).toHaveAttribute("aria-pressed", "false");
-    await expect(score("Ola")).toHaveText(String(count));
-    await ball.click();
-    await page
-      .getByRole("button", { name: "Popraw wynik rozgrywki 1", exact: true })
-      .click();
-    await page
-      .getByRole("combobox", { name: "Punkty dla", exact: true })
-      .selectOption("1");
-    await page
-      .getByRole("combobox", { name: "Liczba punktów", exact: true })
-      .selectOption("2");
-    await page
-      .getByRole("button", { name: "Zapisz punkty", exact: true })
-      .click();
-    await expect(score("Ola")).toHaveText("0");
-    await expect(score("Jan")).toHaveText("2");
-    await expect(ball).toHaveAttribute("aria-pressed", "true");
-    await page.reload();
-    await expect(score("Jan")).toHaveText("2");
-    await expect(ball).toHaveAttribute("aria-pressed", "true");
-    await expect(
-      page.getByRole("heading", { name: "Rozgrywka 2", exact: true }),
-    ).toBeVisible();
-    await page
-      .getByRole("button", { name: "Przyznaj punkty", exact: true })
-      .click();
-    await page
-      .getByRole("combobox", { name: "Punkty dla", exact: true })
-      .selectOption("none");
-    await page
-      .getByRole("button", { name: "Zapisz punkty", exact: true })
-      .click();
-    await page
-      .getByRole("button", { name: "Następna rozgrywka", exact: true })
-      .click();
-    await expect(score("Jan")).toHaveText("2");
+    await undo.click();
+    await expect(page.getByText("Rozdanie 3", { exact: true })).toBeVisible();
+    await undo.click();
+    await expect(score("Jan")).toHaveText("1");
+    await undo.click();
+    await expect(score("Jan")).toHaveText("0");
+    await expect(undo).toHaveCount(0);
+    await expect(page.getByText("Rozdanie 1", { exact: true })).toBeVisible();
+    await points("Ola", 1).click();
     await page.getByRole("button", { name: "Nowy mecz", exact: true }).click();
     await page.getByRole("button", { name: "Anuluj", exact: true }).click();
-    await expect(score("Jan")).toHaveText("2");
+    await expect(score("Ola")).toHaveText("1");
+    await page.getByRole("button", { name: "Nowy mecz", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Rozpocznij nowy mecz", exact: true })
+      .click();
+    await expect(start).toBeVisible();
+    await page.reload();
+    await expect(start).toBeVisible();
+  });
+}
+
+for (const ends of [[[2, 0]], [[2, 0], null]]) {
+  test(`legacy match keeps its score and starts the next end: ${JSON.stringify(ends)}`, async ({
+    page,
+  }) => {
+    await page.goto("/match");
+    await page.evaluate((ends) => {
+      localStorage.setItem(
+        "jedna-kula-match-v1",
+        JSON.stringify({
+          size: 1,
+          names: ["Ola", "Jan"],
+          ends,
+          used: [
+            [true, false, false],
+            [false, false, false],
+          ],
+        }),
+      );
+    }, ends);
+    await page.reload();
+    await expect(page.getByLabel("Wynik: Ola", { exact: true })).toHaveText(
+      "2",
+    );
+    await expect(page.getByText("Rozdanie 2", { exact: true })).toBeVisible();
+    await page
+      .getByRole("button", { name: "Jan: 3 punkty", exact: true })
+      .click();
+    await expect(page.getByLabel("Wynik: Jan", { exact: true })).toHaveText(
+      "3",
+    );
+    await page.reload();
+    await expect(page.getByLabel("Wynik: Ola", { exact: true })).toHaveText(
+      "2",
+    );
+    await expect(page.getByLabel("Wynik: Jan", { exact: true })).toHaveText(
+      "3",
+    );
   });
 }
 
@@ -122,6 +160,7 @@ test("match scoreboard fits narrow phones with long names", async ({
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
     320,
   );
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page.screenshot({
     path: "test-results/match-mobile.png",
     fullPage: true,

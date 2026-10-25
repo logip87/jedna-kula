@@ -25,6 +25,7 @@ import type {
 } from "./types";
 
 export function audience(state: State) {
+  if (state.player?.audience === "junior") return "junior";
   if (state.player?.level)
     return ["advanced", "tournament"].includes(state.player.level)
       ? "athlete"

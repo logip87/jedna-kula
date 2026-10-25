@@ -1,19 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, CircleDot, Pencil, Trophy } from "lucide-react";
+import { ArrowRight, Pencil, RotateCcw, Trophy } from "lucide-react";
 
 type Pair = [number, number];
 type Game = {
   size: number;
   names: [string, string];
   ends: (Pair | null)[];
-  used: [boolean[], boolean[]];
 };
 const storageKey = "jedna-kula-match-v1";
 const ballCount = (size: number) => (size === 1 ? 3 : 6);
-const freshBalls = (size: number): Game["used"] => [
-  Array<boolean>(ballCount(size)).fill(false),
-  Array<boolean>(ballCount(size)).fill(false),
-];
 function readGame(): Game | null {
   try {
     const game = JSON.parse(localStorage.getItem(storageKey) || "null");
@@ -40,18 +35,15 @@ function readGame(): Game | null {
                 n <= ballCount(game.size),
             ) &&
             (end[0] === 0 || end[1] === 0),
-      ) ||
-      !Array.isArray(game.used) ||
-      game.used.length !== 2 ||
-      !game.used.every(
-        (side: unknown) =>
-          Array.isArray(side) &&
-          side.length === ballCount(game.size) &&
-          side.every((b) => typeof b === "boolean"),
       )
     )
       return null;
-    return game as Game;
+    // Older versions kept the scored end open until “next” was pressed.
+    return {
+      size: game.size,
+      names: game.names,
+      ends: game.ends.at(-1) === null ? game.ends : [...game.ends, null],
+    };
   } catch {
     return null;
   }
@@ -62,13 +54,11 @@ export function Match() {
   const [size, setSize] = useState(1);
   const [names, setNames] = useState<[string, string]>(["", ""]);
   const [editing, setEditing] = useState<number | null>(null);
-  const [winner, setWinner] = useState("0");
-  const [points, setPoints] = useState("1");
   const [reset, setReset] = useState(false);
   const [storageError, setStorageError] = useState(false);
-  const editor = useRef<HTMLFormElement>(null);
+  const boardHeading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
-    if (editing !== null) editor.current?.querySelector("select")?.focus();
+    if (editing !== null) boardHeading.current?.focus();
   }, [editing]);
   useEffect(() => {
     try {
@@ -80,11 +70,22 @@ export function Match() {
     }
   }, [game]);
 
-  function edit(index: number) {
-    const end = game?.ends[index];
-    setWinner(end ? (end[0] ? "0" : end[1] ? "1" : "none") : "0");
-    setPoints(String(end ? end[0] || end[1] || 1 : 1));
-    setEditing(index);
+  function record(result: Pair) {
+    setGame((previous) => {
+      if (!previous) return previous;
+      if (editing !== null)
+        return {
+          ...previous,
+          ends: previous.ends.map((end, index) =>
+            index === editing ? result : end,
+          ),
+        };
+      return {
+        ...previous,
+        ends: [...previous.ends.slice(0, -1), result, null],
+      };
+    });
+    setEditing(null);
   }
   const totals = game?.ends.reduce<Pair>(
     (sum, end) => [sum[0] + (end?.[0] || 0), sum[1] + (end?.[1] || 0)],
@@ -96,7 +97,9 @@ export function Match() {
       <div className="page-heading">
         <p className="eyebrow">NA BOISKU</p>
         <h1>Mecz</h1>
-        <p className="muted">Wynik i kule pod ręką. Skup się na grze.</p>
+        <p className="muted">
+          Po rozdaniu dotknij liczby zdobytych punktów. Skup się na grze.
+        </p>
       </div>
       {storageError && (
         <p className="notice" role="alert">
@@ -114,7 +117,6 @@ export function Match() {
               size,
               names: [names[0].trim(), names[1].trim()],
               ends: [null],
-              used: freshBalls(size),
             });
           }}
         >
@@ -171,8 +173,18 @@ export function Match() {
             <span className="pill">
               <Trophy size={16} /> {game.size} na {game.size}
             </span>
-            <b>Rozgrywka {game.ends.length}</b>
+            <b>Rozdanie {editing !== null ? editing + 1 : game.ends.length}</b>
           </div>
+          <h2 ref={boardHeading} tabIndex={-1} className="match-entry-heading">
+            {editing !== null
+              ? `Popraw wynik rozdania ${editing + 1}`
+              : "Ile punktów po rozdaniu?"}
+          </h2>
+          <p className="muted match-hint">
+            {editing !== null
+              ? "Dotknij poprawnej liczby punktów pod zwycięzcą rozdania."
+              : "Dotknij liczby pod zwycięzcą rozdania. Wynik zapisze się od razu."}
+          </p>
           <section className="card match-board" aria-label="Tablica meczu">
             {game.names.map((name, side) => (
               <div className="match-side" key={side}>
@@ -187,40 +199,18 @@ export function Match() {
                 >
                   {totals[side]}
                 </div>
-                <p className="match-ball-count">
-                  Dostępne kule:{" "}
-                  <b>
-                    {game.used[side].filter((used) => !used).length}/
-                    {ballCount(game.size)}
-                  </b>
-                </p>
+                <p className="match-ball-count">Punkty za rozdanie</p>
                 <div className="match-balls">
-                  {game.used[side].map((used, index) => (
+                  {Array.from({ length: ballCount(game.size) }, (_, index) => (
                     <button
                       type="button"
                       key={index}
-                      aria-label={`${name}: kula ${index + 1}`}
-                      aria-pressed={used}
-                      title={
-                        used ? "Przywróć kulę" : "Oznacz kulę jako wykorzystaną"
-                      }
+                      aria-label={`${name}: ${index + 1} ${index === 0 ? "punkt" : index < 4 ? "punkty" : "punktów"}`}
                       onClick={() =>
-                        setGame(
-                          (previous) =>
-                            previous && {
-                              ...previous,
-                              used: previous.used.map((balls, team) =>
-                                team === side
-                                  ? balls.map((ball, i) =>
-                                      i === index ? !ball : ball,
-                                    )
-                                  : balls,
-                              ) as Game["used"],
-                            },
-                        )
+                        record(side === 0 ? [index + 1, 0] : [0, index + 1])
                       }
                     >
-                      <CircleDot aria-hidden="true" size={30} />
+                      {index + 1}
                     </button>
                   ))}
                 </div>
@@ -230,122 +220,52 @@ export function Match() {
               :
             </span>
           </section>
-          <p className="muted match-hint">
-            Dotknij kulki, aby oznaczyć rzut. Dotknij ponownie, aby go cofnąć.
-          </p>
-          <section className="card config" aria-label="Punkty rozgrywki">
-            <h2>Rozgrywka {game.ends.length}</h2>
-            {game.ends.at(-1) === null ? (
-              <button
-                className="button"
-                onClick={() => edit(game.ends.length - 1)}
-              >
-                Przyznaj punkty
-              </button>
-            ) : (
-              <>
-                <p>Punkty zapisane: {game.ends.at(-1)!.join(":")}</p>
-                <button
-                  className="secondary"
-                  onClick={() => edit(game.ends.length - 1)}
-                >
-                  <Pencil size={16} /> Popraw wynik rozgrywki
-                </button>
-              </>
-            )}
-            <button
-              className="button"
-              disabled={game.ends.at(-1) === null || editing !== null}
-              onClick={() =>
-                setGame({
-                  ...game,
-                  ends: [...game.ends, null],
-                  used: freshBalls(game.size),
-                })
-              }
-            >
-              Następna rozgrywka <ArrowRight size={20} />
+          <div className="match-actions">
+            <button className="secondary" onClick={() => record([0, 0])}>
+              Rozdanie bez punktów
             </button>
-            {game.ends.at(-1) === null && (
-              <p className="muted">
-                Najpierw zapisz punkty lub wybierz rozgrywkę bez punktów.
-              </p>
-            )}
-          </section>
-          {editing !== null && (
-            <form
-              className="card config"
-              aria-label="Edycja punktów"
-              ref={editor}
-              onSubmit={(event) => {
-                event.preventDefault();
-                const result: Pair =
-                  winner === "none"
-                    ? [0, 0]
-                    : winner === "0"
-                      ? [Number(points), 0]
-                      : [0, Number(points)];
-                setGame({
-                  ...game,
-                  ends: game.ends.map((end, index) =>
-                    index === editing ? result : end,
-                  ),
-                });
-                setEditing(null);
-              }}
-            >
-              <h2>Punkty · rozgrywka {editing + 1}</h2>
-              <label>
-                Punkty dla
-                <select
-                  value={winner}
-                  onChange={(event) => setWinner(event.target.value)}
-                >
-                  {game.names.map((name, index) => (
-                    <option key={index} value={index}>
-                      {name}
-                    </option>
-                  ))}
-                  <option value="none">Rozgrywka bez punktów</option>
-                </select>
-              </label>
-              {winner !== "none" && (
-                <label>
-                  Liczba punktów
-                  <select
-                    value={points}
-                    onChange={(event) => setPoints(event.target.value)}
-                  >
-                    {Array.from({ length: ballCount(game.size) }, (_, i) => (
-                      <option key={i} value={i + 1}>
-                        {i + 1}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              )}
-              <button className="button">Zapisz punkty</button>
-              <button
-                type="button"
-                className="secondary"
-                onClick={() => setEditing(null)}
-              >
-                Anuluj
+            {editing !== null ? (
+              <button className="text-button" onClick={() => setEditing(null)}>
+                Anuluj poprawianie
               </button>
-            </form>
+            ) : game.ends.length > 1 ? (
+              <button
+                className="text-button"
+                onClick={() =>
+                  setGame(
+                    (previous) =>
+                      previous && {
+                        ...previous,
+                        ends: [...previous.ends.slice(0, -2), null],
+                      },
+                  )
+                }
+              >
+                <RotateCcw size={16} /> Cofnij ostatnie rozdanie
+              </button>
+            ) : null}
+          </div>
+          {game.ends.length > 1 && editing === null && (
+            <p className="muted" role="status">
+              Ostatnie rozdanie:{" "}
+              {game.ends.at(-2)![0] === 0 && game.ends.at(-2)![1] === 0
+                ? "bez punktów"
+                : `${game.names[game.ends.at(-2)![0] > 0 ? 0 : 1]} +${game.ends.at(-2)![0] || game.ends.at(-2)![1]}`}
+              .
+            </p>
           )}
           {game.ends.length > 1 && (
-            <section className="card config" aria-label="Historia rozgrywek">
-              <h2>Historia rozgrywek</h2>
+            <section className="card config" aria-label="Historia rozdań">
+              <h2>Historia rozdań</h2>
               {game.ends.slice(0, -1).map((end, index) => (
                 <div className="match-history" key={index}>
                   <span>
-                    Rozgrywka {index + 1} <b>{end!.join(":")}</b>
+                    Rozdanie {index + 1} <b>{end!.join(":")}</b>
                   </span>
                   <button
                     className="secondary"
-                    aria-label={`Popraw wynik rozgrywki ${index + 1}`}
-                    onClick={() => edit(index)}
+                    aria-label={`Popraw wynik rozdania ${index + 1}`}
+                    onClick={() => setEditing(index)}
                   >
                     <Pencil size={16} /> Popraw
                   </button>

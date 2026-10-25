@@ -4248,6 +4248,20 @@ summary {
   font-size: 13px;
   margin: 12px 0 8px;
 }
+.match-entry-heading {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+.match-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.match-page [role="status"] {
+  overflow-wrap: anywhere;
+}
 .match-balls {
   display: grid;
   grid-template-columns: repeat(3, 44px);
@@ -4263,14 +4277,11 @@ summary {
   border: 1px solid #af7c16;
   border-radius: 50%;
   color: #694600;
+  font-size: 21px;
+  font-weight: 800;
 }
-.match-balls button[aria-pressed="true"] {
-  background: var(--sand);
-  color: #6b6255;
-  border-style: dashed;
-}
-.match-balls button[aria-pressed="true"] svg {
-  opacity: 0.45;
+.match-balls button:active {
+  background: var(--gold);
 }
 .match-hint {
   font-size: 13px;

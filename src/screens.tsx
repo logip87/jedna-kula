@@ -2201,6 +2201,9 @@ export function Profile() {
   const { state, save, busy } = useApp();
   const [name, setName] = useState(state.player?.name ?? "");
   const [age, setAge] = useState(state.player?.age?.toString() ?? "");
+  const [group, setGroup] = useState(
+    state.player?.audience === "junior" ? "junior" : "adult",
+  );
   const [role, setRole] = useState(
     state.player?.preferredRole ?? "wszechstronny",
   );
@@ -2241,9 +2244,11 @@ export function Profile() {
                 preferredHand: hand,
                 level,
                 audience:
-                  level === "beginner" || level === "intermediate"
-                    ? "beginner"
-                    : "athlete",
+                  group === "junior"
+                    ? "junior"
+                    : level === "beginner" || level === "intermediate"
+                      ? "beginner"
+                      : "athlete",
                 createdAt: state.player?.createdAt ?? new Date().toISOString(),
               },
             }))
@@ -2259,9 +2264,9 @@ export function Profile() {
           onGoal={setGoal}
         />
         <p className="muted small">
-          Poziom dobiera punkt wyjścia. „Zaawansowany” oznacza też gracza
-          klubowego pracującego nad konkretnym elementem; nie jest oceną
-          rankingową.
+          Grupa i poziom to osobne informacje: junior też może grać na poziomie
+          mistrzowskim. Poziom określasz samodzielnie; pomaga dobrać punkt
+          wyjścia i nie jest oceną rankingową.
         </p>
         <label>
           Jak masz na imię?
@@ -2274,6 +2279,13 @@ export function Profile() {
               setSaved(false);
             }}
           />
+        </label>
+        <label>
+          Grupa zawodnika
+          <select value={group} onChange={(e) => setGroup(e.target.value)}>
+            <option value="adult">Dorosły</option>
+            <option value="junior">Junior</option>
+          </select>
         </label>
         <label>
           Wiek (opcjonalnie)
@@ -2294,7 +2306,7 @@ export function Profile() {
             <option value="beginner">Początkujący</option>
             <option value="intermediate">Średniozaawansowany</option>
             <option value="advanced">Zaawansowany</option>
-            <option value="tournament">Turniejowy</option>
+            <option value="tournament">Turniejowy / mistrzowski</option>
           </select>
         </label>
         <label>
