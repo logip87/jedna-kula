@@ -1,4 +1,9 @@
-import { choices, type Mode, type Session } from "../../src/domain";
+import {
+  boundaryDistance,
+  choices,
+  type Mode,
+  type Session,
+} from "../../src/domain";
 
 export function nextStepSeries(
   mode: Mode,
@@ -28,7 +33,7 @@ export function nextStepSeries(
     kind: "training",
     difficulty: "średni",
     targetSize: 50,
-    boundary: 40,
+    boundary: mode === "boundary" ? boundaryDistance : 40,
     surface: "gravel",
     startedAt: `2026-10-${String(day).padStart(2, "0")}T10:00:00Z`,
     completedAt: `2026-10-${String(day).padStart(2, "0")}T10:30:00Z`,

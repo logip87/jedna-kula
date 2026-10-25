@@ -19,6 +19,8 @@ test.describe(
     test("first pointing attempt exposes score controls and routine", async ({
       page,
     }) => {
+      await page.goto("/");
+      await page.getByRole("button", { name: "Później", exact: true }).click();
       await beginTraining(page);
       await expect(page).toHaveScreenshot("active-pointing.png");
     });

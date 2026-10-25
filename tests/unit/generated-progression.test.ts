@@ -5,6 +5,7 @@ import {
 import { describe, expect, it } from "vitest";
 import {
   choices,
+  boundaryDistance,
   emptyState,
   type Mode,
   type Session,
@@ -64,7 +65,7 @@ function regular(mode: Mode, distance: number): Session {
     difficulty: "średni",
     surface: "gravel",
     targetSize: 50,
-    boundary: 40,
+    boundary: mode === "boundary" ? boundaryDistance : 40,
     plan: Array.from({ length: 20 }, () => ({ mode, distance })),
   };
 }

@@ -24,6 +24,8 @@ test.describe(
 
     test("active pointing training on mobile", async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto("/");
+      await page.getByRole("button", { name: "Później", exact: true }).click();
       await beginTraining(page);
       await expect(page).toHaveScreenshot("active-training-mobile-390.png", {
         fullPage: false,
