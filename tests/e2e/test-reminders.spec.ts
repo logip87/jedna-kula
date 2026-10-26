@@ -62,7 +62,7 @@ test("reminder appears on day 30, dismissal survives reload and can be scheduled
   await expect(page.getByText("Rzut 1 / 20", { exact: true })).toBeVisible();
   const draft = (await readStoredState(page)).draft!;
   expect(draft.kind).toBe("test");
-  expect(draft.surface).toBe("rough");
+  expect(draft.surface).toBeUndefined();
   expect(draft.plan).toEqual(plan);
   expect(draft.results).toEqual([]);
 });
@@ -83,7 +83,7 @@ test("test summary starts focused practice and preserves an existing draft", asy
   const draft = (await readStoredState(page)).draft!;
   expect(draft.kind).toBe("training");
   expect(draft.drillId).toBe("shoot-basic");
-  expect(draft.surface).toBe("rough");
+  expect(draft.surface).toBeUndefined();
   expect(draft.plan.every((p) => p.distance === 6)).toBe(true);
   await page.goto("/history/benchmark");
   await page.getByRole("button", { name: "Wznów otwartą sesję" }).click();

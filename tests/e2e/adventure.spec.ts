@@ -47,12 +47,9 @@ test("junior journey unlocks the next mission only after saving; map and recomme
   await expect(
     page.locator(".error-map [data-direction=left] strong"),
   ).toHaveText("6");
-  await page
-    .getByRole("combobox", { name: "Teren", exact: true })
-    .selectOption("rough");
   await expect(
-    page.getByRole("heading", { name: "Dodaj pierwszy ślad" }),
-  ).toBeVisible();
+    page.getByRole("combobox", { name: "Teren", exact: true }),
+  ).toHaveCount(0);
   await page.goto("/adventure/next");
   await expect(page.getByText(/20 prób z co najmniej 2 sesji/)).toBeVisible();
   expect(

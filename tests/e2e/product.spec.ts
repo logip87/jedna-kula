@@ -49,7 +49,7 @@ async function restore(page: Page, data: State) {
     .click();
   await expect(page.getByRole("status")).toContainText("Kopia przywrócona");
 }
-test("Today changes difficulty only after acceptance and resumes the accepted plan", async ({
+test("Today keeps distance selection in the player's control and resumes it", async ({
   page,
 }) => {
   await restore(page, {
@@ -58,24 +58,14 @@ test("Today changes difficulty only after acceptance and resumes the accepted pl
   });
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: "Strzał 8 m", exact: true }),
-  ).toBeVisible();
-  await page
-    .getByText("Podpowiedzi do treningu · opcjonalnie", { exact: true })
-    .click();
-  await expect(page.getByRole("region", { name: "Zasady awansu" })).toHaveCount(
-    0,
-  );
-  await expect(
     page.getByRole("button", { name: "SPRÓBUJ TRUDNIEJ", exact: true }),
-  ).toBeVisible();
+  ).toHaveCount(0);
   await page
-    .getByRole("button", { name: "SPRÓBUJ TRUDNIEJ", exact: true })
+    .getByRole("button", { name: "Strzał", exact: true })
     .click();
+  await page.getByLabel("Odległość").selectOption("9");
+  await page.getByRole("button", { name: "ZACZNIJ TRENING", exact: true }).click();
   await expect(page.locator(".distance")).toContainText("9 m");
-  await expect(page.getByRole("region", { name: "Zasady awansu" })).toHaveCount(
-    0,
-  );
   await page.reload();
   await expect(page.locator(".distance")).toContainText("9 m");
   await page.goto("/");
