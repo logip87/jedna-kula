@@ -1236,26 +1236,28 @@ export function Active() {
       {confirm && (
         <div className="notice">
           <p>Możesz zapisać dotychczasowe rzuty lub wrócić do ćwiczenia.</p>
-          {s.results.length > 0 ? (
-            <Link className="button" to="/summary">
-              Podsumuj trening
-            </Link>
-          ) : (
-            <button
-              className="button"
-              disabled={busy}
-              onClick={async () => {
-                if (!(await save({ ...state, draft: null }))) return;
-                if (isCurrentSession())
-                  navigate(s.missionId ? "/adventure/missions" : "/training");
-              }}
-            >
-              Zakończ bez wyniku
+          <div className="notice-actions">
+            {s.results.length > 0 ? (
+              <Link className="button" to="/summary">
+                Podsumuj trening
+              </Link>
+            ) : (
+              <button
+                className="button"
+                disabled={busy}
+                onClick={async () => {
+                  if (!(await save({ ...state, draft: null }))) return;
+                  if (isCurrentSession())
+                    navigate(s.missionId ? "/adventure/missions" : "/training");
+                }}
+              >
+                Zakończ bez wyniku
+              </button>
+            )}
+            <button className="secondary" onClick={() => setConfirm(false)}>
+              Ćwiczę dalej
             </button>
-          )}
-          <button className="secondary" onClick={() => setConfirm(false)}>
-            Ćwiczę dalej
-          </button>
+          </div>
         </div>
       )}
       {d.timed && (

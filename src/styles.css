@@ -960,9 +960,14 @@ input[type="checkbox"] {
   margin-bottom: 12px;
 }
 .notice-actions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 12px;
+}
+.notice-actions .button {
+  width: 100%;
+}
+.notice-actions .secondary {
+  width: fit-content;
 }
 .active-training {
   max-width: 590px;
