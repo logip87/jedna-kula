@@ -47,6 +47,53 @@ test(
     ).toBeVisible();
   },
 );
+test("crouching pointing is listed after basic pointing and keeps its own session", async ({
+  page,
+}) => {
+  await page.goto("/training?category=Puenta");
+  const pointingDrills = page.locator(".drill-grid").last().getByRole("link");
+  await expect(pointingDrills.nth(0)).toHaveAccessibleName(/Puenta podstawowa/);
+  await expect(pointingDrills.nth(1)).toHaveAccessibleName(
+    /Puenta z pozycji kucającej/,
+  );
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+  await pointingDrills.nth(1).click();
+  await expect(
+    page.getByRole("heading", {
+      name: "Puenta z pozycji kucającej",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Odległość")).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+  await page.getByRole("button", { name: "Zaczynam", exact: true }).click();
+  await page
+    .getByRole("button", { name: "0–30 cm +3 pkt", exact: true })
+    .click();
+  await expect(page.getByText("Rzut 2 / 6", { exact: true })).toBeVisible();
+  await page.reload();
+  await expect(page.getByText("Rzut 2 / 6", { exact: true })).toBeVisible();
+  for (let i = 1; i < 6; i++)
+    await page
+      .getByRole("button", { name: "0–30 cm +3 pkt", exact: true })
+      .click();
+  await page.getByRole("button", { name: "Zapisz wynik", exact: true }).click();
+  await expect(
+    page.getByText("ZAPISANY TRENING", { exact: true }),
+  ).toBeVisible();
+  await page.goto("/history");
+  await expect(
+    page.getByRole("link", { name: /Puenta z pozycji kucającej/ }),
+  ).toBeVisible();
+});
 test(
   "mental completion persists independently from technical sessions",
   { tag: ["@showcase", "@e2e"] },

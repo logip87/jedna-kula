@@ -151,6 +151,22 @@ describe("consistent result evidence", () => {
     expect(progressResults(emptyState, now).areas).toEqual([]);
   });
 
+  it("keeps technical pointing variants separate in detailed progress", () => {
+    const basic = series("point", 6, 6);
+    const crouching = {
+      ...series("point", 0, 6, 2),
+      drillId: "point-crouching",
+    };
+    const areas = progressResults(
+      { ...emptyState, sessions: [basic, crouching] },
+      now,
+    ).areas;
+    expect(areas).toMatchObject([
+      { drillId: "point-basic", mode: "point", distance: 8, rate: 100 },
+      { drillId: "point-crouching", mode: "point", distance: 8, rate: 0 },
+    ]);
+  });
+
   it("orders by completion date without changing stored order and excludes future/test results from progress", () => {
     const older = series("point", 6, 6, 1);
     const newer = series("point", 3, 6, 12);

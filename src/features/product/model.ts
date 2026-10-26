@@ -9,6 +9,7 @@ import {
 } from "../../domain";
 import {
   comparableSessions,
+  conditionDrillId,
   conditionKey,
   createRecommendedSession,
   modeNames,
@@ -60,12 +61,20 @@ export function progressResults(state: State, now = new Date()) {
   );
   const groups = new Map<
     string,
-    { mode: Mode; distance: number; hits: number; count: number }
+    {
+      drillId: string;
+      mode: Mode;
+      distance: number;
+      hits: number;
+      count: number;
+    }
   >();
   for (const s of sessions)
     for (const a of s.results) {
-      const key = `${a.mode}:${a.distance}`;
+      const drillId = conditionDrillId(s, a.mode);
+      const key = `${drillId}:${a.mode}:${a.distance}`;
       const group = groups.get(key) ?? {
+        drillId,
         mode: a.mode,
         distance: a.distance,
         hits: 0,
@@ -83,7 +92,12 @@ export function progressResults(state: State, now = new Date()) {
         key,
         rate: percent(group.hits, group.count),
       }))
-      .sort((a, b) => a.mode.localeCompare(b.mode) || a.distance - b.distance),
+      .sort(
+        (a, b) =>
+          a.mode.localeCompare(b.mode) ||
+          a.drillId.localeCompare(b.drillId) ||
+          a.distance - b.distance,
+      ),
   };
 }
 export const technicalSessions = (state: State, now = new Date()) =>

@@ -17,6 +17,20 @@ export const drills: Drill[] = [
     minutes: 10,
   },
   {
+    id: "point-crouching",
+    name: "Puenta z pozycji kucającej",
+    category: "Puenta",
+    description:
+      "Ćwicz puentę wykonywaną z pozycji kucającej. Skup się na stabilnej pozycji, płynnym ruchu i powtarzalności.",
+    instructions:
+      "Ustaw świnkę na wybranej odległości. Przyjmij stabilną pozycję kucającą, rzuć 6 kul i zmierz odległość każdej od świnki. Celuj w 30 cm.",
+    mode: "point",
+    distances,
+    attempts: 6,
+    cue: "Stabilna pozycja. Płynny ruch.",
+    minutes: 10,
+  },
+  {
     id: "point-random",
     name: "Puenta na różne odległości",
     category: "Różne odległości",

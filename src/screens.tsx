@@ -2168,11 +2168,11 @@ export function ProgressPage() {
       </div>
       {results.areas.length > 0 && (
         <section className="card">
-          <h2>Skuteczność według rzutu i dystansu</h2>
+          <h2>Skuteczność według ćwiczenia i dystansu</h2>
           <p className="muted small">
             Trafienia / próby. Puenta do 60 cm, strzał z usunięciem celu,
-            precyzja w kole, lob: pierwsze lądowanie. To łączne wyniki danego
-            rodzaju rzutu; ocenę zmiany powyżej liczymy tylko dla porównywalnych
+            precyzja w kole, lob: pierwsze lądowanie. Wyniki różnych ćwiczeń są
+            rozdzielone; ocenę zmiany powyżej liczymy tylko dla porównywalnych
             sesji.
           </p>
           {[...new Set(results.areas.map((area) => area.mode))].map((mode) => (
@@ -2182,7 +2182,11 @@ export function ProgressPage() {
                 .filter((area) => area.mode === mode)
                 .map((area) => (
                   <div className="stat-row" key={area.key}>
-                    <b>{area.distance} m</b>
+                    <b>
+                      {drills.find((d) => d.id === area.drillId)?.name ??
+                        modeNames[area.mode]}{" "}
+                      · {area.distance} m
+                    </b>
                     <div className="bar">
                       <span style={{ width: `${area.rate}%` }} />
                     </div>
