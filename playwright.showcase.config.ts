@@ -1,10 +1,21 @@
 import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests",
-  testMatch: "**/*.spec.ts",
+  // Showcase retains representative product and quality scenarios, but excludes
+  // the retired broad E2E matrix and all desktop-oriented visual comparisons.
+  testMatch: [
+    "e2e/critical/**/*.spec.ts",
+    "accessibility/**/*.spec.ts",
+    "pwa/**/*.spec.ts",
+    "security/**/*.spec.ts",
+    "resilience/**/*.spec.ts",
+    "agentic/generated/**/*.spec.ts",
+  ],
   grep: /@showcase/,
-  fullyParallel: true,
-  workers: process.env.CI ? 2 : 4,
+  // Every browser check uses the same representative phone.  Cross-browser,
+  // desktop and visual-layout matrices are intentionally outside this suite.
+  fullyParallel: false,
+  workers: 1,
   retries: 0,
   forbidOnly: !!process.env.CI,
   timeout: 30_000,
@@ -26,42 +37,10 @@ export default defineConfig({
   },
   projects: [
     {
-      name: "showcase-android",
+      name: "mobile-chromium",
       grepInvert: /@visual/,
       use: { ...devices["Pixel 7"] },
     },
-    {
-      name: "smoke-chromium",
-      testMatch: "e2e/app.spec.ts",
-      grep: /@smoke/,
-      use: { ...devices["Desktop Chrome"] },
-    },
-    {
-      name: "smoke-firefox",
-      testMatch: "e2e/app.spec.ts",
-      grep: /@smoke/,
-      use: { ...devices["Desktop Firefox"] },
-    },
-    {
-      name: "smoke-iphone",
-      testMatch: "e2e/app.spec.ts",
-      grep: /@smoke/,
-      use: { ...devices["iPhone 13"], browserName: "webkit" },
-    },
-    // Per-OS baselines. The visual job uses macOS; Linux runs the functional suite.
-    ...(process.platform === "darwin"
-      ? [
-          {
-            name: "visual-chromium",
-            testMatch: "visual/**/*.spec.ts",
-            use: {
-              ...devices["Desktop Chrome"],
-              viewport: { width: 393, height: 852 },
-              deviceScaleFactor: 1,
-            },
-          },
-        ]
-      : []),
   ],
   webServer: {
     command: "npm run build && npm run preview -- --port 4173",

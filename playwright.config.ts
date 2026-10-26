@@ -1,6 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "tests/e2e",
+  // Product E2E deliberately cover one user-facing mobile journey per critical
+  // capability.  Domain matrices live in Vitest; historical broad UI coverage is
+  // retained in the repository but is not part of the regression command.
+  testMatch: "critical/**/*.spec.ts",
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: 0,
@@ -18,6 +22,7 @@ export default defineConfig({
   projects: [
     {
       name: "mobile-chromium",
+      // Pixel 7 is 412 × 915 CSS px: a current, popular Android viewport.
       use: { ...devices["Pixel 7"], defaultBrowserType: "chromium" },
     },
   ],

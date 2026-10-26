@@ -100,7 +100,7 @@ Wymagany Node.js 22.12+; ostatnią weryfikację wykonano na Node 24.
 
 ```sh
 npm ci
-npx playwright install chromium firefox webkit
+npx playwright install chromium
 npm run qa:showcase
 ```
 
@@ -108,10 +108,9 @@ Poszczególne obszary:
 
 ```sh
 npm run qa:contracts      # integracje i kontrakty agentowe, bez przeglądarki
-npm run qa:smoke          # krytyczny flow na Chromium, Firefox i WebKit
+npm run qa:smoke          # krytyczne flow na jednym widoku Pixel 7 / Chromium
 npm run qa:pwa
 npm run qa:a11y
-npm run qa:visual         # dwa porównania PNG; baseline macOS
 npm run qa:security
 npm run qa:agent-security
 npm run qa:agentic
@@ -120,7 +119,7 @@ npm run qa:repeat         # pięć przebiegów smoke + resilience
 npm run qa:generate:check # kontrola zgodności testu z planem/review
 ```
 
-Na Linux funkcjonalny showcase działa bez dwóch testów visual; porównania obrazów mają osobny job macOS. Aktualizacja baseline jest świadomą operacją: `npm run qa:visual -- --update-snapshots`, po której trzeba ocenić diff.
+Showcase uruchamia się wyłącznie na jednym widoku Pixel 7 / Chromium. Testy funkcjonalne nie powielają przebiegów dla desktopu, tabletów ani innych silników.
 
 Pełna weryfikacja produktu:
 

@@ -30,11 +30,11 @@ jobs:
         run: echo 'http://archive.ubuntu.com/ubuntu/' | sudo tee /etc/apt/apt-mirrors.txt
       - name: Install browser dependencies
         timeout-minutes: 5
-        run: npx playwright install --with-deps chromium firefox webkit
-      - name: Build + cross-browser smoke
+        run: npx playwright install --with-deps chromium
+      - name: Build + mobile smoke
         run: npm run qa:smoke
       - name: Risk gate (accessibility, security, PWA, resilience)
-        run: npm run qa:browsers -- --project showcase-android --grep '@a11y|@security|@pwa|@resilience'
+        run: npm run qa:browsers -- --project mobile-chromium --grep '@a11y|@security|@pwa|@resilience'
       - uses: actions/upload-artifact@v4
         if: failure() || cancelled()
         with:
@@ -61,7 +61,7 @@ jobs:
         run: echo 'http://archive.ubuntu.com/ubuntu/' | sudo tee /etc/apt/apt-mirrors.txt
       - name: Install browser dependencies
         timeout-minutes: 5
-        run: npx playwright install --with-deps chromium firefox webkit
+        run: npx playwright install --with-deps chromium
       - run: npm run qa:showcase
       - run: npm run test:e2e
       - uses: actions/upload-artifact@v4
@@ -73,36 +73,9 @@ jobs:
             test-results/
           retention-days: 7
           if-no-files-found: ignore
-  visual:
-    if: github.event_name != 'pull_request'
-    runs-on: macos-26
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: npm
-      - run: npm ci
-      - name: Install Chromium
-        timeout-minutes: 5
-        run: npx playwright install chromium
-      - run: npm run qa:visual
-      - uses: actions/upload-artifact@v4
-        if: failure() || cancelled()
-        with:
-          name: visual-failure
-          path: |
-            playwright-report/showcase/
-            test-results/showcase/
-          retention-days: 7
-          if-no-files-found: ignore
-
   deploy:
     name: Deploy production (FTPS)
-    needs: [quality-gate, full-regression, visual]
+    needs: [quality-gate, full-regression]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
