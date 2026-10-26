@@ -1389,7 +1389,7 @@ fieldset > .secondary {
 .more-links .history-item {
   min-height: 115px;
 }
-.more-links svg:last-child {
+.more-links .history-item > svg:last-child {
   margin-left: auto;
 }
 .profile-form {

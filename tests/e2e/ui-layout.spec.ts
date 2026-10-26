@@ -56,6 +56,19 @@ test.describe(
       await checkNavigation(page, true);
     });
 
+    test("more-page icons stay centered inside their tiles", async ({ page }) => {
+      await page.setViewportSize({ width: 1280, height: 720 });
+      await page.goto("/more");
+
+      const icon = page
+        .locator(".more-links")
+        .getByRole("link", { name: "Mecz", exact: true })
+        .locator(".icon-box > svg");
+
+      await expect(icon).toHaveCSS("margin-left", "0px");
+      await expect(icon).toHaveCSS("margin-right", "0px");
+    });
+
     test("125% zoom on a narrow viewport keeps navigation and content usable", async ({
       page,
     }) => {
