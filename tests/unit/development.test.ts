@@ -27,6 +27,7 @@ import {
 } from "../../src/features/development/model";
 import {
   advancePractice,
+  recommendedPhysicalModule,
   practiceModules,
   practiceSteps,
   startPractice,
@@ -431,10 +432,29 @@ describe("practice and competition", () => {
           const state = startPractice(emptyState, m.id, minutes, variant);
           const draft = state.coaching!.practiceDraft!;
           expect(practiceSteps(draft).length).toBe(
-            minutes === 5 ? m.steps.length : m.steps.length * 2 + 1,
+            minutes === 5
+              ? variant === "junior"
+                ? (m.juniorSteps ?? m.steps).length
+                : m.steps.length
+              : (variant === "junior"
+                  ? (m.juniorSteps ?? m.steps).length +
+                    (m.juniorExtendedSteps ?? m.extendedSteps ?? []).length
+                  : m.steps.length + (m.extendedSteps ?? []).length) + 1,
           );
           expect(parseBackup(serializeBackup(state))).toEqual(state);
         }
+  });
+  it("rotates the recommendation away from recently repeated modules", () => {
+    let state = startPractice(emptyState, "physical-mobility", 5, "adult");
+    while (state.coaching?.practiceDraft) state = advancePractice(state);
+    state = startPractice(state, "physical-mobility", 5, "adult");
+    while (state.coaching?.practiceDraft) state = advancePractice(state);
+    state = startPractice(state, "physical-stability", 5, "adult");
+    while (state.coaching?.practiceDraft) state = advancePractice(state);
+
+    expect(recommendedPhysicalModule(state, now).module.id).not.toBe(
+      "physical-mobility",
+    );
   });
   it("caps repeated modules separately for mental and physical XP", () => {
     vi.useFakeTimers();

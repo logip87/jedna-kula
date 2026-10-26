@@ -168,7 +168,7 @@ test("physical junior practice saves progress and earns its separate XP", async 
 }) => {
   await page.goto("/coach/practice/physical");
   await page.getByLabel("Wariant").selectOption("junior");
-  await page.getByRole("button", { name: "10 minut", exact: true }).click();
+  await page.getByRole("button", { name: "Około 10 min", exact: true }).click();
   await page
     .getByRole("button", { name: "Zacznij moduł", exact: true })
     .first()
@@ -176,15 +176,33 @@ test("physical junior practice saves progress and earns its separate XP", async 
   await page
     .getByRole("button", { name: "Wykonane · następny krok", exact: true })
     .click();
-  await expect(page.getByText(/10 MIN · KROK 2/)).toBeVisible();
+  await expect(page.getByText(/Około 10 min · krok 2/)).toBeVisible();
   await page.reload();
-  await expect(page.getByText(/10 MIN · KROK 2/)).toBeVisible();
+  await expect(page.getByText(/Około 10 min · krok 2/)).toBeVisible();
   await finishPractice(page);
   await expect(page.getByText(/Ostatni moduł zapisany:/)).toBeVisible();
   await page.goto("/coach/development");
   await expect(
     page.getByRole("heading", { name: "Poziom 1 · 20 XP", exact: true }),
   ).toBeVisible();
+});
+test("physical module can be resumed from Today", async ({ page }) => {
+  await page.goto("/coach/practice/physical");
+  await page
+    .getByRole("button", { name: "Zacznij moduł", exact: true })
+    .first()
+    .click();
+  await page
+    .getByRole("button", { name: "Wykonane · następny krok", exact: true })
+    .click();
+  await expect(page.getByText(/Około 5 min · krok 2 \/ 6/)).toBeVisible();
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", { name: "Wznów: Mobilność", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("Krok 2/6", { exact: true })).toBeVisible();
+  await page.getByRole("link", { name: "Wznów", exact: true }).click();
+  await expect(page.getByText(/Około 5 min · krok 2 \/ 6/)).toBeVisible();
 });
 test("competition date persists and Today starts the taper plan", async ({
   page,

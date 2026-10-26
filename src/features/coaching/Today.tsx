@@ -20,6 +20,7 @@ import { useApp } from "../../app-context";
 import { successfulAttempt } from "../../domain";
 import { drills } from "../../data";
 import { modeNames, recommendation, weeklyProgress } from "./model";
+import { practiceModules, practiceSteps } from "../development/practices";
 export function Today({ guide }: { guide?: ReactNode }) {
   const { state, save, busy } = useApp(),
     navigate = useNavigate();
@@ -29,6 +30,13 @@ export function Today({ guide }: { guide?: ReactNode }) {
     mental = mentalRecommendation(state),
     dashboard = dashboardEvidence(state),
     lastTraining = lastRepeatableTraining(state);
+  const physicalDraft =
+    state.coaching?.practiceDraft?.kind === "physical"
+      ? state.coaching.practiceDraft
+      : undefined;
+  const physicalModule = physicalDraft
+    ? practiceModules.find((module) => module.id === physicalDraft.moduleId)
+    : undefined;
   const startSuggestion = async () => {
     if (state.draft) {
       navigate("/session");
@@ -55,6 +63,21 @@ export function Today({ guide }: { guide?: ReactNode }) {
         </div>
       </div>
       <TestReminders />
+      {physicalDraft && physicalModule && (
+        <section
+          className="notice practice-resume"
+          aria-label="Rozpoczęty moduł ruchowy"
+        >
+          <p className="eyebrow">ROZPOCZĘTY MODUŁ</p>
+          <h2>Wznów: {physicalModule.category}</h2>
+          <p>
+            Krok {physicalDraft.step + 1}/{practiceSteps(physicalDraft).length}
+          </p>
+          <Link className="button" to="/coach/practice/session">
+            Wznów
+          </Link>
+        </section>
+      )}
       {state.draft ? (
         <section className="coach-main">
           <p className="eyebrow">TRENING W TOKU</p>

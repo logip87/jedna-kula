@@ -39,10 +39,13 @@ import {
 } from "./model";
 import {
   advancePractice,
+  physicalModuleHistory,
   practiceModules,
   practiceSteps,
+  recommendedPhysicalModule,
   startPractice,
   selectPracticeCue,
+  timeSincePractice,
 } from "./practices";
 import type { WeeklyChallenge } from "./types";
 
@@ -72,6 +75,13 @@ export function Development() {
   const { state } = useApp();
   const scores = skillScores(state);
   const level = xpLevel(state.coaching?.xpEvents);
+  const physicalDraft =
+    state.coaching?.practiceDraft?.kind === "physical"
+      ? state.coaching.practiceDraft
+      : undefined;
+  const draftModule = physicalDraft
+    ? practiceModules.find((module) => module.id === physicalDraft.moduleId)
+    : undefined;
   return (
     <div className="coach-page">
       <PageTitle
@@ -103,6 +113,21 @@ export function Development() {
           </p>
         </details>
       </section>
+      {physicalDraft && draftModule && (
+        <section
+          className="notice practice-resume"
+          aria-label="Rozpoczęty moduł ruchowy"
+        >
+          <p className="eyebrow">ROZPOCZĘTY MODUŁ</p>
+          <h2>Wznów: {draftModule.category}</h2>
+          <p>
+            Krok {physicalDraft.step + 1}/{practiceSteps(physicalDraft).length}
+          </p>
+          <Link className="button" to="/coach/practice/session">
+            Wznów
+          </Link>
+        </section>
+      )}
       <section>
         <h2>Skill Tree</h2>
         <p className="muted">
@@ -450,6 +475,32 @@ export function PracticeLibrary({ kind }: { kind: "mental" | "physical" }) {
   const [mentalLevel, setMentalLevel] = useState<MentalLevel | "all">("all");
   const [search] = useSearchParams();
   const selectedLesson = search.get("lesson");
+  const completedId = search.get("completed");
+  const draft = state.coaching?.practiceDraft;
+  const physicalDraft = draft?.kind === "physical" ? draft : undefined;
+  const recommended =
+    kind === "physical" ? recommendedPhysicalModule(state) : undefined;
+  const physicalHistory =
+    kind === "physical" ? physicalModuleHistory(state) : [];
+  const completedPractice = state.coaching?.practiceHistory?.find(
+    (practice) => practice.id === completedId && practice.kind === "physical",
+  );
+  const otherPhysicalPracticeToday = (
+    state.coaching?.practiceHistory ?? []
+  ).some(
+    (practice) =>
+      practice.kind === "physical" &&
+      practice.id !== completedId &&
+      practice.completedAt &&
+      localDay(new Date(practice.completedAt)) === localDay(new Date()),
+  );
+  const xpWasAlreadyEarned =
+    otherPhysicalPracticeToday &&
+    state.coaching?.xpEvents?.some(
+      (event) =>
+        event.kind === "physical" &&
+        localDay(new Date(event.earnedAt)) === localDay(new Date()),
+    );
   const last = state.coaching?.practiceHistory
     ?.filter((p) => p.kind === kind)
     .at(-1);
@@ -463,6 +514,73 @@ export function PracticeLibrary({ kind }: { kind: "mental" | "physical" }) {
             : "Krótki moduł ruchowy do pétanque, bez ciężarów i treningu do wyczerpania."
         }
       />
+      {completedPractice && (
+        <section
+          className="notice practice-complete"
+          aria-label="Ukończony moduł ruchowy"
+        >
+          <p className="eyebrow">MODUŁ UKOŃCZONY</p>
+          <h2>Dobre przygotowanie do gry.</h2>
+          <p>Możesz teraz przejść do spokojnego treningu z kulą.</p>
+          {xpWasAlreadyEarned && (
+            <p className="muted small">
+              Dzisiejsze punkty za przygotowanie ruchowe zostały już przyznane.
+            </p>
+          )}
+          <div className="notice-actions">
+            <Link className="button" to="/">
+              Przejdź do dzisiejszego treningu
+            </Link>
+            <Link className="secondary" to="/coach/practice/physical">
+              Wybierz kolejny moduł
+            </Link>
+          </div>
+        </section>
+      )}
+      {physicalDraft && (
+        <section
+          className="notice practice-resume"
+          aria-label="Rozpoczęty moduł ruchowy"
+        >
+          <p className="eyebrow">ROZPOCZĘTY MODUŁ</p>
+          <h2>
+            Wznów:{" "}
+            {
+              practiceModules.find(
+                (module) => module.id === physicalDraft.moduleId,
+              )?.category
+            }
+          </h2>
+          <p>
+            Krok {physicalDraft.step + 1}/{practiceSteps(physicalDraft).length}
+          </p>
+          <Link className="button" to="/coach/practice/session">
+            Wznów
+          </Link>
+        </section>
+      )}
+      {kind === "physical" && recommended && !physicalDraft && (
+        <section className="card practice-recommendation">
+          <p className="eyebrow">DZISIAJ POLECAM</p>
+          <h2>{recommended.module.category}</h2>
+          <p>Około {minutes} min</p>
+          <p>{recommended.reason}</p>
+          <button
+            className="button"
+            disabled={busy}
+            onClick={async () => {
+              if (
+                await save(
+                  startPractice(state, recommended.module.id, minutes, variant),
+                )
+              )
+                navigate("/coach/practice/session");
+            }}
+          >
+            Zacznij: {recommended.module.category.toLowerCase()}
+          </button>
+        </section>
+      )}
       {last && (
         <p className="success">
           Ostatni moduł zapisany:{" "}
@@ -517,7 +635,7 @@ export function PracticeLibrary({ kind }: { kind: "mental" | "physical" }) {
               </select>
             </label>
             <fieldset>
-              <legend>Mam…</legend>
+              <legend>Czas orientacyjny</legend>
               <div className="filters">
                 {([5, 10] as const).map((n) => (
                   <button
@@ -526,21 +644,26 @@ export function PracticeLibrary({ kind }: { kind: "mental" | "physical" }) {
                     className={n === minutes ? "selected" : ""}
                     onClick={() => setMinutes(n)}
                   >
-                    {n} minut
+                    Około {n} min
                   </button>
                 ))}
               </div>
             </fieldset>
             <p>
-              Spokojny, wygodny zakres ruchu. Jeśli pojawia się ból, zakończ
-              ćwiczenie. Junior ćwiczy z dorosłym.
+              To ogólne przygotowanie ruchowe przed pétanque, nie program
+              leczenia urazów.
+            </p>
+            <p>
+              {variant === "junior"
+                ? "Krótsze zakresy i mniej powtórzeń. Ćwicz z dorosłym."
+                : "Wykonuj ruchy spokojnie, w wygodnym zakresie. Jeśli pojawia się ból, zakończ ćwiczenie."}
             </p>
             <details>
               <summary>Jak wygląda moduł?</summary>
               <p>
-                Czas obejmuje instrukcje i spokojne przejścia. W wersji 10 minut
-                powtórz sekwencję po odpoczynku. Możesz przerwać moduł bez
-                zaliczenia; wróć do niego, gdy będziesz gotowy.
+                Czas jest orientacyjny i obejmuje instrukcje oraz spokojne
+                przejścia. Wersja około 10 min dodaje proste, spokojne ruchy.
+                Możesz przerwać moduł bez zaliczenia i wrócić do niego później.
               </p>
             </details>
           </>
@@ -560,7 +683,7 @@ export function PracticeLibrary({ kind }: { kind: "mental" | "physical" }) {
           </label>
         )}
       </section>
-      {state.coaching?.practiceDraft && (
+      {draft && !physicalDraft && (
         <Link className="button" to="/coach/practice/session">
           Wznów rozpoczęty moduł
         </Link>
@@ -595,8 +718,8 @@ export function PracticeLibrary({ kind }: { kind: "mental" | "physical" }) {
                 {m.category} ·{" "}
                 {kind === "mental"
                   ? `${mentalLevels.find((l) => l.id === m.level)?.name} · 2`
-                  : minutes}{" "}
-                MIN
+                  : `około ${minutes}`}{" "}
+                min
               </p>
               <h2>{m.title}</h2>
               <p>{m.description}</p>
@@ -634,6 +757,20 @@ export function PracticeLibrary({ kind }: { kind: "mental" | "physical" }) {
             </section>
           ))}
       </div>
+      {kind === "physical" && (
+        <section className="card practice-history">
+          <h2>Twoje moduły ruchowe</h2>
+          {physicalHistory.map((item) => (
+            <div key={item.module.id}>
+              <h3>{item.module.category}</h3>
+              <p>
+                Ostatnio: {timeSincePractice(item.lastCompletedAt)} ·
+                Ukończenia: {item.completed}
+              </p>
+            </div>
+          ))}
+        </section>
+      )}
       {kind === "mental" && (
         <Link className="secondary" to="/lessons">
           Lekcje pięciu kompetencji mentalnych
@@ -669,7 +806,9 @@ export function PracticeActive() {
   return (
     <div className="active coach-guided">
       <p className="eyebrow">
-        {draft.minutes} MIN · KROK {draft.step + 1} / {steps.length}
+        {draft.kind === "physical"
+          ? `Około ${draft.minutes} min · krok ${draft.step + 1} / ${steps.length}`
+          : `${draft.minutes} MIN · KROK ${draft.step + 1} / ${steps.length}`}
       </p>
       <h1>{module.title}</h1>
       <p className="development-practice-step">{steps[draft.step]}</p>
@@ -726,7 +865,12 @@ export function PracticeActive() {
               ),
             )
           ) {
-            if (last) navigate(`/coach/practice/${draft.kind}`);
+            if (last)
+              navigate(
+                draft.kind === "physical"
+                  ? `/coach/practice/physical?completed=${draft.id}`
+                  : `/coach/practice/${draft.kind}`,
+              );
           }
         }}
       >
@@ -741,8 +885,8 @@ export function PracticeActive() {
       {confirm && (
         <div className="notice">
           <p>
-            Przerwany moduł nie zostanie zaliczony. Możesz też wrócić do
-            ćwiczenia.
+            Przerwany moduł nie zostanie zaliczony. Możesz wrócić do tego modułu
+            później.
           </p>
           <button
             className="danger"
