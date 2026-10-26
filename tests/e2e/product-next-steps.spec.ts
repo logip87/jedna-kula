@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { emptyState } from "../../src/domain";
-import { difficultDistances, nextStepSeries } from "../support/next-steps";
+import { difficultDistances } from "../support/next-steps";
 import { readStoredState, replaceStoredState } from "../support/indexeddb";
 
 test("a mental practice cue survives reload and is consumed by only the next new technical training", async ({
@@ -80,56 +80,28 @@ test("a mental practice cue survives reload and is consumed by only the next new
   await expect(page.getByLabel("Twoja wskazówka mentalna")).toHaveCount(0);
 });
 
-test("a wider difficulty proposal starts the affected skill only after explicit acceptance", async ({
+test("the player freely chooses a distance and no longer receives a distance-change CTA", async ({
   page,
 }) => {
   await page.goto("/");
   await replaceStoredState(page, {
     ...emptyState,
-    sessions: [
-      ...difficultDistances(),
-      ...[11, 12, 13].map((day) => nextStepSeries("point", 6, 12, day)),
-    ],
+    sessions: difficultDistances(),
   });
   await page.reload();
-  await page.getByRole("button", { name: "Puenta", exact: true }).click();
   await expect(
-    page.getByRole("combobox", { name: "Odległość", exact: true }),
-  ).toHaveValue("6");
-  await expect(
-    page.getByText(/Po 3 ostatnie pełne serie na każdym z 2 dystansów/),
-  ).toBeVisible();
+    page.getByRole("button", { name: "ŁATWIEJSZY WARIANT", exact: true }),
+  ).toHaveCount(0);
+  await page.getByRole("button", { name: "Strzał", exact: true }).click();
+  await page
+    .getByRole("combobox", { name: "Odległość", exact: true })
+    .selectOption("9");
   await page
     .getByRole("button", { name: "ZACZNIJ TRENING", exact: true })
     .click();
-  await expect(page.locator(".session-top")).toContainText("Puenta podstawowa");
-  expect((await readStoredState(page)).draft?.plan[0]).toMatchObject({
-    mode: "point",
-    distance: 6,
-  });
-  // Return to the controlled saved history to exercise the alternative action.
-  await page.goto("/");
-  const saved = await readStoredState(page);
-  await replaceStoredState(page, { ...saved, draft: null });
-  await page.reload();
-  await page
-    .getByRole("button", { name: "ŁATWIEJSZY WARIANT", exact: true })
-    .click();
-  await expect(page.getByText("Rzut 1 / 20", { exact: true })).toBeVisible();
   await expect(page.locator(".session-top")).toContainText("Strzał podstawowy");
-  const draft = (await readStoredState(page)).draft!;
-  expect(draft).toMatchObject({
-    drillId: "shoot-basic",
-    surface: "gravel",
-    targetSize: 50,
-  });
-  expect(draft.plan.every((a) => a.mode === "shoot" && a.distance === 6)).toBe(
-    true,
-  );
-  await page.reload();
-  await expect(page.locator(".distance")).toContainText("6 m");
-  await page.screenshot({
-    path: "test-results/next-steps-easier-training.png",
-    fullPage: false,
+  expect((await readStoredState(page)).draft?.plan[0]).toMatchObject({
+    mode: "shoot",
+    distance: 9,
   });
 });
