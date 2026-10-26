@@ -343,21 +343,23 @@ test("beginner guide starts at six metres and library filters help discovery", a
     .getByRole("button", { name: "Na dobry początek", exact: true })
     .click();
   await expect(
-    page.getByText("Ćwiczenia dla Ciebie: 4", { exact: true }),
+    page.getByText("Wszystkie ćwiczenia: 4", { exact: true }),
   ).toBeVisible();
   await page.getByRole("searchbox", { name: "Szukaj ćwiczenia" }).fill("lob");
   await expect(
-    page.getByText("Ćwiczenia dla Ciebie: 1", { exact: true }),
+    page.getByText("Wszystkie ćwiczenia: 1", { exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByRole("link", { name: /Lob podstawowy/ }),
+    page
+      .locator(".drill-grid:not(.recommendation-grid)")
+      .getByRole("link", { name: /Lob podstawowy/ }),
   ).toBeVisible();
   await page
     .getByRole("searchbox", { name: "Szukaj ćwiczenia" })
     .fill("nieistniejące");
   await page.getByRole("button", { name: "Pokaż wszystkie ćwiczenia" }).click();
   await expect(
-    page.getByText("Ćwiczenia dla Ciebie: 30", { exact: true }),
+    page.getByText("Wszystkie ćwiczenia: 30", { exact: true }),
   ).toBeVisible();
   await page.setViewportSize({ width: 320, height: 720 });
   await page.goto("/");

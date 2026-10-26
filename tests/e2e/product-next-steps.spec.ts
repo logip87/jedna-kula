@@ -46,7 +46,10 @@ test("a mental practice cue survives reload and is consumed by only the next new
       exact: true,
     })
     .click();
-  await page.getByRole("link", { name: /^Puenta Puenta podstawowa/ }).click();
+  await page
+    .locator(".drill-grid:not(.recommendation-grid)")
+    .getByRole("link", { name: /^Puenta Puenta podstawowa/ })
+    .click();
   await page.getByRole("button", { name: "Zaczynam", exact: true }).click();
   await expect(page.getByLabel("Twoja wskazówka mentalna")).toContainText(
     "Ta kula się skończyła. Co jest teraz?",
