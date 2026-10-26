@@ -204,7 +204,7 @@ test("measurement is opt-in, local and contains only counts", async ({
     ),
   ).toBeNull();
   await page.goto("/settings");
-  await page.getByLabel("Zbieraj lokalne liczniki użycia").check();
+  await page.getByLabel("Zbieraj anonimowe dane o użyciu").check();
   await page.goto("/");
   await page
     .getByRole("button", { name: "ZACZNIJ TRENING", exact: true })
@@ -232,7 +232,7 @@ test("measurement is opt-in, local and contains only counts", async ({
     /age|score|name|player|sessionId/,
   );
   await page.goto("/settings");
-  await page.getByLabel("Zbieraj lokalne liczniki użycia").uncheck();
+  await page.getByLabel("Zbieraj anonimowe dane o użyciu").uncheck();
   expect(
     await page.evaluate(() =>
       localStorage.getItem("jedna-kula-product-counters"),

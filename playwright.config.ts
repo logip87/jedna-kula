@@ -4,7 +4,7 @@ export default defineConfig({
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: 0,
-  workers: process.env.CI ? 2 : undefined,
+  workers: process.env.CI ? 4 : undefined,
   reporter: [
     ["list"],
     ["html", { outputFolder: "playwright-report/regression", open: "never" }],
