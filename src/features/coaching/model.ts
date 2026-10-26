@@ -305,6 +305,9 @@ export function weaknesses(
           key,
           count: attempts.length,
           rate,
+          // The pooled result remains useful in details, but one incomplete or
+          // unusually poor session must not become the headline assessment.
+          stableRate: currentRate,
           trend,
           priority,
           landingDirection:
@@ -329,6 +332,157 @@ export function weaknesses(
     })
     .sort((a, b) => b.priority - a.priority || a.key.localeCompare(b.key));
 }
+
+export type TrainingRecommendation = {
+  drillId: string;
+  mode: Mode;
+  distance: number;
+  reason: string;
+  priority: number;
+  count: number;
+  rate: number | null;
+  stableRate: number | null;
+  personalized: boolean;
+};
+
+const modeVariant: Partial<Record<Mode, string>> = {
+  point: "point-random",
+  shoot: "pressure",
+  lob: "lob-changing",
+  target: "point-corridor",
+};
+
+function hasCompletedTraining(state: State, now: Date) {
+  return state.sessions.some(
+    (s) =>
+      s.completedAt &&
+      Date.parse(s.completedAt) <= now.getTime() &&
+      s.results.length > 0 &&
+      s.kind !== "test",
+  );
+}
+
+function starterRecommendations(
+  state: State,
+  now: Date,
+): TrainingRecommendation[] {
+  const prefersShoot =
+    state.player?.trainingGoal === "shoot" ||
+    state.player?.preferredRole === "strzelec";
+  const ids = prefersShoot
+    ? ["shoot-basic", "point-basic", "lob"]
+    : ["point-basic", "shoot-basic", "lob"];
+  const reason = hasCompletedTraining(state, now)
+    ? "Mamy jeszcze za mało danych, żeby ocenić ten wariant."
+    : "Dobry trening na początek.";
+  return ids.map((drillId, index) => {
+    const drill = drills.find((d) => d.id === drillId)!;
+    return {
+      drillId,
+      mode: drill.mode,
+      distance: 6,
+      reason,
+      priority: ids.length - index,
+      count: 0,
+      rate: null,
+      stableRate: null,
+      personalized: false,
+    };
+  });
+}
+
+function recommendationReason(
+  area: ReturnType<typeof weaknesses>[number],
+  now: Date,
+) {
+  const days = Math.floor(
+    (now.getTime() - Date.parse(area.session.completedAt!)) / 86400000,
+  );
+  if (days >= 14) return `Dawno nie trenowałeś tego elementu (${days} dni).`;
+  if (area.trend && area.trend.delta > 5)
+    return "Wynik rośnie, ale warto jeszcze utrwalić ten wariant.";
+  if (area.stableRate >= 80)
+    return "Wyniki są stabilne. Możesz utrwalić lub wybrać trudniejszy wariant.";
+  if (area.stableRate <= 75) return "To obecnie Twój słabszy element.";
+  return "Warto utrwalić ten wariant w tych samych warunkach.";
+}
+
+// The library deliberately has a small, explainable recommendation shelf. It
+// uses the same comparable-condition evidence as Today and Do poprawy; the
+// remaining cards are still a neutral, fully selectable catalogue.
+export function trainingRecommendations(state: State, now = new Date()) {
+  const areas = weaknesses(state, now)
+    .filter(
+      (area) =>
+        area.distance <=
+        Math.min(10, maximumPracticeDistance(state, area.session.drillId)),
+    )
+    .map((area) => ({
+      area,
+      days: Math.max(
+        0,
+        (now.getTime() - Date.parse(area.session.completedAt!)) / 86400000,
+      ),
+    }));
+  if (!areas.length) return starterRecommendations(state, now);
+
+  // Keep a clearly more important weakness first. When priorities are close,
+  // prefer the area that has waited longer rather than a fixed alphabetic tie.
+  const strongest = areas[0].area.priority;
+  areas.sort((a, b) => {
+    const close =
+      Math.abs(a.area.priority - b.area.priority) <= strongest * 0.08;
+    return close
+      ? b.days - a.days ||
+          b.area.priority - a.area.priority ||
+          a.area.key.localeCompare(b.area.key)
+      : b.area.priority - a.area.priority ||
+          a.area.key.localeCompare(b.area.key);
+  });
+
+  const cards: TrainingRecommendation[] = [];
+  for (const { area } of areas) {
+    const stable = area.stableRate >= 80;
+    const variant = stable ? modeVariant[area.mode] : undefined;
+    const drillId = variant ?? conditionDrillId(area.session, area.mode);
+    if (!drills.some((drill) => drill.id === drillId)) continue;
+    cards.push({
+      drillId,
+      mode: area.mode,
+      distance: area.distance,
+      reason: recommendationReason(area, now),
+      priority: area.priority,
+      count: area.count,
+      rate: area.rate,
+      stableRate: area.stableRate,
+      personalized: true,
+    });
+    if (cards.length === 4) return cards;
+  }
+
+  // A player with evidence for only one area still receives a compact choice,
+  // not a catalogue disguised as personalization. The companion card stays in
+  // the same skill and never advances the distance automatically.
+  const lead = cards[0];
+  const companion =
+    lead &&
+    (modeVariant[lead.mode] === lead.drillId
+      ? drillForMode[lead.mode]
+      : modeVariant[lead.mode]);
+  if (lead && companion && companion !== lead.drillId) {
+    cards.push({
+      ...lead,
+      drillId: companion,
+      reason:
+        lead.stableRate !== null && lead.stableRate >= 80
+          ? "Wyniki są stabilne. Spróbuj wariantu z innym zadaniem, bez zmiany dystansu."
+          : "Ćwicz tę samą umiejętność w innym wariancie, jeśli chcesz urozmaicenia.",
+      priority: lead.priority - 0.001,
+    });
+  }
+  return cards.slice(0, 4);
+}
+
 export function recommendation(
   state: State,
   now = new Date(),
@@ -338,7 +492,10 @@ export function recommendation(
   const weak = weaknesses(state, now).filter(
     (r) =>
       r.distance <=
-        Math.min(maximumDistance, maximumPracticeDistance(state, r.session.drillId)) &&
+        Math.min(
+          maximumDistance,
+          maximumPracticeDistance(state, r.session.drillId),
+        ) &&
       (!preferredMode || r.mode === preferredMode),
   )[0];
   if (!weak) {
@@ -367,6 +524,10 @@ export function recommendation(
   }
   const afterBreak =
     now.getTime() - Date.parse(weak.session.completedAt!) >= 30 * 86400000;
+  const headline =
+    Math.abs(weak.stableRate - weak.rate) >= 15
+      ? `Stabilny poziom z ostatnich pełnych serii: ${weak.stableRate}%. Łącznie: ${weak.rate}% z ${weak.count} prób w ${weak.sessions.length} sesji w tych samych warunkach.`
+      : `${weak.rate}% skuteczności na ${weak.distance} m (${weak.count} prób z ${weak.sessions.length} sesji w tych samych warunkach).`;
   const explanation =
     weak.trend && weak.trend.delta > 5
       ? `Ostatnie porównywalne serie: ${weak.trend.recent}%. Utrwal widoczną poprawę.`
@@ -378,7 +539,7 @@ export function recommendation(
   return {
     ...weak,
     target: Math.min(100, (weak.trend?.recent ?? weak.rate) + 7),
-    reason: `${weak.rate}% skuteczności na ${weak.distance} m (${weak.count} prób z ${weak.sessions.length} sesji w tych samych warunkach). ${afterBreak ? "Dawno nie trenowałeś tego wariantu. Wróć do znanych warunków. " : ""}${explanation}${weak.direction ? ` W ${weak.direction.rate}% oznaczonych nietrafionych prób dominują ${weak.direction.id === "short" ? "rzuty za krótkie" : weak.direction.id === "long" ? "rzuty za długie" : weak.direction.id === "left" ? "pudła w lewo" : "pudła w prawo"}.` : ""}`,
+    reason: `${headline} ${afterBreak ? "Dawno nie trenowałeś tego wariantu. Wróć do znanych warunków. " : ""}${explanation}${weak.direction ? ` W ${weak.direction.rate}% oznaczonych nietrafionych prób dominują ${weak.direction.id === "short" ? "rzuty za krótkie" : weak.direction.id === "long" ? "rzuty za długie" : weak.direction.id === "left" ? "pudła w lewo" : "pudła w prawo"}.` : ""}`,
   };
 }
 export function createRecommendedSession(
@@ -442,7 +603,8 @@ export function personalBest(session: Session, history: Session[]) {
     {
       label: "Trafienia pierwszego lądowania",
       value: (s: Session) =>
-        s.results.filter((a) => a.mode === "lob" && successfulAttempt(a)).length,
+        s.results.filter((a) => a.mode === "lob" && successfulAttempt(a))
+          .length,
     },
   ];
   const distanceRecords =

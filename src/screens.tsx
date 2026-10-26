@@ -85,6 +85,7 @@ import { serializeBackup, downloadBackup } from "./features/coaching/backup";
 import {
   modeNames,
   recommendation,
+  trainingRecommendations,
   weeklyProgress,
 } from "./features/coaching/model";
 import {
@@ -495,6 +496,7 @@ export function Start() {
   );
 }
 export function Library() {
+  const { state } = useApp();
   const [group, setGroup] = useState(
     new URLSearchParams(location.search).get("group") ?? "Wszystkie",
   );
@@ -505,6 +507,11 @@ export function Library() {
   const [beginners, setBeginners] = useState(false);
   const categories = ["Wszystkie", ...new Set(drills.map((d) => d.category))];
   const beginnerIds = ["point-basic", "shoot-basic", "target", "lob"];
+  const recommendations = trainingRecommendations(state);
+  const hasHistory = state.sessions.some(
+    (s) => s.completedAt && s.results.length > 0 && s.kind !== "test",
+  );
+  const primaryRecommendation = recommendations[0];
   const visible = drills.filter(
     (d) =>
       (group === "Wszystkie" ||
@@ -554,12 +561,98 @@ export function Library() {
           <Compass />
         </span>
         <div>
-          <b>Nie wiesz, od czego zacząć?</b>
-          <p>Sześć spokojnych rzutów na 6 metrów to dobry pierwszy krok.</p>
+          <b>
+            {hasHistory
+              ? "Wybierz kolejny trening"
+              : "Nie wiesz, od czego zacząć?"}
+          </b>
+          <p>
+            {hasHistory
+              ? "Zobacz propozycję opartą na Twoich wynikach albo wybierz dowolne ćwiczenie z biblioteki."
+              : "Sześć spokojnych rzutów na 6 metrów to dobry pierwszy krok."}
+          </p>
         </div>
-        <Link className="secondary" to="/training/point-basic?level=easy">
-          Mój pierwszy trening <ArrowRight size={18} />
+        <Link
+          className="secondary"
+          to={
+            hasHistory && primaryRecommendation
+              ? `/training/${primaryRecommendation.drillId}`
+              : "/training/point-basic?level=easy"
+          }
+        >
+          {hasHistory
+            ? primaryRecommendation?.personalized
+              ? "Trenuj słabość"
+              : "Wybierz trening"
+            : "Mój pierwszy trening"}{" "}
+          <ArrowRight size={18} />
         </Link>
+      </div>
+      <section
+        className="library-recommendations"
+        aria-labelledby="recommended-training"
+      >
+        <div className="section-title">
+          <div>
+            <p className="eyebrow">
+              {hasHistory ? "NA PODSTAWIE TWOICH WYNIKÓW" : "NA DOBRY POCZĄTEK"}
+            </p>
+            <h2 id="recommended-training">
+              {hasHistory ? "Polecane dla Ciebie" : "Polecane na start"}
+            </h2>
+          </div>
+          <span>Do {recommendations.length} ćwiczeń</span>
+        </div>
+        <div className="drill-grid recommendation-grid">
+          {recommendations.map((item) => {
+            const drill = drills.find((d) => d.id === item.drillId)!;
+            return (
+              <Link
+                key={`${item.drillId}:${item.mode}:${item.distance}`}
+                className={`card drill-card recommendation-card ${drill.mode === "shoot" ? "shoot-card" : drill.mode === "lob" ? "lob-card" : drill.mixed ? "mixed-card" : ""}`}
+                to={`/training/${drill.id}`}
+              >
+                <div className="drill-top">
+                  <div className="icon-box">
+                    <CategoryIcon category={drill.category} />
+                  </div>
+                  <span className="tag">{drill.category}</span>
+                </div>
+                <h3>{drill.name}</h3>
+                <p className="muted">{drill.description}</p>
+                <div className="recommendation-why">
+                  <b>Dlaczego to widzisz</b>
+                  <span>{item.reason}</span>
+                  {item.personalized && (
+                    <small>
+                      {modeNames[item.mode]} {item.distance} m ·{" "}
+                      {item.stableRate}% z ostatnich pełnych serii ·{" "}
+                      {item.count} prób
+                    </small>
+                  )}
+                </div>
+                <div className="card-footer">
+                  <span>
+                    <Timer size={16} />
+                    {drill.minutes} min ·{" "}
+                    {drill.random
+                      ? "Losowe odległości"
+                      : `${drill.distances[0]}–${drill.distances.at(-1)} m`}
+                  </span>
+                  <span className="round-arrow">
+                    <ArrowUpRight size={21} />
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+      <div className="section-title library-all-title">
+        <div>
+          <p className="eyebrow">PEŁNA BIBLIOTEKA</p>
+          <h2>Wszystkie ćwiczenia</h2>
+        </div>
       </div>
       <div className="library-tools">
         <label className="search-field">
@@ -593,7 +686,7 @@ export function Library() {
         ))}
       </div>
       <p className="result-count" aria-live="polite">
-        Ćwiczenia dla Ciebie: {visible.length}
+        Wszystkie ćwiczenia: {visible.length}
       </p>
       <div className="drill-grid">
         {visible.map((d) => (

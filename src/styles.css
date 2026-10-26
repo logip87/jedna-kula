@@ -778,6 +778,45 @@ main {
   color: #534a3b;
   margin-top: 20px;
 }
+.library-recommendations {
+  margin: 6px 0 34px;
+}
+.library-recommendations .section-title {
+  margin-top: 0;
+}
+.recommendation-grid {
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+.recommendation-card {
+  border-top-color: #6f845b;
+}
+.recommendation-card h3 {
+  font-size: 22px;
+}
+.recommendation-why {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 19px 0;
+  padding: 13px;
+  border-radius: 12px;
+  background: #f0f2e9;
+  color: #35402e;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.recommendation-why b {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.recommendation-why small {
+  color: #536047;
+  font-size: 11px;
+}
+.library-all-title {
+  margin-top: 0;
+}
 .back {
   display: inline-flex;
   align-items: center;
