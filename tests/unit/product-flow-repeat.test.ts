@@ -91,7 +91,7 @@ describe("repeat the last training", () => {
       previous.difficulty,
       previous.targetSize,
       previous.boundary,
-      previous.surface,
+      undefined,
       previous.trackDirections,
     ]);
     expect(next.results).toEqual([]);

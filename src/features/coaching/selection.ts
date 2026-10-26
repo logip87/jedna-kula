@@ -28,7 +28,7 @@ export const seriesLengths = [6, 10, 20] as const;
 export type SeriesLength = (typeof seriesLengths)[number];
 export type TrainingSelection = Pick<
   Session,
-  "difficulty" | "targetSize" | "boundary" | "surface" | "trackDirections"
+  "difficulty" | "targetSize" | "boundary" | "trackDirections"
 > & {
   drillId: TrainingChoice;
   distance: number;
@@ -83,7 +83,6 @@ export function trainingSelection(
     targetSize: previous?.targetSize ?? 100,
     boundary:
       drill.mode === "boundary" ? boundaryDistance : (previous?.boundary ?? 60),
-    surface: previous ? previous.surface : "gravel",
     trackDirections: previous?.trackDirections ?? false,
   };
 }
@@ -110,7 +109,6 @@ export function createSelectedTraining(
     difficulty: selection.difficulty,
     targetSize: selection.targetSize,
     boundary: drill.mode === "boundary" ? boundaryDistance : selection.boundary,
-    surface: selection.surface,
     trackDirections: selection.trackDirections,
     plan: Array.from({ length: selection.attempts }, () => ({
       mode: drill.mode,

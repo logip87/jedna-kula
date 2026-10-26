@@ -147,7 +147,7 @@ describe("adventure progression and personalization", () => {
       recommendedTraining({ ...emptyState, sessions: [shoot, ...newer] }).mode,
     ).toBe("point");
   });
-  it("keeps landing separate from final position and filters terrain and distance without inventing old measurements", () => {
+  it("keeps landing separate from final position and ignores legacy terrain", () => {
     const a = {
       ...attempt("lob", 7, false),
       missDirection: "left" as const,
@@ -164,7 +164,7 @@ describe("adventure progression and personalization", () => {
     expect(errorMap(state, "lob", "7", "gravel").counts.left).toBe(1);
     expect(errorMap(state, "lob", "7", "gravel", true).counts.short).toBe(1);
     expect(errorMap(state, "all", "all", "all").missing).toBe(1);
-    expect(errorMap(state, "lob", "7", "rough").total).toBe(0);
+    expect(errorMap(state, "lob", "7", "rough").total).toBe(1);
   });
   it("persists all new modules without losing existing state", async () => {
     const repo = createRepository(crypto.randomUUID());

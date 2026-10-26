@@ -17,6 +17,13 @@ import {
   sessionOutcome,
   summaryEvidence,
 } from "../../src/features/product/model";
+import {
+  conditionKey,
+  recommendation,
+  trends,
+  weaknesses,
+} from "../../src/features/coaching/model";
+import { goalProgress } from "../../src/features/development/model";
 
 const now = new Date("2026-10-14T12:00:00Z");
 function series(
@@ -94,6 +101,40 @@ describe("consistent result evidence", () => {
     ).toBe(false);
   });
 
+  it("excludes two incomplete 10/20 perfect series from all technical evidence", () => {
+    const partial = (day: number) => {
+      const full = series("point", 20, 20, day);
+      return { ...full, results: full.results.slice(0, 10) };
+    };
+    const sessions = [partial(1), partial(2)];
+    const state = { ...emptyState, sessions };
+    expect(recommendation(state, now)).toMatchObject({ count: 0, rate: null });
+    expect(weaknesses(state, now)).toEqual([]);
+    expect(progressResults(state, now).areas).toEqual([]);
+    expect(trends(sessions, "point", 8, undefined, now)).toBeNull();
+  });
+
+  it("uses lob first landings for micro-goal progress even when final positions miss", () => {
+    const sessions = [series("lob", 8, 10, 1), series("lob", 8, 10, 2)].map(
+      (s) => ({ ...s, results: s.results.map((a) => ({ ...a, hit: false })) }),
+    );
+    const source = sessions[0];
+    const goal = {
+      id: "lob-goal",
+      kind: "accuracy" as const,
+      createdAt: "2026-10-01T00:00:00Z",
+      baseline: 80,
+      target: 80,
+      mode: "lob" as const,
+      distance: 8,
+      conditionKey: conditionKey(source, "lob", 8),
+    };
+    expect(goalProgress({ ...emptyState, sessions }, goal, now)).toMatchObject({
+      value: 80,
+      complete: true,
+    });
+  });
+
   it("separates pointing, shooting and lob at the same distance", () => {
     const sessions = [
       series("point", 6, 6),
@@ -138,7 +179,7 @@ describe("consistent result evidence", () => {
     expect(comparableBaseline(current, [first, second])).toBe(50);
     expect(
       comparableBaseline(current, [first, { ...second, surface: "rough" }]),
-    ).toBeNull();
+    ).toBe(50);
     expect(
       comparableBaseline(current, [first, series("shoot", 10, 10, 13)]),
     ).toBeNull();

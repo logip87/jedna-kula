@@ -52,11 +52,6 @@ export const directions: { id: Direction; label: string; symbol: string }[] = [
   { id: "right", label: "W prawo", symbol: "→" },
   { id: "short", label: "Za krótko", symbol: "↓" },
 ];
-export const surfaces: { id: Surface; label: string }[] = [
-  { id: "smooth", label: "Gładkie / twarde" },
-  { id: "gravel", label: "Drobny żwir" },
-  { id: "rough", label: "Nierówne / grube" },
-];
 export const defaultConfig: AdventureConfig = {
   audience: "beginner",
   length: 15,
@@ -91,7 +86,8 @@ export function createPractice(
   mode: Mode,
   distances: number[],
   attempts: number,
-  options: { missionId?: string; surface: Surface; targetSize?: number },
+  // `surface` is accepted only to read old callers/backups; it is ignored.
+  options: { missionId?: string; targetSize?: number; surface?: Surface },
 ): Session {
   return {
     id: crypto.randomUUID(),
@@ -108,24 +104,24 @@ export function createPractice(
     score: 0,
     trackDirections: true,
     missionId: options.missionId,
-    surface: options.surface,
   };
 }
 export function errorMap(
   state: State,
   mode: string,
   distance: string,
-  surface: string,
-  landing = false,
+  surfaceOrLanding: string | boolean = false,
+  legacyLanding = false,
 ) {
+  const landing =
+    typeof surfaceOrLanding === "boolean" ? surfaceOrLanding : legacyLanding;
   const attempts = state.sessions
-    .flatMap((s) => s.results.map((a) => ({ ...a, surface: s.surface })))
+    .flatMap((s) => s.results)
     .filter(
       (a) =>
         (!landing || a.mode === "lob") &&
         (mode === "all" || a.mode === mode) &&
-        (distance === "all" || String(a.distance) === distance) &&
-        (surface === "all" || a.surface === surface),
+        (distance === "all" || String(a.distance) === distance),
     );
   const entries = attempts
     .map((a) => (landing ? a.landingDirection : a.missDirection))

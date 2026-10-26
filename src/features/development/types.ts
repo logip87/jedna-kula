@@ -1,5 +1,4 @@
 import type { Difficulty, Mode } from "../../domain";
-import type { Surface } from "../adventure/model";
 export type Audience = "junior" | "beginner" | "athlete";
 export type SkillId =
   "point" | "shoot" | "lob" | "tactics" | "mental" | "regularity";
@@ -44,7 +43,6 @@ export interface TrainingGoal {
   difficulty?: Difficulty;
   targetSize?: number;
   boundary?: number;
-  surface?: Surface;
 }
 export interface MentalCheckin {
   before: number;

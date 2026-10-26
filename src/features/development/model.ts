@@ -4,6 +4,8 @@ import {
   boundaryDistance,
   localDay,
   percent,
+  successfulAttempt,
+  isCompleteSession,
   type Session,
   type State,
   type Mode,
@@ -36,8 +38,7 @@ export function audience(state: State) {
     (state.adventure?.config?.audience === "junior" ? "junior" : "beginner")
   );
 }
-export const fullSession = (s: Session) =>
-  !!s.completedAt && s.plan.length > 0 && s.results.length === s.plan.length;
+export const fullSession = isCompleteSession;
 const eligible = (state: State, now: Date) =>
   state.sessions.filter(
     (s) => fullSession(s) && new Date(s.completedAt!) <= now,
@@ -60,7 +61,6 @@ export function skillScores(state: State, now = new Date()): SkillScore[] {
         s.difficulty,
         s.targetSize,
         s.boundary,
-        s.surface ?? "unknown",
       ].join(":");
       groups.set(key, [...(groups.get(key) ?? []), s]);
     }
@@ -83,8 +83,7 @@ export function skillScores(state: State, now = new Date()): SkillScore[] {
     const rate =
       attempts.length >= 40
         ? percent(
-            attempts.filter((a) => (id === "lob" ? a.landingHit : a.hit))
-              .length,
+            attempts.filter(successfulAttempt).length,
             attempts.length,
           )
         : null;
@@ -275,7 +274,7 @@ export function goalProgress(
     );
   const ready = matching.length >= 2 && attempts.length >= 20;
   const value = ready
-    ? percent(attempts.filter((a) => a.hit).length, attempts.length)
+    ? percent(attempts.filter(successfulAttempt).length, attempts.length)
     : 0;
   return {
     value,
@@ -302,7 +301,6 @@ export function createMicroGoal(state: State, now = new Date()): State {
     difficulty: r.session.difficulty,
     targetSize: r.session.targetSize,
     boundary: r.session.boundary,
-    surface: r.session.surface,
   };
   if (
     state.coaching?.goals?.some(
@@ -453,9 +451,7 @@ export function awardDevelopment(
   };
 }
 export function masteryHits(session: Session) {
-  return session.results.filter((a) =>
-    a.mode === "lob" ? a.landingHit === true : a.hit,
-  ).length;
+  return session.results.filter(successfulAttempt).length;
 }
 export const masteryDrills = ["point-basic", "shoot-basic", "target", "lob"];
 export function exerciseProgress(state: State, drillId: string) {
@@ -611,7 +607,6 @@ export function competitionTraining(
     targetSize: r.session?.targetSize ?? 50,
     boundary:
       mode === "boundary" ? boundaryDistance : (r.session?.boundary ?? 40),
-    surface: r.session?.surface,
     plan: [],
     situationChoice: undefined,
     results: [],
@@ -634,7 +629,7 @@ export function competitionTraining(
         return {
           distance,
           count: a.length,
-          rate: a.filter((x) => x.hit).length / a.length,
+          rate: a.filter(successfulAttempt).length / a.length,
         };
       })
       .filter((g) => g.count >= 10)

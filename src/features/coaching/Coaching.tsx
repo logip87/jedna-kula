@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowRight, Trophy, RotateCcw } from "lucide-react";
 import { useApp } from "../../app-context";
-import { surfaces } from "../adventure/model";
 import { seriesLengths, type SeriesLength } from "./selection";
 import {
   createRecommendedSession,
@@ -51,9 +50,7 @@ export function Weaknesses() {
           <p>
             {r.count} prób · {r.sessions.length} sesji ·{" "}
             {r.session.kind === "test" ? "testy kontrolne" : "treningi"} ·{" "}
-            {r.session.difficulty} ·{" "}
-            {surfaces.find((s) => s.id === r.session.surface)?.label ??
-              "teren nieoznaczony"}
+            {r.session.difficulty}
           </p>
           <p>
             {r.trend
@@ -106,7 +103,6 @@ export function Weaknesses() {
                 targetSize: r.session.targetSize,
                 boundary:
                   r.mode === "boundary" ? boundaryDistance : r.session.boundary,
-                surface: r.session.surface,
                 plan: Array.from({ length: 20 }, () => ({
                   mode: r.mode,
                   distance: r.distance,
@@ -361,14 +357,8 @@ export function SelfChallenge() {
                 : "Pełna skuteczność. Spróbuj ją utrzymać."}{" "}
               Powtarzasz ten sam plan, dystanse, cel i poziom.
             </p>
-            <p>
-              Teren:{" "}
-              {surfaces.find((s) => s.id === session.surface)?.label ??
-                "nieoznaczony"}{" "}
-              · {session.kind === "test" ? "test" : "trening"}
-            </p>
             <p className="muted">
-              Ustaw teren i cel jak poprzednio. Wynik porównamy po pełnej serii.
+              Ustaw cel jak poprzednio. Wynik porównamy po pełnej serii.
             </p>
             {state.draft ? (
               <Link className="button" to="/session">

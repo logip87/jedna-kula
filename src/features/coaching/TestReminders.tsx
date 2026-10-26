@@ -4,7 +4,6 @@ import { useApp } from "../../app-context";
 import { drills } from "../../data";
 import type { Session } from "../../domain";
 import { sessionFromTest, testHits, testReminders } from "./benchmarks";
-import { surfaces } from "../adventure/model";
 
 export function TestReminders() {
   const { state, save, busy } = useApp();
@@ -43,12 +42,7 @@ export function TestReminders() {
             Minęło {days} dni od ostatniego pełnego testu. Ostatnio:{" "}
             {testHits(session)}/20. Sprawdź wynik w tych samych warunkach.
           </p>
-          <p>
-            Teren:{" "}
-            {surfaces.find((s) => s.id === session.surface)?.label ??
-              "nieoznaczony"}{" "}
-            · 20 rzutów · 6–9 m.
-          </p>
+          <p>20 rzutów · 6–9 m.</p>
           <button
             className="button"
             disabled={busy}

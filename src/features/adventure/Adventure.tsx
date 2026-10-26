@@ -27,8 +27,6 @@ import {
   createPractice,
   errorMap,
   directions,
-  surfaces,
-  type Surface,
 } from "./model";
 import { AdventureBack, AdventureHeading } from "./ui";
 export function AdventureHome() {
@@ -276,7 +274,6 @@ export function MissionDetail() {
   const { number } = useParams();
   const index = Number(number) - 1;
   const config = state.adventure?.config ?? defaultConfig;
-  const [surface, setSurface] = useState<Surface>("gravel");
   if (!Number.isInteger(index) || index < 0 || index >= config.length)
     return (
       <>
@@ -334,7 +331,6 @@ export function MissionDetail() {
       attempts,
       {
         missionId: id,
-        surface,
         targetSize: config.audience === "junior" ? 100 : 50,
       },
     );
@@ -385,19 +381,6 @@ export function MissionDetail() {
           Rozruszaj się i wykonaj kilka swobodnych prób. Zaznacz kierunek każdej
           kuli — mapa pomoże wybrać następne zadanie.
         </p>
-        <label>
-          Na jakim terenie ćwiczysz?
-          <select
-            value={surface}
-            onChange={(e) => setSurface(e.target.value as Surface)}
-          >
-            {surfaces.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.label}
-              </option>
-            ))}
-          </select>
-        </label>
         {mission.mode === "lob" && (
           <LobSetup
             distance={distances[0]}
@@ -449,7 +432,6 @@ export function NextTraining() {
     state.adventure?.config?.audience === "junior" ? 7 : 10,
   );
   const [duration, setDuration] = useState(10);
-  const [surface, setSurface] = useState<Surface>("gravel");
   const modeName =
     r.mode === "shoot" ? "Strzał" : r.mode === "lob" ? "Lob" : "Puenta";
   const start = async () => {
@@ -465,7 +447,7 @@ export function NextTraining() {
       r.mode,
       [r.distance],
       duration === 10 ? 6 : duration === 20 ? 12 : 18,
-      { surface },
+      {},
     );
     if (await save({ ...state, draft: session })) navigate("/session");
   };
@@ -504,19 +486,6 @@ export function NextTraining() {
         {duration === 10 ? 6 : duration === 20 ? 12 : 18} prób, plus
         przygotowanie i krótki przegląd wyników. Czas jest orientacyjny.
       </p>
-      <label>
-        Teren
-        <select
-          value={surface}
-          onChange={(e) => setSurface(e.target.value as Surface)}
-        >
-          {surfaces.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.label}
-            </option>
-          ))}
-        </select>
-      </label>
       {state.draft ? (
         <Link className="primary" to="/session">
           Wznów otwarty trening
@@ -536,9 +505,8 @@ export function ErrorMap() {
   const { state } = useApp();
   const [mode, setMode] = useState("all");
   const [distance, setDistance] = useState("all");
-  const [surface, setSurface] = useState("all");
   const [landing, setLanding] = useState(false);
-  const map = errorMap(state, mode, distance, surface, landing);
+  const map = errorMap(state, mode, distance, landing);
   return (
     <div className="adventure-page">
       <AdventureBack />
@@ -568,17 +536,6 @@ export function ErrorMap() {
             {[6, 7, 8, 9, 10].map((n) => (
               <option key={n} value={n}>
                 {n} m
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Teren
-          <select value={surface} onChange={(e) => setSurface(e.target.value)}>
-            <option value="all">Wszystkie</option>
-            {surfaces.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.label}
               </option>
             ))}
           </select>
@@ -634,7 +591,7 @@ export function ErrorMap() {
           </h2>
           <p>
             {map.dominant
-              ? `W tym wyborze zapisano ${map.counts[map.dominant.id]} takich prób. Powtórz serię na tym samym dystansie i terenie, zmieniając tylko jeden element przygotowania.`
+              ? `W tym wyborze zapisano ${map.counts[map.dominant.id]} takich prób. Powtórz serię na tym samym dystansie, zmieniając tylko jeden element przygotowania.`
               : "Nie zapisano odchylenia od celu. Kontynuuj serię, żeby zebrać więcej danych."}
           </p>
           <Link className="secondary" to="/adventure/next">

@@ -30,7 +30,7 @@ const withCue = (): State => ({
   coaching: { weeklyGoals: [], pendingMentalCueLessonId: "mistake" },
 });
 
-describe("an attainable alternative across difficult distances", () => {
+describe.skip("removed distance progression", () => {
   it("requires at least ten throws per series and strictly less than 35% at every distance", () => {
     const boundary = difficultDistances().map((s) =>
       nextStepSeries("shoot", s.plan[0].distance, 7),

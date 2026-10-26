@@ -1,15 +1,8 @@
 import { drills } from "../../data";
 import {
-  progressionThreshold,
-  progressionSessions,
-  progressionAttempts,
-  progressionWindowDays,
-  maximumPracticeDistance,
-} from "./progression";
-import {
-  boundaryDistance,
   percent,
   successfulAttempt,
+  isCompleteSession,
   type Mode,
   type Session,
   type State,
@@ -17,15 +10,13 @@ import {
 import {
   comparableSessions,
   conditionKey,
-  conditionDrillId,
   createRecommendedSession,
   modeNames,
   personalBest,
   recommendation,
   weaknesses,
 } from "../coaching/model";
-const complete = (s: Session) =>
-  !!s.completedAt && s.plan.length > 0 && s.results.length === s.plan.length;
+const complete = isCompleteSession;
 export const historySessions = (state: State) =>
   state.sessions
     .filter((s) => s.completedAt)
@@ -62,6 +53,7 @@ export function progressResults(state: State, now = new Date()) {
   const sessions = historySessions(state).filter(
     (s) =>
       Date.parse(s.completedAt!) <= now.getTime() &&
+      complete(s) &&
       s.kind !== "test" &&
       !s.mastery &&
       !s.challenge,
@@ -104,172 +96,27 @@ export const technicalSessions = (state: State, now = new Date()) =>
         Date.parse(s.completedAt!) <= now.getTime(),
     )
     .sort((a, b) => Date.parse(a.completedAt!) - Date.parse(b.completedAt!));
-function easierAcrossDistances(state: State, now: Date, preferredMode: Mode) {
-  const maximum =
-    (state.player?.audience ?? state.adventure?.config?.audience) === "junior"
-      ? 7
-      : 10;
-  const families = new Map<
-    string,
-    { mode: Mode; distances: Map<number, Session[]> }
-  >();
-  for (const s of technicalSessions(state, now)) {
-    if (s.kind === "test" || drills.find((d) => d.id === s.drillId)?.test)
-      continue;
-    for (const variant of new Map(
-      s.results.map((a) => [`${a.mode}:${a.distance}`, a]),
-    ).values()) {
-      if (variant.distance > maximum) continue;
-      const key = conditionKey(s, variant.mode, 0);
-      const family = families.get(key) ?? {
-        mode: variant.mode,
-        distances: new Map<number, Session[]>(),
-      };
-      const sessions = family.distances.get(variant.distance) ?? [];
-      sessions.push(s);
-      family.distances.set(variant.distance, sessions);
-      families.set(key, family);
-    }
-  }
-  const candidates = [...families.entries()].flatMap(([key, family]) => {
-    const difficult = [...family.distances.entries()]
-      .flatMap(([distance, history]) => {
-        const recent = history.slice(-progressionSessions);
-        if (
-          recent.length < progressionSessions ||
-          Date.parse(recent[0].completedAt!) <
-            now.getTime() - progressionWindowDays * 86400000
-        )
-          return [];
-        const attempts = recent.map((s) =>
-          s.results.filter(
-            (a) => a.mode === family.mode && a.distance === distance,
-          ),
-        );
-        if (
-          attempts.some(
-            (a) =>
-              a.length < progressionAttempts ||
-              percent(a.filter(successfulAttempt).length, a.length) >= 35,
-          )
-        )
-          return [];
-        return [{ distance, recent, attempts: attempts.flat() }];
-      })
-      .sort((a, b) => a.distance - b.distance);
-    if (difficult.length < 2 || difficult[0].distance <= 5) return [];
-    const source = difficult[0].recent.at(-1)!;
-    const attempts = difficult.flatMap((d) => d.attempts);
-    return [
-      {
-        key,
-        mode: family.mode,
-        sourceSession: source,
-        kind: "easier" as const,
-        distance: difficult[0].distance - 1,
-        pressure: false,
-        rate: percent(
-          attempts.filter(successfulAttempt).length,
-          attempts.length,
-        ),
-        reason: `${modeNames[family.mode]}: na dystansach ${difficult.map((d) => `${d.distance} m`).join(", ")} ostatnie serie są nadal bardzo trudne. Spróbuj bliżej i odbuduj powtarzalność.`,
-        evidence: `Po ${progressionSessions} ostatnie pełne serie na każdym z ${difficult.length} dystansów, każda poniżej 35% skuteczności. Łącznie ${attempts.length} prób z ostatnich ${progressionWindowDays} dni.`,
-        change: `${modeNames[family.mode]}: ${difficult[0].distance} m → ${difficult[0].distance - 1} m. Cel i teren pozostają takie same.`,
-      },
-    ];
-  });
-  candidates.sort(
-    (a, b) =>
-      Number(b.mode === preferredMode) - Number(a.mode === preferredMode) ||
-      Date.parse(b.sourceSession.completedAt!) -
-        Date.parse(a.sourceSession.completedAt!) ||
-      a.key.localeCompare(b.key),
-  );
-  return candidates[0] ?? null;
+export type DistanceAdaptation = {
+  mode: Mode;
+  sourceSession: Session;
+  kind: "harder" | "easier";
+  distance: number;
+  pressure: boolean;
+  rate: number;
+  evidence: string;
+  reason: string;
+  change: string;
+};
+// Kept as a harmless compatibility export for older links and saved UI state.
+// Distance changes are no longer proposed by the product.
+export function adaptation(
+  _state: State,
+  _now = new Date(),
+): DistanceAdaptation | null {
+  return null;
 }
-
-export function adaptation(state: State, now = new Date()) {
-  const r = recommendation(state, now);
-  const foundation = easierAcrossDistances(state, now, r.mode);
-  if (foundation) return foundation;
-  if (!r.session || r.session.kind === "test") return null;
-  const group = technicalSessions(state, now)
-    .filter(
-      (s) =>
-        s.results.some((a) => a.mode === r.mode && a.distance === r.distance) &&
-        conditionKey(s, r.mode, r.distance) ===
-          conditionKey(r.session!, r.mode, r.distance),
-    )
-    .slice(-progressionSessions);
-  const counts = group.map((s) =>
-    s.results.filter((a) => a.mode === r.mode && a.distance === r.distance),
-  );
-  if (
-    group.length < progressionSessions ||
-    counts.some((a) => a.length < progressionAttempts) ||
-    Date.parse(group[0].completedAt!) <
-      now.getTime() - progressionWindowDays * 86400000
-  )
-    return null;
-  const rates = counts.map((a) =>
-    percent(a.filter(successfulAttempt).length, a.length),
-  );
-  const kind: "harder" | "easier" | null = rates.every(
-    (n) => n >= progressionThreshold(r.distance),
-  )
-    ? "harder"
-    : rates.every((n) => n < 35)
-      ? "easier"
-      : null;
-  if (!kind) return null;
-  const max = maximumPracticeDistance(state, r.session.drillId);
-  const distance =
-    kind === "harder"
-      ? Math.min(max, r.distance + 1)
-      : Math.max(5, r.distance - 1);
-  if (kind === "easier" && distance === r.distance) return null;
-  const pressure = kind === "harder" && distance === r.distance;
-  return {
-    mode: r.mode,
-    sourceSession: r.session,
-    kind,
-    distance,
-    pressure,
-    rate: Math.round(rates.reduce((a, b) => a + b, 0) / progressionSessions),
-    evidence: `Trzy ostatnie porównywalne serie, minimum 30 prób: ${Math.round(rates.reduce((a, b) => a + b, 0) / progressionSessions)}%.`,
-    reason:
-      kind === "harder"
-        ? "Ostatnie porównywalne serie są powtarzalne. Możesz spróbować trudniejszego wariantu."
-        : "Ten wariant jest obecnie bardzo trudny. Spróbujmy zbudować podstawę.",
-    change: pressure
-      ? "Ta sama odległość, jedna próba na ustawienie, bez cofania."
-      : `${r.distance} m → ${distance} m. Cel i teren pozostają takie same.`,
-  };
-}
-export function acceptedAdaptation(state: State, now = new Date()): Session {
-  const proposal = adaptation(state, now);
-  if (!proposal) throw new Error("Za mało porównywalnych wyników do zmiany.");
-  const s = createRecommendedSession(state, now);
-  return {
-    ...s,
-    drillId: conditionDrillId(proposal.sourceSession, proposal.mode),
-    difficulty: proposal.sourceSession.difficulty,
-    targetSize: proposal.sourceSession.targetSize,
-    boundary:
-      proposal.mode === "boundary"
-        ? boundaryDistance
-        : proposal.sourceSession.boundary,
-    surface: proposal.sourceSession.surface,
-    plan: Array.from({ length: 20 }, () => ({
-      mode: proposal.mode,
-      distance: proposal.distance,
-    })),
-    coach: {
-      source: "adaptive",
-      adaptation: proposal.kind,
-      oneChance: proposal.pressure,
-    },
-  };
+export function acceptedAdaptation(_state: State, _now = new Date()): Session {
+  throw new Error("Aplikacja nie proponuje już zmiany dystansu.");
 }
 export function mentalRecommendation(state: State, now = new Date()) {
   const sessions = technicalSessions(state, now)
@@ -333,7 +180,6 @@ export function mentalRecommendation(state: State, now = new Date()) {
         s.difficulty === p.difficulty &&
         s.targetSize === p.targetSize &&
         s.boundary === p.boundary &&
-        s.surface === p.surface &&
         s.plan.every(
           (a) => a.mode === p.plan[0].mode && a.distance === p.plan[0].distance,
         ),

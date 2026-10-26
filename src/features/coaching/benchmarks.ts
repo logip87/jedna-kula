@@ -109,7 +109,6 @@ export function sessionFromTest(
     difficulty: source.difficulty,
     targetSize: source.targetSize,
     boundary: source.boundary,
-    surface: source.surface,
     trackDirections: source.trackDirections,
     plan: practice
       ? Array.from({ length: 20 }, () => ({ mode, distance }))

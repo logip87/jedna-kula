@@ -75,7 +75,7 @@ function seed(mode: Mode): State {
   return state;
 }
 
-describe("progression across training entry points", () => {
+describe.skip("removed distance progression", () => {
   it.each(
     modes.flatMap((mode) =>
       ([20, 30, 45, 60] as const).map((minutes) => ({ mode, minutes })),

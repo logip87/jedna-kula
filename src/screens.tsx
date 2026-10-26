@@ -28,7 +28,6 @@ import {
 } from "./features/product/Product";
 import { challengePassed } from "./features/situations/model";
 import React, { useEffect, useRef, useState } from "react";
-import { DistanceChange } from "./DistanceChange";
 import { LobSetup } from "./LobSetup";
 import { ProgressionInfo } from "./features/product/ProgressionInfo";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -99,12 +98,7 @@ import {
 import { canUndoLastThrow, undoLastThrow } from "./features/coaching/session";
 import { useApp } from "./app-context";
 import { DirectionPicker } from "./features/adventure/ui";
-import {
-  missionCompleted,
-  surfaces,
-  type Direction,
-  type Surface,
-} from "./features/adventure/model";
+import { missionCompleted, type Direction } from "./features/adventure/model";
 const date = (s: string) =>
   new Date(s).toLocaleDateString("pl-PL", { day: "numeric", month: "long" });
 const iconMap: Record<string, typeof Target> = {
@@ -685,7 +679,6 @@ export function Detail() {
             ? 40
             : 20;
   const [trackDirections, setTrackDirections] = useState(false);
-  const [surface, setSurface] = useState<Surface>("gravel");
   if (!d) return <Missing />;
   async function start() {
     if (!d) return;
@@ -707,7 +700,6 @@ export function Detail() {
       targetSize,
       boundary,
       trackDirections,
-      surface,
       ...(d.timed
         ? { timedPhase: 0, phaseStartedAt: new Date().toISOString() }
         : {}),
@@ -724,7 +716,7 @@ export function Detail() {
       {d.test && (
         <p className="notice">
           TEST · ustalony plan 20 prób. Wynik pełnej serii porównamy z
-          poprzednim testem na tym samym terenie. Nie można cofać rzutów.
+          poprzednim testem. Nie można cofać rzutów.
         </p>
       )}
       <div className="detail-layout">
@@ -779,21 +771,6 @@ export function Detail() {
             />
             Zapisuj kierunki do mapy rzutów
           </label>
-          {(trackDirections || d.test) && (
-            <label>
-              Teren treningu
-              <select
-                value={surface}
-                onChange={(e) => setSurface(e.target.value as Surface)}
-              >
-                {surfaces.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
           <p className="muted small">
             Ustawienia już czekają. Możesz po prostu zacząć lub dopasować je do
             siebie.
@@ -1218,7 +1195,6 @@ export function Active() {
       )}
       {(!d.timed || phase === 1 || phase === 2) && (
         <>
-          <DistanceChange distance={item.distance} />
           <div className="session-progress">
             <span>
               Rzut {s.results.length + 1}

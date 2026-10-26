@@ -1,4 +1,9 @@
-import { localDay, type State, type Session } from "../../domain";
+import {
+  localDay,
+  successfulAttempt,
+  type State,
+  type Session,
+} from "../../domain";
 import { tacticCases } from "../adventure/data";
 import {
   createPractice,
@@ -75,7 +80,8 @@ export function challengePassed(s: Session) {
   if (s.challenge.kind === "pressure")
     return (
       [0, 3, 6].every(
-        (i) => s.results.slice(i, i + 3).filter((a) => a.hit).length >= 2,
+        (i) =>
+          s.results.slice(i, i + 3).filter(successfulAttempt).length >= 2,
       ) && s.results.length === 9
     );
   return (
@@ -88,7 +94,6 @@ export function createBoss(state: State, index: number): Session {
     c = bossChapters[index];
   if (!p.unlocked) throw new Error("Najpierw ukończ misje tego rozdziału.");
   const s = createPractice(c.drillId, c.mode, [c.distance], 10, {
-    surface: "gravel",
     targetSize: 75,
   });
   return {
@@ -139,7 +144,7 @@ export function createExtraChallenge(
       mode,
       distances,
       count,
-      { surface: "gravel", targetSize: kind === "daily" ? 50 : 75 },
+      { targetSize: kind === "daily" ? 50 : 75 },
     ),
     trackDirections: false,
     difficulty: "średni",

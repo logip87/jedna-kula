@@ -187,7 +187,9 @@ describe("contextual lesson evidence thresholds", () => {
       mentalRecommendation({ ...emptyState, sessions }, now)?.lessonId,
     ).toBe("one");
     sessions[3] = { ...sessions[3], surface: "rough" };
-    expect(mentalRecommendation({ ...emptyState, sessions }, now)).toBeNull();
+    expect(mentalRecommendation({ ...emptyState, sessions }, now)?.lessonId).toBe(
+      "one",
+    );
   });
 });
 

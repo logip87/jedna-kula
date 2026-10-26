@@ -3,6 +3,7 @@ import {
   localDay,
   percent,
   successfulAttempt,
+  isCompleteSession,
   type Mode,
   type Session,
   type State,
@@ -107,27 +108,28 @@ export function conditionKey(s: Session, mode: Mode, distance: number) {
     s.difficulty,
     s.targetSize,
     s.boundary,
-    s.surface ?? "unknown",
   ].join(":");
 }
 // Older saved micro-goals include the plan's focus in the key. Normalize
 // those stored references when comparing them, without rewriting the backup.
 export function normalizeConditionKey(key: string) {
   const parts = key.split(":");
-  if (parts.length !== 12) return key;
-  const [focus] = parts.splice(5, 1);
-  const mode = parts[5] as Mode;
-  if (focus === "wszystko" && Object.hasOwn(drillForMode, mode)) {
-    parts[0] = drillForMode[mode];
+  // Pre-product keys had a focus segment; saved keys also ended with terrain.
+  if (parts.length >= 11 && !Object.hasOwn(drillForMode, parts[5] as Mode)) {
+    const [focus] = parts.splice(5, 1);
+    const mode = parts[5] as Mode;
+    if (focus === "wszystko" && Object.hasOwn(drillForMode, mode))
+      parts[0] = drillForMode[mode];
   }
+  if (["smooth", "gravel", "rough", "unknown"].includes(parts.at(-1) ?? ""))
+    parts.pop();
   return parts.join(":");
 }
 const evidenceSessions = (state: State) =>
   state.sessions
     .filter(
       (s) =>
-        s.completedAt &&
-        s.results.length &&
+        isCompleteSession(s) &&
         !s.mastery &&
         !s.challenge &&
         (s.kind !== "test" ||
@@ -148,6 +150,7 @@ export function trends(
     .filter(
       (s) =>
         s.completedAt &&
+        isCompleteSession(s) &&
         Date.parse(s.completedAt) <= now.getTime() &&
         s.results.some((a) => a.mode === mode && a.distance === distance) &&
         (!key || conditionKey(s, mode, distance) === key),
@@ -332,40 +335,12 @@ export function recommendation(
   maximumDistance = 10,
   preferredMode?: Mode,
 ) {
-  // An accepted change establishes the player's new practice conditions.
-  // Keep it available while collecting evidence, rather than selecting the
-  // mastered distance again just because it has a larger historical sample.
-  const chosenByCondition = new Map<string, Session>();
-  for (const s of evidenceSessions(state).filter(
-    (s) =>
-      s.coach?.source === "adaptive" &&
-      s.kind !== "test" &&
-      s.results.length === s.plan.length &&
-      s.plan.every(
-        (a) => a.distance <= maximumPracticeDistance(state, s.drillId),
-      ) &&
-      Date.parse(s.completedAt!) <= now.getTime() &&
-      Date.parse(s.completedAt!) >= now.getTime() - 30 * 86400000,
-  )) {
-    for (const a of s.plan)
-      chosenByCondition.set(conditionKey(s, a.mode, 0), s);
-  }
-  const chosen = [...new Set(chosenByCondition.values())];
-  const weak = weaknesses(state, now, chosen).filter((r) => {
-    const accepted = chosenByCondition.get(conditionKey(r.session, r.mode, 0));
-    return (
+  const weak = weaknesses(state, now).filter(
+    (r) =>
       r.distance <=
-        Math.min(
-          maximumDistance,
-          maximumPracticeDistance(state, r.session.drillId),
-        ) &&
-      (!preferredMode || r.mode === preferredMode) &&
-      (!accepted ||
-        accepted.plan.some(
-          (a) => conditionKey(accepted, a.mode, a.distance) === r.key,
-        ))
-    );
-  })[0];
+        Math.min(maximumDistance, maximumPracticeDistance(state, r.session.drillId)) &&
+      (!preferredMode || r.mode === preferredMode),
+  )[0];
   if (!weak) {
     const hasHistory = evidenceSessions(state).some(
       (s) => Date.parse(s.completedAt!) <= now.getTime(),
@@ -427,7 +402,6 @@ export function createRecommendedSession(
     targetSize: r.session?.targetSize ?? 100,
     boundary:
       r.mode === "boundary" ? boundaryDistance : (r.session?.boundary ?? 60),
-    surface: r.session?.surface,
     plan: Array.from({ length: r.count ? 20 : 6 }, () => ({
       mode: r.mode,
       distance: r.distance,
@@ -467,7 +441,8 @@ export function personalBest(session: Session, history: Session[]) {
     { label: "Seria kolejnych trafień", value: longest },
     {
       label: "Trafienia pierwszego lądowania",
-      value: (s: Session) => s.results.filter((a) => a.landingHit).length,
+      value: (s: Session) =>
+        s.results.filter((a) => a.mode === "lob" && successfulAttempt(a)).length,
     },
   ];
   const distanceRecords =
@@ -756,7 +731,6 @@ function generateTrainingPlan(
         : r.mode === mode
           ? base.boundary
           : 40,
-    surface: r.mode === mode ? base.surface : "gravel",
     drillId: drillForMode[mode],
     plan,
     trackDirections: false,
@@ -776,7 +750,6 @@ export function comparableSessions(session: Session, history: Session[]) {
       s.difficulty,
       s.targetSize,
       s.boundary,
-      s.surface ?? "unknown",
       s.plan.map((p) => [p.mode, p.distance, p.role ?? null, p.phase ?? null]),
     ]);
   return history
@@ -786,7 +759,7 @@ export function comparableSessions(session: Session, history: Session[]) {
         s.completedAt &&
         new Date(s.completedAt).getTime() <=
           new Date(session.completedAt ?? session.startedAt).getTime() &&
-        s.results.length === s.plan.length &&
+        isCompleteSession(s) &&
         s.plan.length > 0 &&
         key(s) === key(session),
     )

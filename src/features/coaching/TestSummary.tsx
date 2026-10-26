@@ -10,7 +10,6 @@ import {
   sessionFromTest,
 } from "./benchmarks";
 import { modeNames } from "./model";
-import { surfaces } from "../adventure/model";
 
 export function TestSummary({ session }: { session: Session }) {
   const { state, save, busy } = useApp();
@@ -116,12 +115,7 @@ export function TestSummary({ session }: { session: Session }) {
               ? "Utrwal pełną skuteczność w osobnym treningu."
               : "Popracuj nad tym elementem przed kolejnym pomiarem."}
           </p>
-          <p>
-            Teren:{" "}
-            {surfaces.find((s) => s.id === session.surface)?.label ??
-              "nieoznaczony"}
-            . Zachowamy ustawienia celu i terenu.
-          </p>
+          <p>Zachowamy ustawienia celu.</p>
           {!session.completedAt ? (
             <p>
               Zapisz wynik poniżej, aby rozpocząć trening. Przypomnienie o

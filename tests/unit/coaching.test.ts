@@ -99,11 +99,10 @@ describe("recommendations and trends", () => {
       weaknesses({ ...emptyState, sessions: [benchmark(), benchmark()] }, now),
     ).toHaveLength(0);
   });
-  it("does not combine targets, terrain, exercise, difficulty or junior long distances", () => {
+  it("does not combine targets, exercise, difficulty or junior long distances", () => {
     const s = session();
     for (const other of [
       { ...session(), targetSize: 100 },
-      { ...session(), surface: "rough" as const },
       { ...session(), difficulty: "łatwy" as const },
       { ...session(), drillId: "pressure" },
     ])
@@ -258,7 +257,10 @@ describe("plans, records and benchmarks", () => {
     expect(
       personalBest({ ...current, results: current.results.slice(1) }, [prior]),
     ).toBeNull();
-    expect(personalBest(current, [{ ...prior, surface: "rough" }])).toBeNull();
+    expect(personalBest(current, [{ ...prior, surface: "rough" }])).toMatchObject({
+      hits: 5,
+      previous: 3,
+    });
     expect(personalBest(current, [{ ...current, id: "other" }])).toBeNull();
     expect(personalBest(prior, [current])).toBeNull();
   });
@@ -273,7 +275,7 @@ describe("plans, records and benchmarks", () => {
     ).toBeNull();
     expect(
       previousBenchmark(after, [{ ...before, surface: "rough" }]),
-    ).toBeNull();
+    ).not.toBeNull();
     expect(
       previousBenchmark({ ...after, results: after.results.slice(1) }, [
         before,

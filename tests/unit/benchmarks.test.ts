@@ -150,7 +150,7 @@ describe("test feedback and follow-up", () => {
     ).toContain("Jedna seria");
     expect(
       testEvidence({ ...current, surface: "rough" }, [before]).last,
-    ).toBeUndefined();
+    ).toBe(before);
   });
   it("uses landing for lob and creates clean sessions retaining conditions", () => {
     const s = sample("lob", 20, "2026-09-25", "lob");
@@ -161,7 +161,7 @@ describe("test feedback and follow-up", () => {
       expect(next.results).toEqual([]);
       expect(next.completedAt).toBeUndefined();
       expect(next.id).not.toBe(s.id);
-      expect(next.surface).toBe(s.surface);
+      expect(next.surface).toBeUndefined();
       expect(next.targetSize).toBe(s.targetSize);
       expect(next.kind).toBe(practice ? "training" : "test");
       expect(next.plan).toEqual(

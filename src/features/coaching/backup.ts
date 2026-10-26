@@ -451,7 +451,6 @@ function validateSession(s: Session) {
       s.kind === "test" ||
       s.trainingPlan ||
       s.difficulty !== "średni" ||
-      s.surface !== "gravel" ||
       s.boundary !== 40
     )
       fail("warunki wyzwania");

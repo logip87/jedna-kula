@@ -125,10 +125,9 @@ describe("skills and motivation", () => {
     };
     expect(skillScores(withXP, now)).toEqual(skillScores(state, now));
   });
-  it("does not merge different terrains, targets or incomplete tests", () => {
+  it("does not merge different targets or incomplete tests", () => {
     const s = benchmark();
     for (const other of [
-      { ...benchmark(), surface: "rough" as const },
       { ...benchmark(), targetSize: 100 },
       { ...benchmark(), results: s.results.slice(0, 19) },
     ])

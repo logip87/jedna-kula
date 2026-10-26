@@ -19,6 +19,7 @@ export function ResultInsights({ session }: { session: Session }) {
       s.id !== session.id &&
       s.kind !== "test" &&
       s.completedAt &&
+      s.results.length === s.plan.length &&
       s.completedAt <= (session.completedAt ?? session.startedAt),
   );
   const groups = [

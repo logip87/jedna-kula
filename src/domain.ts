@@ -136,6 +136,7 @@ export interface Session {
   missionTitle?: string;
   missionCue?: string;
   trackDirections?: boolean;
+  // Legacy-only: old backups may contain this; new sessions and comparisons ignore it.
   surface?: Surface;
   timedPhase?: number;
   phaseStartedAt?: string;
@@ -226,6 +227,11 @@ export const percent = (n: number, d: number) =>
 export function successfulAttempt(a: Attempt): boolean {
   return a.mode === "lob" ? a.landingHit === true : a.hit;
 }
+// A saved partial series is useful history, but it is not comparable evidence.
+// Keep this definition shared by every analysis that needs a full session.
+export function isCompleteSession(s: Session): boolean {
+  return !!s.completedAt && s.plan.length > 0 && s.results.length === s.plan.length;
+}
 export function makePlan(
   drill: Drill,
   distance: number,
@@ -290,7 +296,7 @@ export function summarize(s: Session) {
     const r = results ?? [];
     return {
       distance: Number(d),
-      accuracy: percent(r.filter((x) => x.hit).length, r.length),
+      accuracy: percent(r.filter(successfulAttempt).length, r.length),
       score: percent(
         r.reduce((a, x) => a + x.points, 0),
         r.reduce((a, x) => a + maxPoints(x.mode), 0),
@@ -305,8 +311,8 @@ export function summarize(s: Session) {
       s.results.reduce((a, x) => a + x.points, 0),
       s.results.reduce((a, x) => a + maxPoints(x.mode), 0),
     ),
-    hits: s.results.filter((x) => x.hit).length,
-    misses: s.results.filter((x) => !x.hit).length,
+    hits: s.results.filter(successfulAttempt).length,
+    misses: s.results.filter((x) => !successfulAttempt(x)).length,
     carreaux: s.results.filter((x) => x.carreau).length,
     outside: s.results.filter((x) => x.outside).length,
     landing: percent(
@@ -350,8 +356,8 @@ export function stats(state: State) {
     count: sessions.length,
     pointAttempts: point.length,
     shootAttempts: shoot.length,
-    point: percent(point.filter((a) => a.hit).length, point.length),
-    shoot: percent(shoot.filter((a) => a.hit).length, shoot.length),
+    point: percent(point.filter(successfulAttempt).length, point.length),
+    shoot: percent(shoot.filter(successfulAttempt).length, shoot.length),
     carreau: percent(shoot.filter((a) => a.carreau).length, shoot.length),
     streak: streak(sessions),
     routine: routineResponses.length
@@ -376,7 +382,7 @@ export function achievements(state: State) {
     ...(state.awards?.some((a) => a.name === "3 dni z rzędu")
       ? [["3 dni z rzędu", true]]
       : []),
-    ["10 trafień", st.attempts.filter((a) => a.hit).length >= 10],
+    ["10 trafień", st.attempts.filter(successfulAttempt).length >= 10],
     ["5 carreaux", st.attempts.filter((a) => a.carreau).length >= 5],
     [
       "Puenta 30 cm",

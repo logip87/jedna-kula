@@ -40,7 +40,6 @@ export function repeatLastTraining(
     boundary: previous.plan.some((a) => a.mode === "boundary")
       ? boundaryDistance
       : previous.boundary,
-    surface: previous.surface,
     trackDirections: previous.trackDirections,
     plan: structuredClone(previous.plan),
     results: [],

@@ -5,8 +5,6 @@ import { lastRepeatableTraining, repeatLastTraining } from "./repeat";
 import { RoutineGuide } from "../mental/RoutineGuide";
 import {
   dashboardEvidence,
-  acceptedAdaptation,
-  adaptation,
   dailyTraining,
   mentalRecommendation,
   progressEvidence,
@@ -28,18 +26,15 @@ export function Today({ guide }: { guide?: ReactNode }) {
   const r = recommendation(state),
     competition = competitionTraining(state),
     week = weeklyProgress(state),
-    proposal = adaptation(state),
     mental = mentalRecommendation(state),
     dashboard = dashboardEvidence(state),
     lastTraining = lastRepeatableTraining(state);
-  const startSuggestion = async (adapt = false) => {
+  const startSuggestion = async () => {
     if (state.draft) {
       navigate("/session");
       return;
     }
-    const session = adapt
-      ? acceptedAdaptation(state)
-      : (competition ?? dailyTraining(state));
+    const session = competition ?? dailyTraining(state);
     if (await save({ ...state, draft: session })) navigate("/session");
   };
   const repeat = async () => {
@@ -117,30 +112,6 @@ export function Today({ guide }: { guide?: ReactNode }) {
             Ułóż dłuższy trening →
           </Link>
         </details>
-      )}
-      {proposal && !competition && !state.draft && (
-        <section className="notice">
-          <p className="eyebrow">OPCJONALNA ZMIANA WARIANTU</p>
-          <p>
-            <b>{proposal.reason}</b>
-          </p>
-          <p>
-            {proposal.evidence} {proposal.change}
-          </p>
-          <button
-            className="secondary"
-            disabled={busy}
-            onClick={() => void startSuggestion(true)}
-          >
-            {proposal.kind === "harder"
-              ? "SPRÓBUJ TRUDNIEJ"
-              : "ŁATWIEJSZY WARIANT"}
-          </button>
-          <p className="muted small">
-            Możesz przyjąć propozycję lub samodzielnie ustawić dowolny dostępny
-            dystans powyżej.
-          </p>
-        </section>
       )}
       <section className="card">
         <h2>Czy robię postęp?</h2>

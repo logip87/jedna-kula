@@ -1,5 +1,5 @@
 import { enrichLesson } from "./content";
-import type { Lesson, Mode, Attempt } from "../../domain";
+import { successfulAttempt, type Lesson, type Mode, type Attempt } from "../../domain";
 
 export const mentalCompetencies = [
   {
@@ -412,7 +412,7 @@ export function technicalMentalCue(
   pressure = false,
 ) {
   if (previous)
-    return (previous.mode === "lob" ? previous.landingHit : previous.hit)
+    return successfulAttempt(previous)
       ? "Zachowaj tę samą rutynę."
       : "Reset i następne zadanie.";
   if (pressure || mode === "shoot") return "Ustal cel. Oddech. Rzut.";

@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { useApp } from "../../app-context";
 import { drills } from "../../data";
-import type { Surface } from "../adventure/model";
 import {
   createSelectedTraining,
   seriesLengths,
@@ -22,7 +21,6 @@ import {
   type TrainingSelection,
 } from "./selection";
 import { modeNames } from "./model";
-import { surfaces } from "../adventure/model";
 import { LobSetup } from "../../LobSetup";
 
 const icons = [CircleDot, Crosshair, MoveUpRight, PanelLeft];
@@ -161,28 +159,6 @@ export function TrainingPicker() {
                   : "Ustaw świnkę i zmierz odległość każdej zagranej kuli. Celuj w 30 cm."}
           </p>
           {drill.mode === "lob" && <LobSetup distance={selection.distance} />}
-          <div className="training-fields">
-            <label>
-              Nawierzchnia
-              <select
-                value={selection.surface ?? ""}
-                onChange={(e) =>
-                  setSelection({
-                    ...selection,
-                    surface: (e.target.value || undefined) as
-                      Surface | undefined,
-                  })
-                }
-              >
-                <option value="">Nieokreślona</option>
-                {surfaces.map((surface) => (
-                  <option key={surface.id} value={surface.id}>
-                    {surface.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
           <label className="checkbox">
             <input
               type="checkbox"
@@ -197,7 +173,7 @@ export function TrainingPicker() {
             Zapisuj kierunek nietrafionych rzutów
           </label>
           <p className="muted small">
-            Wyniki porównujemy na tym samym dystansie i w tych samych warunkach.
+            Wyniki porównujemy dla tego samego rodzaju treningu, dystansu i ustawienia celu.
           </p>
         </details>
       </form>
