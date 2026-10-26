@@ -406,7 +406,7 @@ test("beginner guide starts at six metres and library filters help discovery", a
     .fill("nieistniejące");
   await page.getByRole("button", { name: "Pokaż wszystkie ćwiczenia" }).click();
   await expect(
-    page.getByText("Wszystkie ćwiczenia: 30", { exact: true }),
+    page.getByText("Wszystkie ćwiczenia: 31", { exact: true }),
   ).toBeVisible();
   await page.setViewportSize({ width: 320, height: 720 });
   await page.goto("/");
