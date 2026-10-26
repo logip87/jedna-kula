@@ -309,7 +309,9 @@ describe("private product events", () => {
     enableMeasurement(true);
     recordEvent("app_open");
     recordEvent("profile" as ProductEvent);
-    expect(sink).toHaveBeenCalledExactlyOnceWith({ name: "app_open" });
+    expect(sink).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ eventName: "app_open" }),
+    );
     expect(JSON.stringify(productCounters())).not.toContain("profile");
     enableMeasurement(false);
     expect(productCounters()).toEqual({});
@@ -336,7 +338,8 @@ describe("private product events", () => {
         ],
       },
     );
-    expect(sink.mock.calls.map((c) => c[0].name)).toEqual([
+    expect(sink.mock.calls.map((c) => c[0].eventName)).toEqual([
+      "training_start",
       "recommended_training_start",
       "training_complete",
       "recommended_training_complete",

@@ -29,6 +29,7 @@ import {
   directions,
 } from "./model";
 import { AdventureBack, AdventureHeading } from "./ui";
+import { trackEvent } from "../product/analytics";
 export function AdventureHome() {
   const { state, save, busy } = useApp();
   const config = state.adventure?.config ?? defaultConfig;
@@ -99,6 +100,7 @@ export function AdventureHome() {
         </p>
         <Link
           className="primary"
+          onClick={() => trackEvent("adventure_start", { module: "adventure", source: "adventure" })}
           to={
             hasPersonalRecommendation
               ? "/adventure/next"

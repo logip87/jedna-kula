@@ -600,7 +600,8 @@ export function Library() {
               <Link
                 key={`${item.drillId}:${item.mode}:${item.distance}`}
                 className={`card drill-card recommendation-card ${drill.mode === "shoot" ? "shoot-card" : drill.mode === "lob" ? "lob-card" : drill.mixed ? "mixed-card" : ""}`}
-                to={`/training/${drill.id}`}
+                to={trainingHref(drill.id)}
+                onClick={() => trackEvent("recommendation_click", { module: "training", source: "recommendation" })}
               >
                 <div className="drill-top">
                   <div className="icon-box">

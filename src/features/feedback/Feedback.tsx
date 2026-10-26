@@ -1,6 +1,7 @@
 import { useState, useRef, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { Send } from "lucide-react";
+import { trackEvent } from "../product/analytics";
 
 export function Feedback() {
   const [kind, setKind] = useState("idea");
@@ -63,6 +64,7 @@ export function Feedback() {
             : "Nie udało się wysłać zgłoszenia. Spróbuj ponownie.",
         );
       setSent(true);
+      trackEvent("feedback_submit", { module: "feedback" });
       setMessage("");
       setEmail("");
     } catch (failure) {

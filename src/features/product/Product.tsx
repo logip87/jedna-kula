@@ -6,10 +6,31 @@ import type { Session } from "../../domain";
 import { summaryEvidence } from "./model";
 import {
   enableMeasurement,
+  measurementChoiceMade,
   measurementEnabled,
   productCounters,
   recordEvent,
+  trackEvent,
 } from "./analytics";
+export function AnalyticsConsent() {
+  const [visible, setVisible] = useState(() => !measurementChoiceMade());
+  if (!visible) return null;
+  return (
+    <section className="notice" aria-label="Anonimowa analityka beta">
+      <p>
+        Podczas testów zbieramy anonimowe informacje o użyciu aplikacji, aby
+        poprawiać jej działanie. Nie zbieramy wyników treningowych ani danych
+        osobowych.
+      </p>
+      <button className="secondary" onClick={() => { enableMeasurement(true); trackEvent("app_open"); setVisible(false); }}>
+        Pomóż anonimowo
+      </button>
+      <button className="text-link" onClick={() => { enableMeasurement(false); setVisible(false); }}>
+        Nie teraz
+      </button>
+    </section>
+  );
+}
 export function TrainingSummary({ session }: { session: Session }) {
   return session.kind === "test" ? (
     <TestSummary session={session} />
@@ -107,11 +128,13 @@ export function MeasurementSettings() {
   const counts = productCounters();
   return (
     <section className="card config">
-      <h2>Pomiar użycia — tylko na tym urządzeniu</h2>
+      <h2>Anonimowy pomiar użycia w becie</h2>
       <p>
-        Opcjonalne liczniki otwarć i użycia modułów. Bez imienia, wieku,
-        profilu, wyników, historii, identyfikatora użytkownika i
-        fingerprintingu. Nic nie wysyłamy na serwer.
+        Opcjonalne, anonimowe zdarzenia o otwarciach i użyciu modułów. Bez
+        imienia, wieku, profilu, wyników, historii, e-maila, lokalizacji i
+        fingerprintingu. Losowy identyfikator służy wyłącznie do odróżniania
+        anonimowej instalacji; zdarzenia wysyłamy do Jednej Kuli po odzyskaniu
+        sieci.
       </p>
       <label className="checkbox">
         <input
@@ -122,11 +145,11 @@ export function MeasurementSettings() {
             setEnabled(e.target.checked);
           }}
         />
-        Zbieraj lokalne liczniki użycia
+        Zbieraj anonimowe dane o użyciu
       </label>
       <p className="muted small">
-        Wyłączenie usuwa liczniki. Zachowujemy najwyżej 90 dni; nie są częścią
-        kopii treningów.
+        Wyłączenie usuwa lokalną kolejkę i liczniki. Nie są częścią kopii
+        treningów.
       </p>
       <button className="secondary" onClick={() => setShow(!show)}>
         Pokaż lokalne liczniki

@@ -47,7 +47,12 @@ import { BeginnerGuide } from "./BeginnerGuide";
 import { Today } from "./features/coaching/Today";
 import { attachPendingMentalCue } from "./features/mental/cue";
 import { ProfilePrompt } from "./features/profile/ProfilePrompt";
-import { recordEvent, transitionEvents } from "./features/product/analytics";
+import {
+  flushAnalytics,
+  trackEvent,
+  transitionEvents,
+} from "./features/product/analytics";
+import { AnalyticsConsent } from "./features/product/Product";
 import { awardSituations } from "./features/situations/model";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
@@ -86,17 +91,19 @@ function App() {
   const route = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
-    const event =
-      route.pathname === "/"
-        ? "today_view"
-        : route.pathname === "/summary"
-          ? "summary_view"
-          : route.pathname === "/coach/weaknesses"
-            ? "weakness_view"
-            : route.pathname === "/coach/week"
-              ? "weekly_challenge_view"
-              : null;
-    if (event) recordEvent(event);
+    const event = route.pathname === "/" ? "today_view"
+      : route.pathname === "/training" ? "training_picker_view"
+      : route.pathname === "/summary" ? "summary_view"
+      : route.pathname === "/coach/weaknesses" ? "weakness_view"
+      : route.pathname === "/coach/week" ? "weekly_challenge_view"
+      : route.pathname === "/adventure" ? "adventure_view"
+      : route.pathname.startsWith("/adventure/tactics") ? "tactics_view"
+      : route.pathname.startsWith("/lessons") || route.pathname.startsWith("/coach/practice/mental") ? "mental_view"
+      : route.pathname.startsWith("/coach/practice/physical") ? "physical_view"
+      : route.pathname.startsWith("/rules") ? "rules_view"
+      : route.pathname.startsWith("/history") ? "history_view"
+      : route.pathname === "/feedback" ? "feedback_open" : null;
+    if (event) trackEvent(event);
   }, [route.pathname]);
   const [state, setState] = useState<State | null>(null);
   const [busy, setBusy] = useState(false);
@@ -108,7 +115,8 @@ function App() {
     ((reload?: boolean) => Promise<void>) | null
   >(null);
   useEffect(() => {
-    recordEvent("app_open");
+    trackEvent("app_open");
+    void flushAnalytics();
     repository
       .load()
       .then(setState)
@@ -119,7 +127,10 @@ function App() {
             : "Nie udało się otworzyć danych. Sprawdź uprawnienia pamięci i odśwież aplikację.",
         ),
       );
-    const on = () => setOffline(!navigator.onLine);
+    const on = () => {
+      setOffline(!navigator.onLine);
+      if (navigator.onLine) void flushAnalytics();
+    };
     const prompt = (e: Event) => {
       e.preventDefault();
       setInstall(e as InstallEvent);
@@ -266,6 +277,7 @@ function App() {
             </div>
           )}
           <main id="main-content" tabIndex={-1}>
+            <AnalyticsConsent />
             <ProfilePrompt key={route.pathname} />
             <ScreenBoundary key={route.pathname}>
               <Suspense fallback={<p role="status">Wczytywanie ekranu…</p>}>
