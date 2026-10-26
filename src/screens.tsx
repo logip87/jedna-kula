@@ -1645,12 +1645,17 @@ function Result({
             </b>
             <p>
               {readonly
-                ? "Zobacz, co odblokowałeś na swojej ścieżce."
+                ? "Co dalej? Możesz przejść do kolejnej misji albo wykonać trening z rekomendacji."
                 : "Zapisz wynik poniżej. Tylko pełna, zapisana seria zalicza misję."}
             </p>
             <Link className="secondary" to="/adventure/missions">
               Moja ścieżka
             </Link>
+            {readonly && (
+              <Link className="secondary" to="/adventure/next">
+                Zobacz rekomendację
+              </Link>
+            )}
           </div>
         </section>
       )}

@@ -1,4 +1,4 @@
-import { recommendation } from "../coaching/model";
+import { trainingRecommendations } from "../coaching/model";
 import {
   boundaryDistance,
   type State,
@@ -71,13 +71,76 @@ export function missionCompleted(state: State, id: string) {
   );
 }
 export function recommendedTraining(state: State, maximumDistance = 10) {
-  const r = recommendation(state, new Date(), maximumDistance);
+  const now = new Date();
+  const candidates = trainingRecommendations(state, now).filter(
+    (candidate) => candidate.distance <= maximumDistance,
+  );
+  const lead = candidates[0];
+  // Do not rotate a clearly stronger need. Similar priorities are rotated by
+  // the last time they were recommended, so variety is a consequence of the
+  // training history rather than randomness.
+  const comparable = lead
+    ? candidates.filter(
+        (candidate) =>
+          candidate.personalized && candidate.priority >= lead.priority * 0.75,
+      )
+    : [];
+  const lastRecommended = (mode: Mode, distance: number) =>
+    state.sessions
+      .filter(
+        (session) =>
+          session.completedAt &&
+          session.coach?.source === "recommended" &&
+          session.plan.some(
+            (attempt) => attempt.mode === mode && attempt.distance === distance,
+          ),
+      )
+      .map((session) => Date.parse(session.completedAt!))
+      .sort((a, b) => b - a)[0] ?? -Infinity;
+  const r =
+    comparable.length > 1
+      ? [...comparable].sort(
+          (a, b) =>
+            lastRecommended(a.mode, a.distance) -
+              lastRecommended(b.mode, b.distance) || b.priority - a.priority,
+        )[0]
+      : lead;
+  if (!r) throw new Error("Brak wariantu treningu");
+  const comparableSessions = state.sessions.filter(
+    (session) =>
+      !!session.completedAt &&
+      !session.challenge &&
+      !session.mastery &&
+      session.kind !== "test" &&
+      session.results.some(
+        (attempt) => attempt.mode === r.mode && attempt.distance === r.distance,
+      ),
+  );
+  const sampleCount = comparableSessions.reduce(
+    (total, session) =>
+      total +
+      session.results.filter(
+        (attempt) => attempt.mode === r.mode && attempt.distance === r.distance,
+      ).length,
+    0,
+  );
+  const personalized =
+    r.personalized && r.count >= 20 && comparableSessions.length >= 2;
   return {
     mode: r.mode,
     distance: r.distance,
-    count: r.count,
-    rate: (r.rate ?? 0) / 100,
+    count: personalized ? r.count : sampleCount,
+    sessions: personalized
+      ? Math.max(2, comparableSessions.length)
+      : comparableSessions.length,
+    rate: r.rate === null ? null : r.rate / 100,
     reason: r.reason,
+    personalized,
+    status: personalized ? ("ready" as const) : ("building" as const),
+    rotationReason:
+      comparable.length > 1 && r !== lead
+        ? "Zmieniamy bodziec między podobnie ważnymi obszarami."
+        : undefined,
   };
 }
 

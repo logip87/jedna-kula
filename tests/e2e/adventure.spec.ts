@@ -1,5 +1,37 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+test("new player sees one honest next step and an empty map, not false personalization", async ({
+  page,
+}) => {
+  await page.goto("/adventure");
+  await expect(page.getByText("NA TERAZ", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Zobacz zadanie", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText(
+      "Pierwsze treningi pomogą zbudować bazę do późniejszych rekomendacji.",
+    ),
+  ).toBeVisible();
+  await page.goto("/adventure/next");
+  await expect(
+    page.getByRole("heading", { name: "Pierwszy trening bazowy" }),
+  ).toBeVisible();
+  await expect(page.getByText("Budujemy bazę", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("Jeszcze nie korzystamy z Twojej historii."),
+  ).toBeVisible();
+  await page.goto("/adventure/map");
+  await expect(
+    page.getByRole("heading", { name: "Zobacz, gdzie uciekają kule" }),
+  ).toBeVisible();
+  await expect(page.locator(".error-map")).toHaveCount(0);
+  await page.goto("/adventure/tactics");
+  await expect(
+    page.getByText("To ćwiczenie decyzji, nie ocena skuteczności rzutu."),
+  ).toBeVisible();
+});
+
 test("junior journey unlocks the next mission only after saving; map and recommendations use real results", async ({
   page,
 }) => {
@@ -8,7 +40,7 @@ test("junior journey unlocks the next mission only after saving; map and recomme
   await page.getByRole("button", { name: "Krótka seria", exact: true }).click();
   await page.getByRole("button", { name: "10 treningów", exact: true }).click();
   await page.getByRole("button", { name: "Zapisz wybór ścieżki" }).click();
-  await expect(page.locator(".adventure-hero")).toContainText(
+  await expect(page.locator(".adventure-path-status")).toContainText(
     "0 / 10 misji · Krótka seria",
   );
   await page.reload();
@@ -17,7 +49,7 @@ test("junior journey unlocks the next mission only after saving; map and recomme
     page.getByRole("heading", { name: "Ta misja jeszcze czeka" }),
   ).toBeVisible();
   await page.goto("/adventure/mission/1");
-  await page.getByRole("button", { name: "Zaczynam misję" }).click();
+  await page.getByRole("button", { name: "Rozpocznij serię 6 prób" }).click();
   await expect(page.getByText("Rzut 1 / 6", { exact: true })).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Ponad 100 cm +0 pkt", exact: true }),
@@ -39,7 +71,7 @@ test("junior journey unlocks the next mission only after saving; map and recomme
   ).toBeVisible();
   await page.goto("/adventure/missions");
   await expect(page.locator(".mission-passport")).toContainText("1 / 10 misji");
-  await page.getByRole("link", { name: "Otwórz misję", exact: true }).click();
+  await page.getByRole("link", { name: "Zobacz zadanie", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Poczuj długość" }),
   ).toBeVisible();
@@ -51,7 +83,8 @@ test("junior journey unlocks the next mission only after saving; map and recomme
     page.getByRole("combobox", { name: "Teren", exact: true }),
   ).toHaveCount(0);
   await page.goto("/adventure/next");
-  await expect(page.getByText(/20 prób z co najmniej 2 sesji/)).toBeVisible();
+  await expect(page.getByText("Budujemy bazę", { exact: true })).toBeVisible();
+  await expect(page.getByText(/6 \/ 20 prób · 1 \/ 2 sesji/)).toBeVisible();
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,

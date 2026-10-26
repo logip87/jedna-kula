@@ -147,6 +147,69 @@ describe("adventure progression and personalization", () => {
       recommendedTraining({ ...emptyState, sessions: [shoot, ...newer] }).mode,
     ).toBe("point");
   });
+  it("labels a baseline honestly until it has twenty comparable attempts in two sessions", () => {
+    const oneSession = session(
+      Array.from({ length: 19 }, () => attempt("point", 6, true)),
+    );
+    const building = recommendedTraining({
+      ...emptyState,
+      sessions: [oneSession],
+    });
+    expect(building.personalized).toBe(false);
+    expect(building.status).toBe("building");
+    expect(building.count).toBe(19);
+    expect(building.sessions).toBe(1);
+
+    const ready = recommendedTraining({
+      ...emptyState,
+      sessions: [
+        session(Array.from({ length: 10 }, () => attempt("point", 6, false))),
+        session(
+          Array.from({ length: 10 }, () => attempt("point", 6, false)),
+          {
+            id: "second",
+          },
+        ),
+      ],
+    });
+    expect(ready.personalized).toBe(true);
+    expect(ready.status).toBe("ready");
+    expect(ready.count).toBe(20);
+    expect(ready.rate).toBe(0);
+  });
+  it("rotates similarly important recommendations but keeps a clear priority", () => {
+    const point = session(
+      Array.from({ length: 10 }, (_, i) => attempt("point", 6, i < 5)),
+    );
+    const shoot = session(
+      Array.from({ length: 10 }, (_, i) => attempt("shoot", 6, i < 5)),
+      {
+        drillId: "shoot-basic",
+        plan: Array.from({ length: 10 }, () => ({
+          mode: "shoot",
+          distance: 6,
+        })),
+      },
+    );
+    const state = {
+      ...emptyState,
+      sessions: [
+        point,
+        {
+          ...point,
+          id: "point-2",
+          coach: { source: "recommended" as const },
+          completedAt: new Date().toISOString(),
+        },
+        shoot,
+        { ...shoot, id: "shoot-2" },
+      ],
+    };
+    const rotated = recommendedTraining(state);
+    expect(rotated.personalized).toBe(true);
+    expect(rotated.mode).toBe("shoot");
+    expect(rotated.rotationReason).toBeTruthy();
+  });
   it("keeps landing separate from final position and ignores legacy terrain", () => {
     const a = {
       ...attempt("lob", 7, false),

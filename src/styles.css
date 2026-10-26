@@ -3130,6 +3130,99 @@ summary {
   background: #efbb32;
   color: #1d1c18;
 }
+.adventure-now .text-link {
+  display: inline-block;
+  margin-top: 16px;
+  color: white;
+  text-decoration: underline;
+}
+.adventure-path-status {
+  display: grid;
+  grid-template-columns: 1fr minmax(150px, 240px) auto;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 0;
+  padding: 18px 20px;
+  border: 1px solid #dedad1;
+  border-radius: 18px;
+  background: white;
+}
+.adventure-path-status p {
+  margin: 4px 0 0;
+  color: #534a3b;
+}
+.adventure-explainer {
+  margin: 20px 0;
+}
+.adventure-explainer h2 {
+  font-size: 20px;
+}
+.mission-current {
+  margin: 24px 0;
+  padding: 26px;
+  border-radius: 24px;
+  background: #efbb32;
+}
+.mission-current h2 {
+  font-size: 30px;
+  margin: 8px 0;
+}
+.mission-upcoming {
+  margin: 24px 0;
+}
+.mission-upcoming > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #dedad1;
+}
+.mission-upcoming span {
+  color: #534a3b;
+  white-space: nowrap;
+}
+.mission-all {
+  margin: 28px 0;
+}
+.mission-all > summary {
+  cursor: pointer;
+  font-weight: 750;
+  font-size: 18px;
+}
+.data-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 18px 0;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.62);
+}
+.data-status b,
+.data-status span,
+.data-status small {
+  display: block;
+}
+.data-status small {
+  width: 100%;
+  color: #534a3b;
+}
+.recommendation-why {
+  margin: 16px 0;
+}
+.recommendation-why summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.map-empty {
+  margin: 24px 0;
+}
+.tactic-intro {
+  margin: 18px 0;
+  padding: 16px;
+  border-left: 4px solid #efbb32;
+  background: white;
+}
 .adventure-modules {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -3548,6 +3641,12 @@ summary {
   accent-color: #1d1c18;
 }
 @media (max-width: 700px) {
+  .adventure-path-status {
+    grid-template-columns: 1fr;
+  }
+  .adventure-path-status .secondary {
+    width: 100%;
+  }
   .adventure-modules {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -3578,6 +3677,9 @@ summary {
   }
 }
 @media (max-width: 420px) {
+  .mission-current {
+    padding: 20px;
+  }
   .adventure-modules {
     grid-template-columns: 1fr;
   }
