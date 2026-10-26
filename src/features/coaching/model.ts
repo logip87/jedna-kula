@@ -345,6 +345,15 @@ export type TrainingRecommendation = {
   personalized: boolean;
 };
 
+function preferredStarterMode(state: State): Mode {
+  if (
+    state.player?.trainingGoal === "shoot" ||
+    state.player?.preferredRole === "strzelec"
+  )
+    return "shoot";
+  return "point";
+}
+
 const modeVariant: Partial<Record<Mode, string>> = {
   point: "point-random",
   shoot: "pressure",
@@ -366,10 +375,7 @@ function starterRecommendations(
   state: State,
   now: Date,
 ): TrainingRecommendation[] {
-  const prefersShoot =
-    state.player?.trainingGoal === "shoot" ||
-    state.player?.preferredRole === "strzelec";
-  const ids = prefersShoot
+  const ids = preferredStarterMode(state) === "shoot"
     ? ["shoot-basic", "point-basic", "lob"]
     : ["point-basic", "shoot-basic", "lob"];
   const reason = hasCompletedTraining(state, now)
@@ -504,7 +510,7 @@ export function recommendation(
     );
     const mode: Mode =
       preferredMode ??
-      (state.player?.trainingGoal === "shoot" ? "shoot" : "point");
+      preferredStarterMode(state);
     const firstTask = {
       point: "puenty",
       shoot: "strzału",
@@ -701,6 +707,13 @@ export type TrainingFocus =
   | "słabości"
   | "presja"
   | "lekko";
+
+// Profile preference is a starting point only. Once a player has trained,
+// their latest plan remains the generator's default.
+export function preferredTrainingFocus(state: State): TrainingFocus {
+  if (state.player?.trainingGoal === "pressure") return "presja";
+  return preferredStarterMode(state) === "shoot" ? "strzał" : "puenta";
+}
 function focusMode(focus: TrainingFocus): Mode | undefined {
   if (focus === "strzał" || focus === "presja") return "shoot";
   if (focus === "lob") return "lob";

@@ -8,6 +8,7 @@ import {
   createRecommendedSession,
   generateTraining,
   modeNames,
+  preferredTrainingFocus,
   selfChallenge,
   weaknesses,
   type TrainingFocus,
@@ -166,15 +167,17 @@ export function Generator() {
             "lekko",
           ] as const
         ).find((f) => f === previous?.trainingPlan?.focus) ??
-          (
-            {
-              point: "puenta",
-              shoot: "strzał",
-              lob: "lob",
-              boundary: "przy linii",
-              target: "do celu",
-            } as const
-          )[previous?.plan[0].mode ?? "point"]),
+          (previous?.plan[0]
+            ? (
+                {
+                  point: "puenta",
+                  shoot: "strzał",
+                  lob: "lob",
+                  boundary: "przy linii",
+                  target: "do celu",
+                } as const
+              )[previous.plan[0].mode]
+            : preferredTrainingFocus(state))),
   );
   const distances = trainingPlanDistances(
     generateTraining(state, minutes, focus),
@@ -383,7 +386,7 @@ export function SelfChallenge() {
             <p>
               Zapisz pełną serię. Będzie punktem odniesienia do kolejnej próby.
             </p>
-            <Link className="button" to="/training?group=Testy">
+            <Link className="button" to="/training?category=Testy">
               Wybierz test kontrolny
             </Link>
           </>

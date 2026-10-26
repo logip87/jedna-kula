@@ -58,6 +58,32 @@ test("training library separates a starter shelf from the full catalogue", async
   ).toBe(true);
 });
 
+test("training library and generator use the player's shooter preference", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await replaceStoredState(page, {
+    ...emptyState,
+    player: {
+      id: "shooter",
+      name: "",
+      preferredRole: "strzelec",
+      preferredHand: "prawa",
+      createdAt: "2026-10-01T10:00:00Z",
+    },
+  });
+  await page.goto("/training");
+  await expect(
+    page.getByRole("combobox", { name: "Rodzaj treningu" }),
+  ).toHaveCount(0);
+  await page.getByRole("link", { name: /Mój pierwszy trening/ }).click();
+  await expect(
+    page.getByRole("heading", { name: "Strzał podstawowy", exact: true }),
+  ).toBeVisible();
+  await page.goto("/coach/generator");
+  await expect(page.getByLabel("Chcę trenować")).toHaveValue("strzał");
+});
+
 test("training library explains a data-based recommendation and keeps manual choice", async ({
   page,
 }) => {

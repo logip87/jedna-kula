@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { choices, emptyState, type Mode, type Session } from "../../src/domain";
 import {
+  preferredTrainingFocus,
   recommendation,
   trainingRecommendations,
 } from "../../src/features/coaching/model";
@@ -55,6 +56,25 @@ describe("recommendation shelf", () => {
       drillId: "point-basic",
       reason: "Dobry trening na początek.",
     });
+  });
+
+  it("keeps a shooter's first suggestions and generated plan on shooting", () => {
+    const state = {
+      ...emptyState,
+      player: {
+        id: "shooter",
+        name: "",
+        preferredRole: "strzelec",
+        preferredHand: "prawa",
+        createdAt: "2026-10-01",
+      },
+    };
+    expect(trainingRecommendations(state, now)[0]).toMatchObject({
+      drillId: "shoot-basic",
+      mode: "shoot",
+    });
+    expect(recommendation(state, now)).toMatchObject({ mode: "shoot" });
+    expect(preferredTrainingFocus(state)).toBe("strzał");
   });
 
   it("uses the existing weakness evidence for a shooting recommendation", () => {

@@ -256,7 +256,7 @@ export function Today({ guide }: { guide?: ReactNode }) {
           porównujesz z własnymi treningami.
         </p>
         <div className="coach-links">
-          <Link to="/training?group=Testy">Testy kontrolne</Link>
+          <Link to="/training?category=Testy">Testy kontrolne</Link>
           <Link to="/coach/mastery">Próby mistrzowskie</Link>
           <Link to="/coach/challenge">Pokonaj siebie</Link>
           <Link to="/coach/generator?focus=presja">Trening z presją</Link>

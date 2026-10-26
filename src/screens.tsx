@@ -500,13 +500,14 @@ export function Start() {
 export function Library() {
   const { state } = useApp();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [group, setGroup] = useState(
-    new URLSearchParams(location.search).get("group") ?? "Wszystkie",
-  );
   const filter = searchParams.get("category") ?? "Wszystkie";
   const [query, setQuery] = useState("");
   const [beginners, setBeginners] = useState(false);
-  const categories = ["Wszystkie", ...new Set(drills.map((d) => d.category))];
+  const categories = [
+    "Wszystkie",
+    ...new Set(drills.map((d) => d.category)),
+    "Testy",
+  ];
   const beginnerIds = ["point-basic", "shoot-basic", "target", "lob"];
   const recommendations = trainingRecommendations(state);
   const hasHistory = state.sessions.some(
@@ -528,18 +529,8 @@ export function Library() {
   }, []);
   const visible = drills.filter(
     (d) =>
-      (group === "Wszystkie" ||
-        (d.group ??
-          (d.pressure
-            ? "Presja"
-            : d.mixed
-              ? "Mix"
-              : d.mode === "shoot"
-                ? "Strzał"
-                : d.mode === "lob"
-                  ? "Lob"
-                  : "Puenta")) === group) &&
-      (filter === "Wszystkie" || d.category === filter) &&
+      (filter === "Wszystkie" ||
+        (filter === "Testy" ? d.test : d.category === filter)) &&
       (!beginners || beginnerIds.includes(d.id)) &&
       `${d.name} ${d.category} ${d.description}`
         .toLocaleLowerCase("pl")
@@ -554,22 +545,6 @@ export function Library() {
       <Link className="secondary" to="/coach/generator">
         Ułóż trening na 10, 20 lub 30 minut
       </Link>
-      <label className="coach-library-group">
-        Rodzaj treningu
-        <select value={group} onChange={(e) => setGroup(e.target.value)}>
-          {[
-            "Wszystkie",
-            "Puenta",
-            "Strzał",
-            "Lob",
-            "Presja",
-            "Mix",
-            "Testy",
-          ].map((x) => (
-            <option key={x}>{x}</option>
-          ))}
-        </select>
-      </label>
       <div className="library-start">
         <span className="icon-box">
           <Compass />
@@ -590,7 +565,7 @@ export function Library() {
           className="secondary"
           onClick={() => trackEvent("recommendation_click", { module: "training", source: "recommendation" })}
           to={
-            hasHistory && primaryRecommendation
+            primaryRecommendation
               ? trainingHref(primaryRecommendation.drillId)
               : "/training/point-basic?level=easy"
           }
@@ -751,7 +726,6 @@ export function Library() {
               setQuery("");
               setFilter("Wszystkie");
               setBeginners(false);
-              setGroup("Wszystkie");
             }}
           >
             Pokaż wszystkie ćwiczenia
@@ -2148,7 +2122,7 @@ export function ProgressPage() {
         Statystyki poniżej dotyczą zwykłych treningów. Testy i próby
         mistrzowskie porównujesz osobno w historii i podsumowaniu testu.
       </p>
-      <Link className="secondary" to="/training?group=Testy">
+      <Link className="secondary" to="/training?category=Testy">
         Testy kontrolne
       </Link>
       <div className="metric-grid">

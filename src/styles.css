@@ -3924,13 +3924,6 @@ summary {
   flex-direction: column;
   gap: 28px;
 }
-.coach-library-group {
-  display: block;
-  margin: 20px 0;
-}
-.coach-library-group select {
-  margin-top: 10px;
-}
 @media (max-width: 600px) {
   .coach-main {
     padding: 24px;
