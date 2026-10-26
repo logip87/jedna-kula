@@ -788,7 +788,7 @@ main {
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
 }
 .recommendation-card {
-  border-top-color: #6f845b;
+  border-top-color: #d5a32c;
 }
 .recommendation-card h3 {
   font-size: 22px;
@@ -800,8 +800,8 @@ main {
   margin: 19px 0;
   padding: 13px;
   border-radius: 12px;
-  background: #f0f2e9;
-  color: #35402e;
+  background: #fff0d8;
+  color: #5b421a;
   font-size: 13px;
   line-height: 1.4;
 }
@@ -811,7 +811,7 @@ main {
   text-transform: uppercase;
 }
 .recommendation-why small {
-  color: #536047;
+  color: #7a603f;
   font-size: 11px;
 }
 .library-all-title {
@@ -1157,6 +1157,31 @@ fieldset > .secondary {
   margin-right: 7px;
   margin-bottom: 9px;
 }
+.scenario-board {
+  margin: 0 0 18px;
+  border: 1px solid #dedad1;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.scenario-board svg {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  margin: auto;
+}
+.scenario-board text {
+  fill: #534a3b;
+  font-size: 10px;
+  font-weight: 700;
+}
+.scenario-board figcaption {
+  padding: 10px 14px;
+  border-top: 1px solid #dedad1;
+  color: #534a3b;
+  font-size: 13px;
+  line-height: 1.4;
+}
 .two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1396,7 +1421,7 @@ fieldset > .secondary {
   max-width: 560px;
 }
 .success {
-  color: #315b22;
+  color: #785000;
 }
 .danger {
   display: inline-flex;

@@ -69,7 +69,7 @@ export function ShotFigure({ figure }: { figure: number }) {
         cx="90"
         cy="85"
         r="70"
-        fill="#ddf59b"
+        fill="#f7e6b1"
         stroke="#202635"
         strokeWidth="2"
       />

@@ -29,8 +29,9 @@ import {
 import { challengePassed } from "./features/situations/model";
 import React, { useEffect, useRef, useState } from "react";
 import { LobSetup } from "./LobSetup";
+import { ScenarioBoard } from "./features/situations/ScenarioBoard";
 import { ProgressionInfo } from "./features/product/ProgressionInfo";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -100,6 +101,7 @@ import { canUndoLastThrow, undoLastThrow } from "./features/coaching/session";
 import { useApp } from "./app-context";
 import { DirectionPicker } from "./features/adventure/ui";
 import { missionCompleted, type Direction } from "./features/adventure/model";
+import { trackEvent } from "./features/product/analytics";
 const date = (s: string) =>
   new Date(s).toLocaleDateString("pl-PL", { day: "numeric", month: "long" });
 const iconMap: Record<string, typeof Target> = {
@@ -497,12 +499,11 @@ export function Start() {
 }
 export function Library() {
   const { state } = useApp();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [group, setGroup] = useState(
     new URLSearchParams(location.search).get("group") ?? "Wszystkie",
   );
-  const initial =
-    new URLSearchParams(location.search).get("category") ?? "Wszystkie";
-  const [filter, setFilter] = useState(initial);
+  const filter = searchParams.get("category") ?? "Wszystkie";
   const [query, setQuery] = useState("");
   const [beginners, setBeginners] = useState(false);
   const categories = ["Wszystkie", ...new Set(drills.map((d) => d.category))];
@@ -512,6 +513,19 @@ export function Library() {
     (s) => s.completedAt && s.results.length > 0 && s.kind !== "test",
   );
   const primaryRecommendation = recommendations[0];
+  const trainingHref = (id: string) => {
+    const query = searchParams.toString();
+    return `/training/${id}${query ? `?${query}` : ""}`;
+  };
+  const setFilter = (category: string) => {
+    const next = new URLSearchParams(searchParams);
+    if (category === "Wszystkie") next.delete("category");
+    else next.set("category", category);
+    setSearchParams(next);
+  };
+  useEffect(() => {
+    trackEvent("recommendation_view", { module: "training" });
+  }, []);
   const visible = drills.filter(
     (d) =>
       (group === "Wszystkie" ||
@@ -574,9 +588,10 @@ export function Library() {
         </div>
         <Link
           className="secondary"
+          onClick={() => trackEvent("recommendation_click", { module: "training", source: "recommendation" })}
           to={
             hasHistory && primaryRecommendation
-              ? `/training/${primaryRecommendation.drillId}`
+              ? trainingHref(primaryRecommendation.drillId)
               : "/training/point-basic?level=easy"
           }
         >
@@ -693,7 +708,7 @@ export function Library() {
           <Link
             key={d.id}
             className={`card drill-card ${d.mode === "shoot" ? "shoot-card" : d.mode === "lob" ? "lob-card" : d.mixed ? "mixed-card" : ""}`}
-            to={`/training/${d.id}`}
+            to={trainingHref(d.id)}
           >
             <div className="drill-top">
               <div className="icon-box">
@@ -802,7 +817,7 @@ export function Detail() {
   }
   return (
     <>
-      <Back />
+      <Back to={`/training${location.search}`} />
       <Heading eyebrow={d.category.toUpperCase()} title={d.name}>
         {d.description}
       </Heading>
@@ -1351,6 +1366,7 @@ export function Active() {
           {situation && (
             <fieldset>
               <legend>{scenario?.title}. Co robisz?</legend>
+              {scenario && <ScenarioBoard scenario={scenario} />}
               <p>{scenario?.description}</p>
               <p className="muted">
                 Ustaw układ na boisku. Wybierz decyzję, wykonaj rzut, potem
