@@ -1,8 +1,16 @@
+export type RuleSourceType =
+  | "game_rules"
+  | "pfp_general"
+  | "pfp_competition"
+  | "ranking"
+  | "precision_shooting";
 export interface Source {
   name: string;
   date: string;
   file: string;
   url: string;
+  sourceType: RuleSourceType;
+  currentStatus?: string;
 }
 export interface Rule {
   id: string;
@@ -37,8 +45,10 @@ export interface RulesQuizProgress {
   startedAt: string;
   currentIndex: number;
 }
-export const verifiedOn = "2026-10-07";
-export const contentVersion = "2026-10-07.1";
+export const verifiedAt = "2026-10-26";
+export const rulesVersion = "PFP/FIPJP-2026-10-26";
+export const verifiedOn = verifiedAt;
+export const contentVersion = rulesVersion;
 export const normalize = (text: string) =>
   text
     .toLocaleLowerCase("pl")

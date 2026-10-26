@@ -84,7 +84,7 @@ function Source({ rule }: { rule: Rule }) {
               {ref.article && `, ${ref.article}`}
             </b>
             <span>
-              Data dokumentu: {displayDate(source.date)} · weryfikacja:{" "}
+              {source.currentStatus ?? `Data dokumentu: ${displayDate(source.date)}`} · weryfikacja:{" "}
               {displayDate(verifiedOn)}
             </span>
             <div>

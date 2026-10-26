@@ -39,6 +39,13 @@ describe("official rules catalog", () => {
       expect(r.related?.every((id) => findRule(id)) ?? true).toBe(true);
     }
     for (const s of Object.values(sources)) {
+      expect([
+        "game_rules",
+        "pfp_general",
+        "pfp_competition",
+        "ranking",
+        "precision_shooting",
+      ]).toContain(s.sourceType);
       expect(new URL(s.url).hostname).toBe("petanque.pl");
       expect(existsSync(`public/rule-sources/${s.file}`)).toBe(true);
       expect(
