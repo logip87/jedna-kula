@@ -1,32 +1,36 @@
-# Jedna kula — Quality Engineering na prawdziwej PWA
+# Jedna kula — PWA do treningu pétanque
 
-**Portfolio: Senior QA Automation Engineer · SDET · Quality Engineer · AI-assisted QA Engineer**
+Jedna kula to działająca aplikacja do samodzielnego treningu pétanque. Pomaga wybrać ćwiczenie, zapisać serię rzutów, wrócić do rozpoczętego treningu i śledzić postęp. Działa lokalnie w przeglądarce: React, TypeScript, IndexedDB oraz PWA z service workerem.
 
-Zawodnik kończy trening na boisku, traci internet i zamyka telefon. Po powrocie wynik powinien nadal być w historii. Ten projekt pokazuje, jak przełożyć takie wymaganie na strategię testów, sprawdzić rzeczywisty zapis w przeglądarce i udowodnić zachowanie aplikacji również wtedy, gdy pamięć odmawia współpracy.
-
-Jedna kula to działająca aplikacja do treningu pétanque: React, TypeScript, IndexedDB i PWA z service workerem. Jej jakość sprawdzają testy logiki, integracji, interfejsu, offline, dostępności, obrazu i bezpieczeństwa. Osobna demonstracja pokazuje kontrolowany proces AI-assisted QA.
+Wyniki i szkice zostają na urządzeniu. Po przygotowaniu cache aplikacja działa również bez sieci. Testy automatyczne skupiają się na krytycznych zachowaniach produktu: zapisie treningu, trwałości danych, działaniu offline, dostępności i ochronie lokalnych danych.
 
 **Od grania do trenowania.** Produkt jest skierowany przede wszystkim do ambitnych graczy klubowych, juniorów oraz osób początkujących i średniozaawansowanych, które potrzebują struktury treningu. [Pozycjonowanie i persona](docs/POSITIONING.md).
 
-**Zacznij od:** [strategii testów](docs/TEST_STRATEGY.md), [scenariuszy showcase](#quality-engineering) lub [opisu aplikacji dla gracza](docs/APLIKACJA.md).
+**Zacznij od:** [strategii testów](docs/TEST_STRATEGY.md), [opisu aktualnego zestawu testów](#testy-i-automatyczna-kontrola-jakości) lub [opisu aplikacji dla gracza](docs/APLIKACJA.md).
 
-## Quality Engineering
+## Co robi aplikacja
 
-**25 reprezentatywnych scenariuszy, każdy z określonym ryzykiem i celem.** Showcase można uruchomić jednym poleceniem. Szersza regresja pozostaje osobnym zestawem do weryfikacji całego produktu.
+- **Prowadzi trening techniczny.** Biblioteka ćwiczeń obejmuje puentę, strzał, lob, grę przy linii i trening mieszany. Gracz wybiera warunki serii, wpisuje wyniki rzutów i może wznowić przerwany trening.
+- **Pomaga wybrać następny krok.** Po zapisanych seriach pokazuje rekomendacje oparte na porównywalnych wynikach, trendzie i czasie od ostatniego treningu. Bez historii proponuje spokojny punkt startowy, a pełna biblioteka pozostaje zawsze dostępna.
+- **Układa naukę w ścieżkę.** Przygoda z pétanque prowadzi przez misje treningowe i pokazuje aktualne zadanie, najbliższe etapy oraz postęp. Misje budują bazę, a rekomendacje korzystają ze zwykłych zapisanych serii.
+- **Rozwija także poza samym rzutem.** Moduły mentalne, krótkie ćwiczenia praktyczne i „Ciało do gry” wspierają rutynę, koncentrację oraz spokojne przygotowanie ruchowe. Rozpoczęte moduły można wznowić, a fizyczny trening ma historię i propozycję na dziś.
+- **Ćwiczy decyzje meczowe.** Plansze taktyczne i tryb meczowy pozwalają przeanalizować sytuację, wybrać zagranie oraz zachować własną decyzję i wynik rozgrywki.
+- **Pokazuje postęp bez konta.** Historia, statystyki, rekordy i kopie JSON działają lokalnie na urządzeniu; po przygotowaniu cache aplikacja jest dostępna offline.
 
-Cztery główne E2E wydzielono z istniejących przepływów; wykorzystano również dotychczasowy test błędu pamięci. Nowe scenariusze uzupełniają konkretne luki: integrację warstw, granice bezpieczeństwa, opóźniony zapis, rzeczywiste porównania wizualne i ograniczenia pracy agentów.
+## Testy i automatyczna kontrola jakości
+
+Zestaw nie próbuje automatyzować każdej kombinacji w interfejsie. Logika i warianty domenowe są sprawdzane w Vitest, a Playwright uruchamia pięć najważniejszych przepływów użytkownika na emulowanym Pixelu 7 w Chromium. Dodatkowy zestaw przeglądarkowy weryfikuje offline, dostępność, granice danych i opóźniony zapis.
 
 ### Co można sprawdzić w kodzie
 
-- **E2E — 4 scenariusze.** Puenta prowadzi od rzutów do zapisanej historii i statystyk. Strzał pod presją rozróżnia usunięcie celu od dotknięcia. Zaliczona lekcja oraz profil przetrwają ponowne otwarcie. [Przepływy użytkownika](tests/e2e/app.spec.ts).
-- **Integration — 3 scenariusze.** Silnik punktacji współpracuje z repozytorium i statystykami; moduł mentalny zachowuje samoocenę i postęp; import atomowo zastępuje stan i zachowuje kopię poprzednich danych. Vitest i fake-indexeddb sprawdzają te kontrakty bez kosztu UI. [Integracje](tests/integration/training.test.ts).
+- **Krytyczne E2E — 5 scenariuszy.** Gracz może rozpocząć, cofnąć, wznowić i zapisać trening; postęp lekcji mentalnej, modułu ruchowego, misji Przygody i decyzji taktycznej przetrwa odświeżenie. [Przepływy użytkownika](tests/e2e/critical).
+- **Unit i integration.** Vitest sprawdza punktację, rekomendacje, progres, wybór treningu, zapis danych i współpracę modułów bez kosztu uruchamiania przeglądarki. [Testy integracyjne](tests/integration).
 - **PWA / offline — 3 scenariusze.** Testy pracują na produkcyjnym buildzie, czekają na prawdziwy controller service workera, sprawdzają cache i manifest, wyłączają sieć oraz zapisują trening. Ponowne otwarcie strony w tym samym kontekście potwierdza trwałość szkicu i wyniku. [Offline](tests/pwa/offline.spec.ts).
 - **Accessibility — 2 scenariusze.** Axe-core bada krytyczne widoki; dodatkowe asercje sprawdzają skip link, fokus, dostępne nazwy i aktywację klawiaturą. [Dostępność](tests/accessibility/critical.spec.ts).
-- **Visual regression — 2 scenariusze.** Dashboard i aktywna sesja są porównywane z zapisanymi PNG. Kontrolowany zegar, viewport i reduced motion ograniczają zmienność. Różnica obrazu wymaga oceny; CI nie aktualizuje wzorców. [Porównania wizualne](tests/visual/critical.spec.ts).
 - **Application security — 3 scenariusze.** Nazwa podobna do payloadu XSS pozostaje tekstem, uszkodzony IndexedDB daje kontrolowany alert, a sfałszowana punktacja w imporcie nie zastępuje danych użytkownika. [Granice danych](tests/security/input.spec.ts).
 - **Agent security — 4 scenariusze.** Instrukcje w stronie, repozytorium i danych użytkownika pozostają niezaufanymi danymi. Broker odmawia nieprzyznanych capabilities, w tym shell i network, przed wywołaniem adaptera. [Kontrakty brokera](tests/agent-security/boundaries.test.ts).
 - **AI-assisted testing — 2 scenariusze.** Generator tworzy wykonywalny test z planu i zgodnego rekordu review. Kontrola healera blokuje zmianę oczekiwanego zachowania i oddziela product bug od test bug. [Wykonywany test](tests/agentic/generated/mental.spec.ts) · [kontrola review](tests/agentic/review.test.ts).
-- **Resilience — 2 scenariusze.** `QuotaExceededError` pozwala ponowić zapis bez utraty próby. Wstrzymanie potwierdzenia rzeczywistej transakcji sprawdza, czy szybkie wielokrotne kliknięcia nie tworzą duplikatów. Synchronizacja opiera się na stanie aplikacji i jawnym sygnale. [Opóźniony zapis](tests/resilience/commit.spec.ts).
+- **Resilience — 3 scenariusze.** Wstrzymanie potwierdzenia rzeczywistej transakcji sprawdza blokadę interfejsu, brak duplikatów po wielokrotnym kliknięciu oraz trwałość danych, gdy użytkownik opuszcza ekran podczas zapisu. [Opóźniony zapis](tests/resilience/commit.spec.ts).
 
 ### Decyzje inżynierskie, które stoją za testami
 
@@ -38,7 +42,7 @@ Cztery główne E2E wydzielono z istniejących przepływów; wykorzystano równi
 
 **Mała warstwa wsparcia.** Typowane helpery upraszczają przygotowanie treningu, danych i persystencji. Testy zachowują czytelny przebieg oraz widoczne asercje. [Helpery i kontrakty](tests/support).
 
-**Cross-browser według priorytetu.** Pełny zestaw przeglądarkowy działa na Chromium z emulacją Pixel 7. Smoke zapisu puenty jest dodatkowo wykonywany na desktop Chromium, Firefox i WebKit z ekranem iPhone 13. Jeden krytyczny kontrakt jest sprawdzany na trzech silnikach bez powielania całej suite.
+**Jeden reprezentatywny widok.** Testy przeglądarkowe działają na Chromium z emulacją Pixel 7. Repozytorium nie utrzymuje obecnie automatycznej macierzy Firefox, WebKit, desktopów ani visual regression.
 
 ### Testowanie doprowadziło również do poprawy produktu
 
@@ -46,17 +50,9 @@ Analiza bezpieczeństwa ujawniła brak walidacji danych odczytywanych z IndexedD
 
 To przykład pracy od zidentyfikowanego ryzyka, przez poprawkę w aplikacji, do powtarzalnego dowodu jej działania.
 
-### Wyniki ostatniej pełnej weryfikacji
+### Stan ostatnio sprawdzony lokalnie
 
-**12.10.2026, lokalnie:**
-
-- Showcase: **8/8 Vitest + 20/20 wykonań Playwright**. To 25 różnych scenariuszy oraz trzy dodatkowe wykonania smoke na innych projektach przeglądarkowych.
-- Szersza regresja: **109/109 Vitest + 47/47 Playwright**. Osiem kontraktów showcase wchodzi również do tego zestawu Vitest.
-- Smoke i resilience powtórzone pięć razy: **15/15, bez retry**.
-- Porównania wizualne przeszły z zapisanymi baseline, bez ich aktualizacji.
-- TypeScript, ESLint i produkcyjny build PWA: poprawne.
-
-Wyniki są zapisanym stanem weryfikacji, nie deklaracją ciągłego statusu CI. [Szczegóły środowiska i zakresu](docs/TEST_STRATEGY.md).
+27.10.2026 `npm test` zakończył się wynikiem **328 zaliczonych, 52 pominięte** w 27 plikach. Listowanie bieżącej konfiguracji Playwright wykrywa **5 krytycznych E2E** oraz **17 scenariuszy browserowego showcase**. To wynik lokalnej weryfikacji, nie deklaracja stałego statusu CI. [Zakres i ograniczenia](docs/TEST_STRATEGY.md).
 
 ### CI/CD — quality gate i wdrożenie
 
@@ -66,25 +62,21 @@ Workflow [GitHub Actions](.github/workflows/quality.yml) jest skonfigurowany dla
 flowchart TD
   PR[Pull request] --> I[Install: npm ci]
   I --> U[Lint / TypeScript / Unit + Integration]
-  U --> P[Build + Smoke: Chromium / Firefox / WebKit]
+  U --> P[Build + krytyczne E2E: Pixel 7 / Chromium]
   P --> A[Accessibility]
   A --> S[Security / PWA / Resilience]
   S --> Q[Quality Gate]
   M[Push / Manual run] --> F[Full regression + Showcase]
-  M --> V[Visual: macOS 26]
   Q --> D[Deploy FTPS: tylko push main]
   F --> D
-  V --> D
   D --> H[Weryfikacja HTTPS / backup 14 dni]
 ```
 
-Workflow ma read-only permissions, izolowane joby i concurrency. Po failure zachowuje HTML report, trace oraz screenshots przez 7 dni. Visual działa w osobnym jobie macOS; wzorce nie są aktualizowane automatycznie. Po push do `main` job deploy czeka na sukces quality-gate, full-regression i visual. Publikuje przez FTPS i porównuje pliki buildu ze stroną przez HTTPS.
+Workflow ma read-only permissions, izolowane joby i concurrency. Po failure zachowuje HTML report, trace oraz screenshots przez 7 dni. Na pull requestach uruchamia quality gate, a po pushu lub uruchomieniu ręcznym także showcase i pełne krytyczne E2E. Deploy po pushu do `main` czeka na oba joby testowe. [Aktualne przebiegi CI](https://github.com/logip87/jedna-kula/actions/workflows/quality.yml).
 
-**CI potwierdzone na GitHub, 12.10.2026:** [przebieg dla commita `03c478a`](https://github.com/logip87/jedna-kula/actions/runs/38237821420) zakończył się sukcesem: quality gate, full-regression i visual. Obejmuje lint, TypeScript, Vitest, kontrolę generatora, build, smoke na trzech silnikach oraz accessibility/security/PWA/resilience. Visual przeszedł na hosted runnerze macOS bez aktualizacji baseline. [Aktualne przebiegi CI](https://github.com/logip87/jedna-kula/actions/workflows/quality.yml).
+Instalacja Chromium ma osobny limit pięciu minut, aby problem infrastruktury był widoczny wcześniej. Regresja i showcase mają osobne katalogi raportów i wyników.
 
-Pierwszy przebieg ujawnił przekroczenie limitu podczas instalacji przeglądarek. Instalacja ma osobny limit 5 minut, aby problem infrastruktury był widoczny wcześniej. Regresja generuje HTML report, trace i screenshots po błędzie; raporty regresji i showcase mają osobne katalogi.
-
-**Delivery:** aktualizacja `main` (w tym merge PR) uruchamia automatyczne wdrożenie na [jednakula.progtest.pl](https://jednakula.progtest.pl) po przejściu wszystkich trzech jobów. PR i manualne uruchomienie testów nie publikują aplikacji. Hasło FTPS jest sekretem środowiska `production`, dostępnym wyłącznie krokowi wysyłki. Deploy zachowuje stare zasoby, zapisuje kopię zastępowanych plików jako artefakt na 14 dni oraz weryfikuje zgodność plików przez HTTPS i trzy trasy SPA. Wdrożenia są serializowane; nowy push nie przerywa trwającego transferu. [Konfiguracja i odzyskiwanie](docs/CAL_DEPLOYMENT.md). Lokalne `npm run deploy` pozostaje dostępne.
+**Delivery:** aktualizacja `main` (w tym merge PR) uruchamia automatyczne wdrożenie na [jednakula.progtest.pl](https://jednakula.progtest.pl) po przejściu quality gate i full regression. PR i manualne uruchomienie testów nie publikują aplikacji. Hasło FTPS jest sekretem środowiska `production`, dostępnym wyłącznie krokowi wysyłki. Deploy zachowuje stare zasoby, zapisuje kopię zastępowanych plików jako artefakt na 14 dni oraz weryfikuje zgodność plików przez HTTPS i trzy trasy SPA. Wdrożenia są serializowane; nowy push nie przerywa trwającego transferu. [Konfiguracja i odzyskiwanie](docs/CAL_DEPLOYMENT.md). Lokalne `npm run deploy` pozostaje dostępne.
 
 ### AI-assisted QA z jawną granicą odpowiedzialności
 
@@ -175,7 +167,6 @@ React · TypeScript · Vite · Tailwind CSS · React Router · IndexedDB (`idb`)
 - [Formularz kontaktowy](docs/FEEDBACK.md)
 
 Statyczne wdrożenie: `dist/` przez HTTPS, ze SPA fallback do `index.html`. Skrypt FTPS `scripts/cal-ftp.py` przechowuje hasło w Pęku kluczy i kopie zastępowanych plików w `release/`. Dane treningowe pozostają lokalne; formularz zgłoszeń wysyła wyłącznie treść świadomie wpisaną przez użytkownika i opcjonalny e-mail.
-
 
 ### Rozmiar JavaScript i start aplikacji
 
