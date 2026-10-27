@@ -1248,23 +1248,23 @@ fieldset > .secondary {
   color: #534a3b;
 }
 .stat-row {
-  display: flex;
-  align-items: center;
-  gap: 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 18px;
+  row-gap: 9px;
   margin-top: 25px;
   font-size: 15px;
 }
 .stat-row > b {
-  width: 34px;
+  min-width: 0;
 }
 .stat-row > span {
   font-size: 13px;
   color: #534a3b;
-  min-width: 85px;
   text-align: right;
 }
 .bar {
-  flex: 1;
+  grid-column: 1 / -1;
   height: 9px;
   border-radius: 6px;
   background: #e7e3d8;
